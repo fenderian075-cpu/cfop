@@ -1182,6 +1182,25 @@ function fpSolvePlan(){
   const simple=(typeof mode!=='undefined'&&mode==='s');
   let cur=FP.state.slice();
   const all=[];
+  // 2層回し・中層・持ち替えでセンターの向きが変わっていたら、まず持ち替えで基準(黄上・青前)に戻す
+  if(cur[4]!==4||cur[22]!==22){
+    const P=['','x',"x'",'x2','z',"z'"],Y=['','y',"y'",'y2'];
+    let fix=null;
+    outer:for(const a of P)for(const b of Y){
+      const s=(a+' '+b).trim();
+      const t2=s?run(cur,s):cur;
+      if(t2[4]===4&&t2[22]===22){fix=s;break outer;}
+    }
+    if(!fix)return null;
+    all.push({
+      stage:tj('持ち替え','Reorient'),
+      t:tj('向きを基準に戻す','Reorient the cube'),
+      j:tj('2層回しや中層回しでキューブごと向きが変わっている。黄センターを上・青センターを正面に持ち替えてから解く',
+           'Wide/slice turns rotated the whole cube. Bring the yellow center up and the blue center to the front first'),
+      alg:fix,mv:toks(fix),hi:null,view:[-25,-35]
+    });
+    cur=run(cur,fix);
+  }
   const c=svCross(cur);if(!c)return null;all.push(...c.steps);cur=c.st;
   const f=svF2L(cur);if(!f)return null;all.push(...f.steps);cur=f.st;
   const o=svOLL(cur,simple);if(!o)return null;all.push(...o.steps);cur=o.st;
@@ -1245,14 +1264,21 @@ function fpInit(){
     };
     next();
   }
+  // スクランブルは「完成状態から」が定義。直前の自由回しはリセットしてから適用する
+  const fpSoftReset=()=>{
+    FP.state=SOLVED.slice();FP.hist=[];FP.moves=0;fpPaint();
+    $('#fpCount').textContent=(typeof LANG!=='undefined'&&LANG==='en')?'0 moves':'0手';
+    const sb=$('#fpSolved');if(sb)sb.hidden=true;
+  };
   $('#fpScramble').addEventListener('click',()=>{
     if(FP.anim||FP.solving)return;
-    if(WCA.ready&&!WCA.failed){WCA.cb=s2=>fpApplySeq(toks(s2));WCA.cbSent=true;WCA.worker.postMessage('scramble');}
-    else if(!WCA.failed&&typeof Worker!=='undefined'){WCA.cb=s2=>fpApplySeq(toks(s2));WCA.cbSent=false;wcaInit();}
-    else fpApplySeq(toks(scrRandom(18)));
+    if(WCA.ready&&!WCA.failed){WCA.cb=s2=>{fpSoftReset();fpApplySeq(toks(s2));};WCA.cbSent=true;WCA.worker.postMessage('scramble');}
+    else if(!WCA.failed&&typeof Worker!=='undefined'){WCA.cb=s2=>{fpSoftReset();fpApplySeq(toks(s2));};WCA.cbSent=false;wcaInit();}
+    else{fpSoftReset();fpApplySeq(toks(scrRandom(18)));}
   });
   $('#fpPerfect').addEventListener('click',()=>{
     if(FP.anim||FP.solving)return;
+    fpSoftReset();
     fpApplySeq(toks(PERFECT[Math.floor(Math.random()*2)]));
   });
   $('#fpReset').addEventListener('click',()=>{
