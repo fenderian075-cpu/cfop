@@ -1,0 +1,35 @@
+{
+  "name": "CFOP Trainer",
+  "short_name": "CFOP Trainer",
+  "description": "ルービックキューブ CFOP法の学習アプリ。3D手順再生・全119手順・クイズ付き",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "categories": ["education", "games"],
+  "background_color": "#101014",
+  "theme_color": "#101014",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
