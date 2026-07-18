@@ -71,7 +71,7 @@
         <button class="btn" id="scrclear">クリア</button>
         <button class="btn pri" id="scrplay">▶ 3Dで再現</button>
       </div>
-      <div class="scrhold">持ち方: <i style="background:#FFD21E"></i>黄センターを上・<i style="background:#2f6fe4"></i>青センターを正面にして回し始める(3D再現・展開図と同じ基準)。大会(WCA)では白上・緑前が公式。</div>
+      <div class="scrhold">持ち方: <i style="background:#FFFF55"></i>黄センターを上・<i style="background:#1B45A6"></i>青センターを正面にして回し始める(3D再現・展開図と同じ基準)。大会(WCA)では白上・緑前が公式。</div>
       <div class="scrmeta" id="scrmeta">0手</div>
       <div style="font-size:.64rem;color:var(--tx3);margin-top:5px">スクランブルはWCA準拠のrandom-state方式(cubejsによる二相法ソルバ)。環境が対応しない場合はランダムムーブ式に自動フォールバック。</div>
       <div class="scrnet" id="scrnet"></div>
@@ -140,6 +140,45 @@
     <div class="structrow" id="structRow"></div>
     <div class="note">ステッカーは貼り替わらない——動くのは26個のピース。エッジはエッジの場所へ、コーナーはコーナーの場所へしか移動できない。センターは互いの位置関係が固定なので、白の対面は必ず黄、青の右隣は必ず赤(持ち方基準)。だから「面の色を揃える」のではなく「各ピースをセンターに合う場所へ運ぶ」と考える。</div>
 
+    <h2 class="sec">センターの位置関係 <span class="hint">色の並びは絶対に変わらない</span></h2>
+    <div class="ctrwrap">
+      <div class="ctrcard">
+        <svg viewBox="0 0 96 118" aria-hidden="true">
+        <rect x="6" y="8" width="28" height="28" rx="6" fill="#FFFFFF" stroke="#14151a" stroke-width="2"/>
+        <rect x="62" y="8" width="28" height="28" rx="6" fill="#FFFF55" stroke="#14151a" stroke-width="2"/>
+        <rect x="6" y="46" width="28" height="28" rx="6" fill="#1B45A6" stroke="#14151a" stroke-width="2"/>
+        <rect x="62" y="46" width="28" height="28" rx="6" fill="#449751" stroke="#14151a" stroke-width="2"/>
+        <rect x="6" y="84" width="28" height="28" rx="6" fill="#D92E20" stroke="#14151a" stroke-width="2"/>
+        <rect x="62" y="84" width="28" height="28" rx="6" fill="#EB632B" stroke="#14151a" stroke-width="2"/>
+        <text x="48" y="27" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+        <text x="48" y="65" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+        <text x="48" y="103" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+      </svg>
+        <b>対面ペア</b>
+        <span>白⇄黄・青⇄緑・赤⇄橙。対面のペアは固定で、片方が見えればもう片方が確定する</span>
+      </div>
+      <div class="ctrcard">
+        <svg viewBox="0 0 150 150" aria-hidden="true">
+        <defs></defs>
+        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#14151a" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
+        <polygon points="-1,-5 8,0 -1,5" transform="translate(39,39) rotate(-138)" fill="#fff" stroke="#14151a" stroke-width="1.8" stroke-linejoin="round"/>
+        <rect x="57" y="57" width="36" height="36" rx="6" fill="#FFFF55" stroke="#14151a" stroke-width="2"/>
+        <rect x="57" y="99" width="36" height="36" rx="6" fill="#1B45A6" stroke="#14151a" stroke-width="2"/>
+        <rect x="99" y="57" width="36" height="36" rx="6" fill="#D92E20" stroke="#14151a" stroke-width="2"/>
+        <rect x="57" y="15" width="36" height="36" rx="6" fill="#449751" stroke="#14151a" stroke-width="2"/>
+        <rect x="15" y="57" width="36" height="36" rx="6" fill="#EB632B" stroke="#14151a" stroke-width="2"/>
+        <text x="75" y="146" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">前(F)</text>
+        <text x="142" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">右</text>
+        <text x="75" y="10" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">奥</text>
+        <text x="8" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">左</text>
+      </svg>
+        <b>側面は時計回りに 青→赤→緑→橙</b>
+        <span>黄を上にして上から見た並び。「青の右隣は必ず赤」——エッジの側面色を合わせるとき、隣のセンター色を見ずに即答できる</span>
+      </div>
+    </div>
+    <div class="note">クロスを速くする鍵はこの暗記。白エッジの側面色を見た瞬間「その色のセンターはどっち周りにあるか」が分かれば、D面を回すだけで正しい位置に合わせられる。</div>
+
 
     <h2 class="sec">回転記号 <span class="hint">図をタップ=3Dでその回転が動く。濃い部分が動く層</span></h2>
     <div class="n3wrap">
@@ -175,9 +214,9 @@
       <svg viewBox="0 0 92 92" class="rulesvg" aria-hidden="true">
         <rect x="10" y="10" width="72" height="72" rx="8" fill="#1d1e25" stroke="#454a56" stroke-width="1"/>
         <g>
-          <rect x="15" y="15" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="36.5" y="15" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="58" y="15" width="19" height="19" rx="3" fill="#f4f4f6"/>
-          <rect x="15" y="36.5" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="36.5" y="36.5" width="19" height="19" rx="3" fill="#FFD21E"/><rect x="58" y="36.5" width="19" height="19" rx="3" fill="#f4f4f6"/>
-          <rect x="15" y="58" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="36.5" y="58" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="58" y="58" width="19" height="19" rx="3" fill="#f4f4f6"/>
+          <rect x="15" y="15" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="36.5" y="15" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="58" y="15" width="19" height="19" rx="3" fill="#FFFFFF"/>
+          <rect x="15" y="36.5" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="36.5" y="36.5" width="19" height="19" rx="3" fill="#FFFF55"/><rect x="58" y="36.5" width="19" height="19" rx="3" fill="#FFFFFF"/>
+          <rect x="15" y="58" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="36.5" y="58" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="58" y="58" width="19" height="19" rx="3" fill="#FFFFFF"/>
         </g>
         <path d="M 22.4 22.4 A 33.5 33.5 0 1 1 22.4 69.6" fill="none" stroke="#14151a" stroke-width="7" stroke-linecap="round"/>
         <path d="M 22.4 22.4 A 33.5 33.5 0 1 1 22.4 69.6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
@@ -252,44 +291,7 @@
     <div class="pgttl">Cross</div>
     <div class="pgsub" id="crossSub"></div>
 
-    <h2 class="sec">センターの位置関係 <span class="hint">色の並びは絶対に変わらない</span></h2>
-    <div class="ctrwrap">
-      <div class="ctrcard">
-        <svg viewBox="0 0 96 118" aria-hidden="true">
-        <rect x="6" y="8" width="28" height="28" rx="6" fill="#f4f4f6" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="8" width="28" height="28" rx="6" fill="#FFD21E" stroke="#14151a" stroke-width="2"/>
-        <rect x="6" y="46" width="28" height="28" rx="6" fill="#2f6fe4" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="46" width="28" height="28" rx="6" fill="#1ca34a" stroke="#14151a" stroke-width="2"/>
-        <rect x="6" y="84" width="28" height="28" rx="6" fill="#E5342B" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="84" width="28" height="28" rx="6" fill="#E85D04" stroke="#14151a" stroke-width="2"/>
-        <text x="48" y="27" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-        <text x="48" y="65" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-        <text x="48" y="103" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-      </svg>
-        <b>対面ペア</b>
-        <span>白⇄黄・青⇄緑・赤⇄橙。対面のペアは固定で、片方が見えればもう片方が確定する</span>
-      </div>
-      <div class="ctrcard">
-        <svg viewBox="0 0 150 150" aria-hidden="true">
-        <defs></defs>
-        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#14151a" stroke-width="6.5" stroke-linecap="round"/>
-        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
-        <polygon points="-1,-5 8,0 -1,5" transform="translate(39,39) rotate(-138)" fill="#fff" stroke="#14151a" stroke-width="1.8" stroke-linejoin="round"/>
-        <rect x="57" y="57" width="36" height="36" rx="6" fill="#FFD21E" stroke="#14151a" stroke-width="2"/>
-        <rect x="57" y="99" width="36" height="36" rx="6" fill="#2f6fe4" stroke="#14151a" stroke-width="2"/>
-        <rect x="99" y="57" width="36" height="36" rx="6" fill="#E5342B" stroke="#14151a" stroke-width="2"/>
-        <rect x="57" y="15" width="36" height="36" rx="6" fill="#1ca34a" stroke="#14151a" stroke-width="2"/>
-        <rect x="15" y="57" width="36" height="36" rx="6" fill="#E85D04" stroke="#14151a" stroke-width="2"/>
-        <text x="75" y="146" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">前(F)</text>
-        <text x="142" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">右</text>
-        <text x="75" y="10" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">奥</text>
-        <text x="8" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">左</text>
-      </svg>
-        <b>側面は時計回りに 青→赤→緑→橙</b>
-        <span>黄を上にして上から見た並び。「青の右隣は必ず赤」——エッジの側面色を合わせるとき、隣のセンター色を見ずに即答できる</span>
-      </div>
-    </div>
-    <div class="note">クロスを速くする鍵はこの暗記。白エッジの側面色を見た瞬間「その色のセンターはどっち周りにあるか」が分かれば、D面を回すだけで正しい位置に合わせられる。</div>
+    <div class="note">センターの色の並び(対面ペア/側面は時計回りに 青→赤→緑→橙)は基礎編「センターの位置関係」を参照。ここでの前提知識になる。</div>
 
     <div id="crossSimple">
       <div class="crossfig">

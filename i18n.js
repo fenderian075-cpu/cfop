@@ -19,6 +19,7 @@ const EN={
   '回転記号':'Turn Notation','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
+  'センターの色の並び(対面ペア/側面は時計回りに 青→赤→緑→橙)は基礎編「センターの位置関係」を参照。ここでの前提知識になる。':'For the fixed center layout (opposite pairs / clockwise side order blue→red→green→orange), see "Center relationships" in Basic — it is the prerequisite here.',
   'ボタン操作へ':'Button controls','スワイプ操作へ':'Swipe controls','ドラッグで視点を回せる(D・B・Lの確認用)':'Drag to rotate the view (useful for D, B and L).',
   '3D 手順プレイヤー':'3D Algorithm Player','名前つき手順を選ぶ':'Choose a named algorithm','再生する手順を選択':'Choose an algorithm to play','再生する回転記号':'Turn notation to play',
   '最初に戻る':'Go to Start','1手戻る':'Back One Move','再生':'Play','一時停止':'Pause','1手進む':'Forward One Move','最後へ進む':'Go to End','手順の再生位置。左へ戻すと逆方向に確認できます':'Algorithm position. Drag left to review in reverse.',
