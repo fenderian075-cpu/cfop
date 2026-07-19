@@ -243,7 +243,7 @@ function cubeNetSVG(state,{interactive=false,labels=false}={}){
   let s='';
   for(const [f,[gc,gr]] of Object.entries(facePos)){
     const ox=gc*(FW+FP), oy=gr*(FW+FP);
-    s+=`<rect class="net-faceplate" x="${(ox-2.25).toFixed(2)}" y="${(oy-2.25).toFixed(2)}" width="${(FW+4.5).toFixed(2)}" height="${(FW+4.5).toFixed(2)}" rx="4.6"/>`;
+    s+=`<rect class="net-faceplate" x="${(ox-2.25).toFixed(2)}" y="${(oy-2.25).toFixed(2)}" width="${(FW+4.5).toFixed(2)}" height="${(FW+4.5).toFixed(2)}" rx="5.2" fill="${FC[f]}" fill-opacity=".055"/>`;
     for(let k=0;k<9;k++){
       const r=Math.floor(k/3),c=k%3,p=f*9+k;
       const color=FC[Math.floor((state?.[p]??p)/9)];
@@ -400,18 +400,7 @@ function n3init(){
       box.appendChild(group);
     });
   });
-  // 持ち替えは、表示領域に入った時だけ一度ずつ実回転して方向を伝える。
-  // 常時回し続けず、タップ時のアニメーションはいつでも割り込めるようにする。
-  const axisGrid=document.querySelector('.nchips[data-n3g="rot"]');
-  if(axisGrid&&'IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
-    const axisObserver=new IntersectionObserver(entries=>{
-      if(!entries.some(e=>e.isIntersecting))return;
-      const cards=[...axisGrid.querySelectorAll('.ncard')];
-      cards.forEach((card,i)=>setTimeout(()=>ncardAnimate(card,card.dataset.tok),140+i*110));
-      axisObserver.unobserve(axisGrid);
-    },{threshold:.34});
-    axisObserver.observe(axisGrid);
-  }
+  // 持ち替えのアニメーションはタップ操作時のみ再生する(自動デモは行わない)
   $('#n3view').addEventListener('click',()=>{N3.yaw=-35;N3.pitch=-25;n3view();});
   // drag orbit
   const st=$('#n3stage');let drag=null;
@@ -774,13 +763,21 @@ function axisRotationSVG(token,prog){
   };
   const markerId=`axis-${active}-${prime?'p':'n'}`;
   const arrow=(x,y,ang,color,opacity)=>`<polygon points="-1,-4 7,0 -1,4" transform="translate(${x} ${y}) rotate(${ang})" fill="${color}" opacity="${opacity}"/>`;
-  let axisLines='';
+  let bgAxes='',fgAxis='';
   for(const k of ['x','y','z']){
-    const a=axes[k],on=k===active,color=colors[k],opacity=on?1:.34,width=on?3:1.35;
+    const a=axes[k],on=k===active,color=colors[k];
     const ang=Math.atan2(a.b[1]-a.a[1],a.b[0]-a.a[0])*180/Math.PI;
-    axisLines+=`<line x1="${a.a[0]}" y1="${a.a[1]}" x2="${a.b[0]}" y2="${a.b[1]}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" opacity="${opacity}"/>`;
-    axisLines+=arrow(a.b[0],a.b[1],ang,color,opacity);
-    axisLines+=`<text x="${a.label[0]}" y="${a.label[1]}" text-anchor="middle" dominant-baseline="middle" fill="${color}" stroke="var(--panel)" stroke-width="3" paint-order="stroke" opacity="${on?1:.58}" font-size="${on?13:10}" font-weight="900" font-family="ui-monospace,Menlo,monospace">${k}</text>`;
+    if(on){
+      // アクティブ軸: キューブの前面で強調
+      fgAxis+=`<line x1="${a.a[0]}" y1="${a.a[1]}" x2="${a.b[0]}" y2="${a.b[1]}" stroke="${color}" stroke-width="3.2" stroke-linecap="round"/>`;
+      fgAxis+=arrow(a.b[0],a.b[1],ang,color,1);
+      fgAxis+=`<text x="${a.label[0]}" y="${a.label[1]}" text-anchor="middle" dominant-baseline="middle" fill="${color}" stroke="var(--panel)" stroke-width="3.2" paint-order="stroke" font-size="14" font-weight="900" font-family="ui-monospace,Menlo,monospace">${k}</text>`;
+    }else{
+      // 非アクティブ軸: キューブの背後に透過ガイドとして沈める
+      bgAxes+=`<line x1="${a.a[0]}" y1="${a.a[1]}" x2="${a.b[0]}" y2="${a.b[1]}" stroke="${color}" stroke-width="1.1" stroke-linecap="round" opacity=".16"/>`;
+      bgAxes+=arrow(a.b[0],a.b[1],ang,color,.2);
+      bgAxes+=`<text x="${a.label[0]}" y="${a.label[1]}" text-anchor="middle" dominant-baseline="middle" fill="${color}" opacity=".35" font-size="9" font-weight="800" font-family="ui-monospace,Menlo,monospace">${k}</text>`;
+    }
   }
   const sweep=prime?0:1;
   const start=prime?'82 52':'39 35',end=prime?'39 35':'82 52';
@@ -826,8 +823,8 @@ function axisRotationSVG(token,prog){
   const pulse=prog===undefined?1:.8+.2*Math.sin(Math.min(prog,90)*Math.PI/180);
   return `<svg class="axisrotation axis-${active}${prog===undefined?'':' axis-playing'}" viewBox="0 0 124 110" xmlns="http://www.w3.org/2000/svg">
     <defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="${colors[active]}"/></marker></defs>
-    <g class="axis-cube-shape">${cubeFaces}</g>
-    ${axisLines}<g opacity="${pulse.toFixed(2)}">${ring}</g>
+    ${bgAxes}<g class="axis-cube-shape">${cubeFaces}</g>
+    ${fgAxis}<g opacity="${pulse.toFixed(2)}">${ring}</g>
     <rect x="8" y="8" width="28" height="22" rx="8" fill="${colors[active]}" fill-opacity=".18" stroke="${colors[active]}" stroke-opacity=".62"/>
     <text x="22" y="19" text-anchor="middle" dominant-baseline="middle" fill="${colors[active]}" font-size="13" font-weight="900" font-family="ui-monospace,Menlo,monospace">${token}</text>
   </svg>`;

@@ -164,12 +164,13 @@ ruby.ck rt{font-size:.5em;font-weight:800;opacity:.85;letter-spacing:.05em;user-
 .netwrap svg{width:100%; max-width:340px; height:auto}
 .netnote{font-size:.7rem; color:var(--tx2); margin-top:8px}
 .cube-net{display:block;margin-inline:auto;overflow:visible;shape-rendering:geometricPrecision}
-.cube-net .net-faceplate{fill:var(--net-plate);stroke:var(--net-line);stroke-width:.55;vector-effect:non-scaling-stroke}
+.cube-net .net-faceplate{stroke:none}
+body[data-theme="light"] .cube-net{filter:drop-shadow(0 1px 1.5px rgba(15,23,42,.08))}
 .cube-net .net-cell{stroke:var(--net-line);stroke-width:.68;vector-effect:non-scaling-stroke;
   transform-box:fill-box;transform-origin:center;transition:opacity .18s ease,filter .18s ease,stroke .18s ease,stroke-width .18s ease,transform .18s ease}
-.cube-net .net-label{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:9px;font-weight:850;pointer-events:none}
+.cube-net .net-label{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:8px;font-weight:900;letter-spacing:.12em;pointer-events:none}
 .cube-net--interactive.has-highlight .net-cell:not(.is-moving){opacity:.62;filter:saturate(.82)}
-.cube-net--interactive .net-cell.is-moving{stroke:var(--accent);stroke-width:1.25;filter:brightness(1.08) saturate(1.16) drop-shadow(0 0 1.8px var(--accent));transform:scale(1.025)}
+.cube-net--interactive .net-cell.is-moving{stroke:var(--accent);stroke-width:1.25;filter:brightness(1.08) saturate(1.16) drop-shadow(0 0 1.8px var(--accent));transform:scale(1.025);transform-box:fill-box;transform-origin:center}
 @media(prefers-reduced-motion:reduce){.cube-net .net-cell{transition:none}.cube-net--interactive .net-cell.is-moving{transform:none}}
 
 main{max-width:680px; margin:0 auto; padding:14px}
