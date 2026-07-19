@@ -501,8 +501,8 @@ const ARROWS={
 function arrowSVG(spec,mod){
   const flip=mod.includes("'")?-1:1;
   let body='';
-  const head=(x,y,ang)=>`<polygon points="0,-9 16,0 0,9" transform="translate(${x},${y}) rotate(${ang})" fill="#fff" stroke="#111" stroke-width="2"/>`;
-  const lineS='stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"';
+  const head=(x,y,ang)=>`<polygon points="0,-8 14,0 0,8" transform="translate(${x},${y}) rotate(${ang})" fill="#fff" stroke="#111" stroke-width="1.5"/>`;
+  const lineS='stroke="#fff" stroke-width="4.4" stroke-linecap="round" fill="none"';
   if(spec.k==='arc'){
     const cw=spec.d*flip>0;
     const R=56,a0=cw?140:40,a1=cw?-70:250;
@@ -523,7 +523,7 @@ function arrowSVG(spec,mod){
       body+=head(o,dd*58,dd>0?90:-90);
     }
   }
-  if(mod.includes('2')) body+=`<text x="0" y="6" text-anchor="middle" font-size="26" font-weight="900" fill="#fff" stroke="#111" stroke-width="3.5" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
+  if(mod.includes('2')) body+=`<text x="0" y="6" text-anchor="middle" font-size="26" font-weight="900" fill="#fff" stroke="#111" stroke-width="2.8" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
   return `<svg viewBox="-78 -78 156 156">${body}</svg>`;
 }
 function n3arrow(token){
@@ -731,14 +731,14 @@ function triboxSVG(token,prog){
         stkQ.push(sp.map(tf));
       }
     }
-    for(const q of bodyQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${BODY}" stroke="#454a56" stroke-width="0.6"/>`;
-    for(const q of stkQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${mv?MOV:STA}" stroke="#14151a" stroke-width="0.7"/>`;
+    for(const q of bodyQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${BODY}" stroke="#454a56" stroke-width="0.4"/>`;
+    for(const q of stkQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${mv?MOV:STA}" stroke="#14151a" stroke-width="0.45"/>`;
   }
   /* ---- 直線矢印のみ(層と一緒に回した位置に描く) ---- */
-  const head=(x,y,ang)=>`<polygon points="-1,-4.4 6.6,0 -1,4.4" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="#fff" stroke="#14151a" stroke-width="1.5" stroke-linejoin="round"/>`;
+  const head=(x,y,ang)=>`<polygon points="-1,-4.4 6.6,0 -1,4.4" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="#fff" stroke="#14151a" stroke-width="1.1" stroke-linejoin="round"/>`;
   const line3=(a,b)=>{const A=proj(a),B=proj(b);
-    return `<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#14151a" stroke-width="5" stroke-linecap="round"/>`
-      +`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>`
+    return `<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#14151a" stroke-width="3.4" stroke-linecap="round"/>`
+      +`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`
       +head(B[0],B[1],Math.atan2(B[1]-A[1],B[0]-A[0])*180/Math.PI);};
   const dir=Math.sign(th);
   const tfA=(p,L)=>{const q=p.slice();q[axI]+=(L!==0?L*lift:0);return rot(q);};
@@ -752,7 +752,7 @@ function triboxSVG(token,prog){
     // Z軸系: 上面ストリップに水平矢印。x'=x c − y s ⇒ 上面(y<0)は +dir 方向へ
     for(const L of movingLv)out+=line3(tfA([-1.15*dir,-1.72,L],L),tfA([1.15*dir,-1.72,L],L));
   }
-  if(mod.includes('2'))out+=`<text x="26" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" stroke="#14151a" stroke-width="3.4" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
+  if(mod.includes('2'))out+=`<text x="26" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" stroke="#14151a" stroke-width="2.6" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
   return `<svg viewBox="-6 -8 112 120" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
 }
 

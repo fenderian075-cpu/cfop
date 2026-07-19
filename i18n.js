@@ -16,7 +16,7 @@ const EN={
   '進捗の保存・復元(コード方式)':'Save / Restore Progress (code)','ここに進捗コードが表示されます':'Your progress code appears here','コード発行':'Generate Code','コピー':'Copy','復元':'Restore',
   '進捗はこの端末に自動保存されます。別端末への移行・バックアップにはコードを使用してください。':'Progress is saved automatically on this device. Use a code to back it up or transfer it to another device.',
   '基礎':'Basics','回転記号とトリガー。すべての手順はこの部品でできている。':'Turn notation and triggers. Every algorithm is built from these pieces.',
-  '回転記号':'Turn Notation','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
+  '回転記号':'Turn Notation','図をタップ=3Dで再生。黄色の層が動く':'Tap a symbol to play it — the yellow layer moves','外側から見た向き':'Direction viewed from outside',
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
   'センターの色の並び(対面ペア/側面は時計回りに 青→赤→緑→橙)は基礎編「センターの位置関係」を参照。ここでの前提知識になる。':'For the fixed center layout (opposite pairs / clockwise side order blue→red→green→orange), see "Center relationships" in Basic — it is the prerequisite here.',
@@ -145,7 +145,11 @@ function setLanguage(lang){LANG=lang;try{localStorage.setItem('cfop-lang',lang);
 function applyTheme(){
   document.body.dataset.theme=THEME;document.documentElement.dataset.theme=THEME;
   document.querySelectorAll('#themeSeg button').forEach(b=>{const on=b.dataset.theme===THEME;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-  const thi=document.getElementById('thIco');if(thi)thi.textContent=THEME==='dark'?'☀':'☾';
+  const thi=document.getElementById('thIco');if(thi){
+    thi.textContent=THEME==='dark'?'☾':'☀';
+    const label=THEME==='dark'?'ライトモードに切り替え':'ダークモードに切り替え';
+    thi.setAttribute('aria-label',label);thi.title=label;
+  }
 }
 function setTheme(theme){
   if(theme!=='light'&&theme!=='dark')return;

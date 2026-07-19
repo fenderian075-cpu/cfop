@@ -340,30 +340,42 @@ body[data-theme="light"] .ncard.on{box-shadow:inset 0 0 0 1.5px var(--yl),0 1px 
   .mOnly{display:flex!important}
   h2.sec.mOnly{display:flex!important}
   nav{display:none!important}
-  body{padding-left:0!important;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  /* 見出しのhintが入り切らない場合は文中で割らず丸ごと次行へ */
+  h2.sec{flex-wrap:wrap}
+  h2.sec .hint{white-space:nowrap;max-width:100%}
+  body{padding-left:0!important;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
   .tabbar{
     display:flex;position:fixed;left:0;right:0;bottom:0;z-index:90;
-    background:color-mix(in srgb,var(--bg) 88%,transparent);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:blur(16px) saturate(1.35);-webkit-backdrop-filter:blur(16px) saturate(1.35);
     border-top:1px solid var(--line);
-    padding:5px 2px calc(5px + env(safe-area-inset-bottom));
+    padding:4px 4px calc(6px + env(safe-area-inset-bottom));
   }
   .tabbar button{
     flex:1;border:0;background:transparent;color:var(--tx3);font:inherit;
-    font-size:.6rem;font-weight:800;letter-spacing:.01em;padding:4px 0 2px;cursor:pointer;
+    font-size:.6rem;font-weight:800;letter-spacing:.02em;padding:3px 0 1px;cursor:pointer;
     display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;
-    position:relative;border-radius:0;margin:0;transition:background .18s ease,box-shadow .18s ease,color .18s ease;
+    border-radius:10px;margin:0;transition:color .18s ease;
   }
-  .tabbar button i{width:7px;height:7px;border-radius:2.5px;background:var(--tx3);opacity:.5}
-  .tabbar button.on{color:var(--tc,var(--yl));background:linear-gradient(180deg,color-mix(in srgb,var(--tc,var(--yl)) 17%,transparent),color-mix(in srgb,var(--tc,var(--yl)) 5%,transparent));box-shadow:inset 0 2px 0 color-mix(in srgb,var(--tc,var(--yl)) 84%,transparent)}
-  .tabbar button.on i{background:var(--tc,var(--yl));opacity:1}
-  .tabbar [data-p="home"],.tabbar [data-p="oll"]{--tc:var(--yl)}
-  .tabbar [data-p="basic"]{--tc:var(--gn)}
-  .tabbar [data-p="cross"]{--tc:var(--wh)}
-  .tabbar [data-p="f2l"]{--tc:var(--or)}
-  .tabbar [data-p="pll"]{--tc:var(--bl)}
-  .tabbar [data-p="quiz"]{--tc:var(--rd)}
-  .pprestore{bottom:calc(72px + env(safe-area-inset-bottom))!important}
+  /* ドット=キューブのステッカー。現在ページだけ面の色に点灯、他はグレーのマスク */
+  .tabbar button i{
+    width:11px;height:11px;border-radius:3px;
+    background:var(--dOff);border:1.5px solid var(--dline);box-sizing:border-box;
+    transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+  }
+  .tabbar button.on{color:var(--tx)}
+  .tabbar button.on i{
+    background:var(--tc,var(--yl));border-color:#14151a;transform:scale(1.2);
+    box-shadow:0 1px 7px color-mix(in srgb,var(--tc,var(--yl)) 60%,transparent);
+  }
+  /* ステッカーは実キューブ配色(テーマ非依存) */
+  .tabbar [data-p="home"],.tabbar [data-p="oll"]{--tc:#FFFF55}
+  .tabbar [data-p="basic"]{--tc:#449751}
+  .tabbar [data-p="cross"]{--tc:#FFFFFF}
+  .tabbar [data-p="f2l"]{--tc:#EB632B}
+  .tabbar [data-p="pll"]{--tc:#1B45A6}
+  .tabbar [data-p="quiz"]{--tc:#D92E20}
+  .pprestore{bottom:calc(64px + env(safe-area-inset-bottom))!important}
   header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px}
   #where{justify-self:start;min-width:0;max-width:100%;gap:5px;overflow:hidden}
   #where .whereBrandText{display:block}
@@ -625,3 +637,8 @@ button.chk{cursor:pointer;background:transparent}.acard>.chk:focus-visible,.task
 .fpsBtn.swiping i{color:var(--yl)}
 .fpsRow.swiping{background:color-mix(in srgb,var(--yl) 15%,var(--panel2));border-color:var(--yl);cursor:grabbing}
 .fpsRow.swiping .ar{color:var(--yl)}
+
+/* ライトテーマ: カード類に極薄の陰影で面の重なりを表現 */
+body[data-theme="light"] .ctrcard,
+body[data-theme="light"] table.cmp,
+body[data-theme="light"] .note{box-shadow:0 1px 2px rgba(15,23,42,.05)}
