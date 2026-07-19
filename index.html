@@ -8,20 +8,20 @@
 <meta name="robots" content="index,follow">
 <meta name="color-scheme" content="dark light">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<link rel="canonical" href="https://fenderian075-cpu.github.io/cfop/">
+<link rel="canonical" href="/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="CFOP Trainer">
 <meta property="og:description" content="3D手順再生・全119手順・クイズで、CFOP法を段階的に学習。">
-<meta property="og:url" content="https://fenderian075-cpu.github.io/cfop/">
-<meta property="og:image" content="https://fenderian075-cpu.github.io/cfop/og.jpg">
+<meta property="og:url" content="/">
+<meta property="og:image" content="/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="3×3キューブとCFOP Trainer">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="CFOP Trainer">
 <meta name="twitter:description" content="3D手順再生・全119手順・クイズで、CFOP法を段階的に学習。">
-<meta name="twitter:image" content="https://fenderian075-cpu.github.io/cfop/og.jpg">
+<meta name="twitter:image" content="/og.jpg">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#101014" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f2f4f9" media="(prefers-color-scheme: light)">
@@ -57,11 +57,10 @@
   <!-- ============ HOME ============ -->
   <section class="page on" id="pg-home">
     <div class="pgttl">ソルブフロー</div>
-    <div class="pgsub">どこを見て、何で判断するか。タップで展開(簡易/本格で判断基準が変わる)</div>
     <div class="flow" id="flowBox"></div>
 
 
-    <h2 class="sec">スクランブル <span class="hint">入力すると展開図が即時更新。3Dで忠実に再現</span></h2>
+    <h2 class="sec">スクランブル</h2>
     <div class="scrwrap">
       <div class="scrhold">持ち方: <b>黄を上・青を正面</b>にして回し始める(下の展開図・3Dと同じ向き)</div>
       <input class="apinput" id="scrinput" placeholder="スクランブルを入力(例: R U F2 D' ...)" spellcheck="false" autocapitalize="off">
@@ -71,14 +70,14 @@
         <button class="btn" id="scrclear">クリア</button>
         <button class="btn pri" id="scrplay">▶ 3Dで再現</button>
       </div>
-      <div class="scrhold">持ち方: <i style="background:#FFFF55"></i>黄センターを上・<i style="background:#1B45A6"></i>青センターを正面にして回し始める(3D再現・展開図と同じ基準)。大会(WCA)では白上・緑前が公式。</div>
+      <div class="scrhold">持ち方: <i style="background:#FFD21E"></i>黄センターを上・<i style="background:#2f6fe4"></i>青センターを正面にして回し始める(3D再現・展開図と同じ基準)。大会(WCA)では白上・緑前が公式。</div>
       <div class="scrmeta" id="scrmeta">0手</div>
       <div style="font-size:.64rem;color:var(--tx3);margin-top:5px">スクランブルはWCA準拠のrandom-state方式(cubejsによる二相法ソルバ)。環境が対応しない場合はランダムムーブ式に自動フォールバック。</div>
       <div class="scrnet" id="scrnet"></div>
     </div>
 
 
-    <h2 class="sec">フリープレイ <span class="hint">自由に回して遊ぶ。ドラッグで視点回転</span></h2>
+    <h2 class="sec">フリープレイ</h2>
     <div class="fpwrap">
       <div class="fshdr" id="fsHdr" hidden>
         <span class="fscmdbadge" id="fsStageBadge"></span>
@@ -140,47 +139,8 @@
     <div class="structrow" id="structRow"></div>
     <div class="note">ステッカーは貼り替わらない——動くのは26個のピース。エッジはエッジの場所へ、コーナーはコーナーの場所へしか移動できない。センターは互いの位置関係が固定なので、白の対面は必ず黄、青の右隣は必ず赤(持ち方基準)。だから「面の色を揃える」のではなく「各ピースをセンターに合う場所へ運ぶ」と考える。</div>
 
-    <h2 class="sec">センターの位置関係 <span class="hint">色の並びは絶対に変わらない</span></h2>
-    <div class="ctrwrap">
-      <div class="ctrcard">
-        <svg viewBox="0 0 96 118" aria-hidden="true">
-        <rect x="6" y="8" width="28" height="28" rx="6" fill="#FFFFFF" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="8" width="28" height="28" rx="6" fill="#FFFF55" stroke="#14151a" stroke-width="2"/>
-        <rect x="6" y="46" width="28" height="28" rx="6" fill="#1B45A6" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="46" width="28" height="28" rx="6" fill="#449751" stroke="#14151a" stroke-width="2"/>
-        <rect x="6" y="84" width="28" height="28" rx="6" fill="#D92E20" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="84" width="28" height="28" rx="6" fill="#EB632B" stroke="#14151a" stroke-width="2"/>
-        <text x="48" y="27" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-        <text x="48" y="65" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-        <text x="48" y="103" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-      </svg>
-        <b>対面ペア</b>
-        <span>白⇄黄・青⇄緑・赤⇄橙。対面のペアは固定で、片方が見えればもう片方が確定する</span>
-      </div>
-      <div class="ctrcard">
-        <svg viewBox="0 0 150 150" aria-hidden="true">
-        <defs></defs>
-        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#14151a" stroke-width="6.5" stroke-linecap="round"/>
-        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
-        <polygon points="-1,-5 8,0 -1,5" transform="translate(39,39) rotate(-138)" fill="#fff" stroke="#14151a" stroke-width="1.8" stroke-linejoin="round"/>
-        <rect x="57" y="57" width="36" height="36" rx="6" fill="#FFFF55" stroke="#14151a" stroke-width="2"/>
-        <rect x="57" y="99" width="36" height="36" rx="6" fill="#1B45A6" stroke="#14151a" stroke-width="2"/>
-        <rect x="99" y="57" width="36" height="36" rx="6" fill="#D92E20" stroke="#14151a" stroke-width="2"/>
-        <rect x="57" y="15" width="36" height="36" rx="6" fill="#449751" stroke="#14151a" stroke-width="2"/>
-        <rect x="15" y="57" width="36" height="36" rx="6" fill="#EB632B" stroke="#14151a" stroke-width="2"/>
-        <text x="75" y="146" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">前(F)</text>
-        <text x="142" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">右</text>
-        <text x="75" y="10" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">奥</text>
-        <text x="8" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">左</text>
-      </svg>
-        <b>側面は時計回りに 青→赤→緑→橙</b>
-        <span>黄を上にして上から見た並び。「青の右隣は必ず赤」——エッジの側面色を合わせるとき、隣のセンター色を見ずに即答できる</span>
-      </div>
-    </div>
-    <div class="note">クロスを速くする鍵はこの暗記。白エッジの側面色を見た瞬間「その色のセンターはどっち周りにあるか」が分かれば、D面を回すだけで正しい位置に合わせられる。</div>
 
-
-    <h2 class="sec">回転記号 <span class="hint">図をタップ=3Dで再生。黄色の層が動く</span></h2>
+    <h2 class="sec">回転記号</h2>
     <div class="n3wrap">
       <div class="n3stage" id="n3stage"><button class="btn viewreset" id="n3view">↺ 視点</button><div class="n3orbit" id="n3orbit"></div></div>
       <div class="n3info"><div class="big mono" id="n3label">R</div><div class="ds" id="n3desc"></div></div>
@@ -214,9 +174,9 @@
       <svg viewBox="0 0 92 92" class="rulesvg" aria-hidden="true">
         <rect x="10" y="10" width="72" height="72" rx="8" fill="#1d1e25" stroke="#454a56" stroke-width="1"/>
         <g>
-          <rect x="15" y="15" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="36.5" y="15" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="58" y="15" width="19" height="19" rx="3" fill="#FFFFFF"/>
-          <rect x="15" y="36.5" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="36.5" y="36.5" width="19" height="19" rx="3" fill="#FFFF55"/><rect x="58" y="36.5" width="19" height="19" rx="3" fill="#FFFFFF"/>
-          <rect x="15" y="58" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="36.5" y="58" width="19" height="19" rx="3" fill="#FFFFFF"/><rect x="58" y="58" width="19" height="19" rx="3" fill="#FFFFFF"/>
+          <rect x="15" y="15" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="36.5" y="15" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="58" y="15" width="19" height="19" rx="3" fill="#f4f4f6"/>
+          <rect x="15" y="36.5" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="36.5" y="36.5" width="19" height="19" rx="3" fill="#FFD21E"/><rect x="58" y="36.5" width="19" height="19" rx="3" fill="#f4f4f6"/>
+          <rect x="15" y="58" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="36.5" y="58" width="19" height="19" rx="3" fill="#f4f4f6"/><rect x="58" y="58" width="19" height="19" rx="3" fill="#f4f4f6"/>
         </g>
         <path d="M 22.4 22.4 A 33.5 33.5 0 1 1 22.4 69.6" fill="none" stroke="#14151a" stroke-width="7" stroke-linecap="round"/>
         <path d="M 22.4 22.4 A 33.5 33.5 0 1 1 22.4 69.6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
@@ -236,7 +196,7 @@
     <h2 class="sec">持ち替え <span class="hint">全体回転。手数に数えない</span></h2>
     <div class="nchips" data-n3g="rot"></div>
 
-    <h2 class="sec">展開図 <span class="hint">記号を選ぶと動く層が白枠で連動</span></h2>
+    <h2 class="sec">展開図 <span class="hint">記号を選ぶと動く層がアクセント表示で連動</span></h2>
     <div class="netwrap">
       <div id="netbox"></div>
       <div class="netnote">本サイトの基準配色:上=黄・前=青・右=赤。対面は 白⇔黄 / 青⇔緑 / 赤⇔橙</div>
@@ -291,7 +251,44 @@
     <div class="pgttl">Cross</div>
     <div class="pgsub" id="crossSub"></div>
 
-    <div class="note">センターの色の並び(対面ペア/側面は時計回りに 青→赤→緑→橙)は基礎編「センターの位置関係」を参照。ここでの前提知識になる。</div>
+    <h2 class="sec">センターの位置関係 <span class="hint">色の並びは絶対に変わらない</span></h2>
+    <div class="ctrwrap">
+      <div class="ctrcard">
+        <svg viewBox="0 0 96 118" aria-hidden="true">
+        <rect x="6" y="8" width="28" height="28" rx="6" fill="#f4f4f6" stroke="#14151a" stroke-width="2"/>
+        <rect x="62" y="8" width="28" height="28" rx="6" fill="#FFD21E" stroke="#14151a" stroke-width="2"/>
+        <rect x="6" y="46" width="28" height="28" rx="6" fill="#2f6fe4" stroke="#14151a" stroke-width="2"/>
+        <rect x="62" y="46" width="28" height="28" rx="6" fill="#1ca34a" stroke="#14151a" stroke-width="2"/>
+        <rect x="6" y="84" width="28" height="28" rx="6" fill="#E5342B" stroke="#14151a" stroke-width="2"/>
+        <rect x="62" y="84" width="28" height="28" rx="6" fill="#E85D04" stroke="#14151a" stroke-width="2"/>
+        <text x="48" y="27" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+        <text x="48" y="65" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+        <text x="48" y="103" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+      </svg>
+        <b>対面ペア</b>
+        <span>白⇄黄・青⇄緑・赤⇄橙。対面のペアは固定で、片方が見えればもう片方が確定する</span>
+      </div>
+      <div class="ctrcard">
+        <svg viewBox="0 0 150 150" aria-hidden="true">
+        <defs></defs>
+        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#14151a" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M 111 39 A 51 51 0 1 1 39 39" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
+        <polygon points="-1,-5 8,0 -1,5" transform="translate(39,39) rotate(-138)" fill="#fff" stroke="#14151a" stroke-width="1.8" stroke-linejoin="round"/>
+        <rect x="57" y="57" width="36" height="36" rx="6" fill="#FFD21E" stroke="#14151a" stroke-width="2"/>
+        <rect x="57" y="99" width="36" height="36" rx="6" fill="#2f6fe4" stroke="#14151a" stroke-width="2"/>
+        <rect x="99" y="57" width="36" height="36" rx="6" fill="#E5342B" stroke="#14151a" stroke-width="2"/>
+        <rect x="57" y="15" width="36" height="36" rx="6" fill="#1ca34a" stroke="#14151a" stroke-width="2"/>
+        <rect x="15" y="57" width="36" height="36" rx="6" fill="#E85D04" stroke="#14151a" stroke-width="2"/>
+        <text x="75" y="146" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">前(F)</text>
+        <text x="142" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">右</text>
+        <text x="75" y="10" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">奥</text>
+        <text x="8" y="78" text-anchor="middle" font-size="10" fill="currentColor" opacity=".75">左</text>
+      </svg>
+        <b>側面は時計回りに 青→赤→緑→橙</b>
+        <span>黄を上にして上から見た並び。「青の右隣は必ず赤」——エッジの側面色を合わせるとき、隣のセンター色を見ずに即答できる</span>
+      </div>
+    </div>
+    <div class="note">クロスを速くする鍵はこの暗記。白エッジの側面色を見た瞬間「その色のセンターはどっち周りにあるか」が分かれば、D面を回すだけで正しい位置に合わせられる。</div>
 
     <div id="crossSimple">
       <div class="crossfig">
@@ -341,7 +338,6 @@
     <div class="pgsub" id="pllSub"></div>
     <h2 class="sec">PLLパターン認識ガイド</h2>
     <div class="pllguide">
-      <div class="lead">黄色上面は完成済みなので見なくてOK。図ではグレーにし、側面12マスだけを認識対象にしています。</div>
       <div class="pllsteps">
         <div class="pllstep"><span class="pllno">1</span><div><b>バーを探す</b> — 側面3枚が同色なら、その面を基準に持つ。</div></div>
         <div class="pllstep"><span class="pllno">2</span><div><b>ヘッドライトを探す</b> — 同じ面の左右コーナーが同色。1組か、なし／複数かを見る。</div></div>
@@ -359,7 +355,6 @@
   <!-- ============ QUIZ ============ -->
   <section class="page" id="pg-quiz">
     <div class="pgttl">練習</div>
-    <div class="pgsub">ケースを見て手順を即答する。判定は自分の手で。</div>
     <div class="qfilters" id="qFilters">
       <button class="fchip" data-qopt="auf">向きランダム</button>
       <button class="fchip on" data-q="F2L">F2L</button>
@@ -379,17 +374,13 @@
 </main>
 
 <div class="tabbar" id="tabbar" role="navigation" aria-label="ページ切替">
-  <button data-p="home" class="on"><i></i><b>Home</b></button>
-  <button data-p="basic"><i></i><b>Basic</b></button>
-  <button data-p="cross"><i></i><b>Cross</b></button>
-  <button data-p="f2l"><i></i><b>F2L</b></button>
-  <button data-p="oll"><i></i><b>OLL</b></button>
-  <button data-p="pll"><i></i><b>PLL</b></button>
-  <button data-p="quiz"><i></i><b>Quiz</b></button>
-</div>
-<div class="tocsheet" id="tocSheet" hidden>
-  <div class="tochead">目次</div>
-  <div id="tocList"></div>
+  <button data-p="home" class="on"><i></i>Home</button>
+  <button data-p="basic"><i></i>Basic</button>
+  <button data-p="cross"><i></i>Cross</button>
+  <button data-p="f2l"><i></i>F2L</button>
+  <button data-p="oll"><i></i>OLL</button>
+  <button data-p="pll"><i></i>PLL</button>
+  <button data-p="quiz"><i></i>Quiz</button>
 </div>
 
 <aside class="pp" id="pp" aria-hidden="true" role="dialog" aria-label="3Dプレイヤー">
@@ -411,9 +402,6 @@
     </span>
     <button id="navToggle" aria-label="目次を開閉" aria-expanded="false">☰</button>
   </div>
-  <div class="seg navmode" id="modeSeg" aria-label="学習モード">
-    <button data-m="s" class="on">簡易</button><button data-m="a">本格</button>
-  </div>
   <div class="navscroll">
     <div class="navitem current" data-nav="home"><button class="navmain on" data-p="home">Home</button><div class="subnav"></div></div>
     <div class="navitem" data-nav="basic"><button class="navmain" data-p="basic">Basic</button><div class="subnav"></div></div>
@@ -424,6 +412,12 @@
     <div class="navitem" data-nav="quiz"><button class="navmain" data-p="quiz">Quiz</button><div class="subnav"></div></div>
   </div>
   <div class="navsettings">
+    <div class="navlearning">
+      <span class="lbl">学習モード</span>
+      <div class="seg navmode" id="modeSeg" aria-label="学習モード">
+        <button data-m="s" class="on">簡易</button><button data-m="a">本格</button>
+      </div>
+    </div>
     <div class="navtheme">
       <span class="lbl">THEME</span>
       <div class="seg" id="themeSeg" aria-label="表示テーマ">

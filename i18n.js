@@ -16,17 +16,15 @@ const EN={
   '進捗の保存・復元(コード方式)':'Save / Restore Progress (code)','ここに進捗コードが表示されます':'Your progress code appears here','コード発行':'Generate Code','コピー':'Copy','復元':'Restore',
   '進捗はこの端末に自動保存されます。別端末への移行・バックアップにはコードを使用してください。':'Progress is saved automatically on this device. Use a code to back it up or transfer it to another device.',
   '基礎':'Basics','回転記号とトリガー。すべての手順はこの部品でできている。':'Turn notation and triggers. Every algorithm is built from these pieces.',
-  '回転記号':'Turn Notation','図をタップ=3Dで再生。黄色の層が動く':'Tap a symbol to play it — the yellow layer moves','外側から見た向き':'Direction viewed from outside',
+  '回転記号':'Turn Notation','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
-  '目次':'Contents','⤒ ページ先頭':'⤒ Top of page',
-  'センターの色の並び(対面ペア/側面は時計回りに 青→赤→緑→橙)は基礎編「センターの位置関係」を参照。ここでの前提知識になる。':'For the fixed center layout (opposite pairs / clockwise side order blue→red→green→orange), see "Center relationships" in Basic — it is the prerequisite here.',
   'ボタン操作へ':'Button controls','スワイプ操作へ':'Swipe controls','ドラッグで視点を回せる(D・B・Lの確認用)':'Drag to rotate the view (useful for D, B and L).',
   '3D 手順プレイヤー':'3D Algorithm Player','名前つき手順を選ぶ':'Choose a named algorithm','再生する手順を選択':'Choose an algorithm to play','再生する回転記号':'Turn notation to play',
   '最初に戻る':'Go to Start','1手戻る':'Back One Move','再生':'Play','一時停止':'Pause','1手進む':'Forward One Move','最後へ進む':'Go to End','手順の再生位置。左へ戻すと逆方向に確認できます':'Algorithm position. Drag left to review in reverse.',
   'スライダーを左右へ動かすと、途中状態・逆戻しを自由に確認できます':'Drag the slider in either direction to inspect any intermediate state.','′(逆回転)':'′ (counterclockwise)',
   '基本回転':'Basic Turns','2層回し':'Wide Turns','小文字 = w(ワイド)':'Lowercase = w (wide)','中層':'Slice Moves','持ち替え':'Cube Rotations','全体回転。手数に数えない':'Whole-cube rotation; not counted as a move.',
-  '展開図':'Cube Net','記号を選ぶと動く層が白枠で連動':'The moving layer is outlined when you choose a turn.','本サイトの基準配色:上=黄・前=青・右=赤。対面は 白⇔黄 / 青⇔緑 / 赤⇔橙':'Site color scheme: top=yellow, front=blue, right=red. Opposites: white/yellow, blue/green, red/orange.',
+  '展開図':'Cube Net','記号を選ぶと動く層がアクセント表示で連動':'The moving layer is softly highlighted when you choose a turn.','本サイトの基準配色:上=黄・前=青・右=赤。対面は 白⇔黄 / 青⇔緑 / 赤⇔橙':'Site color scheme: top=yellow, front=blue, right=red. Opposites: white/yellow, blue/green, red/orange.',
   '名前で覚える手順':'Named Algorithms','OLL・PLLに何度も出てくる部品':'Building blocks repeated throughout OLL and PLL','トリガー':'Triggers','手が覚えるべき最小単位':'Smallest units to build into muscle memory',
   'OLL・PLLの手順は暗記ではなく「トリガーの連結」として読む。例: T字OLL = セクシー1回 + スレッジ1回。':'Read OLL and PLL as linked triggers, not one long string. Example: T OLL = one Sexy Move + one Sledgehammer.',
   '最重要:「ゆっくり回して速くなる」。':'Most important: slow down to speed up.',
@@ -146,11 +144,7 @@ function setLanguage(lang){LANG=lang;try{localStorage.setItem('cfop-lang',lang);
 function applyTheme(){
   document.body.dataset.theme=THEME;document.documentElement.dataset.theme=THEME;
   document.querySelectorAll('#themeSeg button').forEach(b=>{const on=b.dataset.theme===THEME;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-  const thi=document.getElementById('thIco');if(thi){
-    thi.textContent=THEME==='dark'?'☾':'☀';
-    const label=THEME==='dark'?'ライトモードに切り替え':'ダークモードに切り替え';
-    thi.setAttribute('aria-label',label);thi.title=label;
-  }
+  const thi=document.getElementById('thIco');if(thi)thi.textContent=THEME==='dark'?'☀':'☾';
 }
 function setTheme(theme){
   if(theme!=='light'&&theme!=='dark')return;

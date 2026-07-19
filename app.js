@@ -37,33 +37,14 @@ const $=q=>document.querySelector(q);
 function algCard(id,name,alg,svg,extraCls,kind){
   const d=document.createElement('div');
   d.className='acard'+(extraCls?' '+extraCls:'');
-  d.innerHTML=`<div class="chk">✓</div>${svg}<div class="nm">${name}</div><div class="alg mono">${chunk(alg)}</div><div class="mv">${hm(alg)}手</div><div class="cycle">${cycleText(alg)}</div><br><button class="playmini">3Dで再生</button>`;
+  d.innerHTML=`<div class="chk">✓</div>${svg}<div class="algbody"><div class="nm">${name}</div><div class="alg mono">${chunk(alg)}</div><div class="algmeta"><span class="mv">${hm(alg)}手</span><span class="cycle">${cycleText(alg)}</span><button class="playmini">3Dで再生</button></div></div>`;
   attach3DButton(d,alg,name,kind);
   bindCard(d,id);
   return d;
 }
-const PLL_SIDES=[['F面',[18,19,20]],['R面',[11,10,9]],['B面',[47,46,45]],['L面',[36,37,38]]];
-function pllCue(st){
-  const bars=[],heads=[],blocks=[];
-  PLL_SIDES.forEach(([name,idx])=>{
-    const c=idx.map(i=>Math.floor(st[i]/9)),bar=c[0]===c[1]&&c[1]===c[2];
-    if(bar)bars.push(name);
-    else{
-      if(c[0]===c[2])heads.push(name);
-      if(c[0]===c[1]||c[1]===c[2])blocks.push(name);
-    }
-  });
-  const tags=[];
-  const icon='<span class="pi"><i></i><i></i><i></i></span>';
-  if(bars.length)tags.push(`<span class="cuebar">${icon}<b>バー（3枚同色）</b> ${bars.join(' / ')}</span>`);
-  if(heads.length)tags.push(`<span class="cuehead">${icon}<b>ヘッドライト（両端）</b> ${heads.join(' / ')}</span>`);
-  if(blocks.length)tags.push(`<span class="cueblock">${icon}<b>2枚ブロック（隣接2枚）</b> ${blocks.join(' / ')}</span>`);
-  if(!tags.length)tags.push('<span class="none">特徴的な一致なし：4側面の色順を見る</span>');
-  return `<div class="pllcues"><span class="cuelead">認識ポイント</span>${tags.join('')}</div>`;
-}
 function pllCard(id,name,alg){
-  const st=caseState(alg),d=algCard(id,name,alg,llSVG(st,'pll',false,true),null,'pll');
-  d.querySelector('.cycle').insertAdjacentHTML('beforebegin',pllCue(st));return d;
+  const st=caseState(alg);
+  return algCard(id,name,alg,llSVG(st,'pll',false,true),null,'pll');
 }
 function buildOLL(){
   const w=$('#ollList');w.innerHTML='';allPurge('O');
@@ -167,7 +148,7 @@ function buildF2L(){
       const d=document.createElement('div');d.className='acard fcard';
       const useAlg=f2lMirror?mirAlg(c.a):c.a;
       const svg=f2lMirror?isoSVG(mirState(caseState(useAlg)),true):isoSVG(caseState(c.a));
-      d.innerHTML=`<div class="chk">✓</div>${svg}<div class="bd"><div class="nm">F2L #${gi+1}${f2lMirror?' <span style="color:var(--tx3)">FL</span>':''}</div><div class="alg mono">${chunk(useAlg)}</div><div class="mv">${hm(useAlg)}手</div><div class="cycle">${cycleText(useAlg)}</div><br><button class="playmini">3Dで再生</button></div>`;
+      d.innerHTML=`<div class="chk">✓</div>${svg}<div class="bd algbody"><div class="nm">F2L #${gi+1}${f2lMirror?' <span style="color:var(--tx3)">FL</span>':''}</div><div class="alg mono">${chunk(useAlg)}</div><div class="algmeta"><span class="mv">${hm(useAlg)}手</span><span class="cycle">${cycleText(useAlg)}</span><button class="playmini">3Dで再生</button></div></div>`;
       attach3DButton(d,useAlg,`F2L #${gi+1}${f2lMirror?'(FL)':''}`,'f2l');
       bindCard(d,'F'+gi);
       g.appendChild(d);
@@ -254,24 +235,31 @@ function chunkLive(alg){
 }
 /* ================= net (unfolded cube) ================= */
 let netCells=null;
-function buildNet(){
-  const C=17,G=1.6,FP=5;
+function cubeNetSVG(state,{interactive=false,labels=false}={}){
+  const C=15,G=1.65,FP=5.2;
   const FW=3*C+2*G;
   const facePos={0:[1,0],4:[0,1],2:[1,1],1:[2,1],5:[3,1],3:[1,2]}; // U L F R B D
   const LBL={0:'U',1:'R',2:'F',3:'D',4:'L',5:'B'};
   let s='';
   for(const [f,[gc,gr]] of Object.entries(facePos)){
     const ox=gc*(FW+FP), oy=gr*(FW+FP);
+    s+=`<rect class="net-faceplate" x="${(ox-2.25).toFixed(2)}" y="${(oy-2.25).toFixed(2)}" width="${(FW+4.5).toFixed(2)}" height="${(FW+4.5).toFixed(2)}" rx="4.6"/>`;
     for(let k=0;k<9;k++){
       const r=Math.floor(k/3),c=k%3,p=f*9+k;
-      s+=`<rect data-p="${p}" x="${(ox+c*(C+G)).toFixed(1)}" y="${(oy+r*(C+G)).toFixed(1)}" width="${C}" height="${C}" rx="2.4" fill="${FC[f]}" stroke="var(--dline)" stroke-width="1" style="transition:stroke .12s"/>`;
+      const color=FC[Math.floor((state?.[p]??p)/9)];
+      s+=`<rect class="net-cell"${interactive?` data-p="${p}"`:''} x="${(ox+c*(C+G)).toFixed(2)}" y="${(oy+r*(C+G)).toFixed(2)}" width="${C}" height="${C}" rx="2.65" fill="${color}"/>`;
     }
-    const tc=(f==3||f==0)?'#555':'#fff';
-    s+=`<text x="${ox+FW/2}" y="${oy+FW/2+4.5}" text-anchor="middle" font-size="12.5" font-weight="800" fill="${tc}" font-family="ui-monospace,Menlo,monospace">${LBL[f]}</text>`;
+    if(labels){
+      const tc=(f==3||f==0)?'rgba(30,35,45,.72)':'rgba(255,255,255,.82)';
+      s+=`<text class="net-label" x="${ox+FW/2}" y="${oy+FW/2+3.15}" text-anchor="middle" fill="${tc}">${LBL[f]}</text>`;
+    }
   }
   const W=4*FW+3*FP, H=3*FW+2*FP;
-  $('#netbox').innerHTML=`<svg viewBox="-2 -2 ${W+4} ${H+4}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
-  netCells=[...document.querySelectorAll('#netbox rect')];
+  return `<svg class="cube-net${interactive?' cube-net--interactive':''}" viewBox="-3 -3 ${W+6} ${H+6}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cube net">${s}</svg>`;
+}
+function buildNet(){
+  $('#netbox').innerHTML=cubeNetSVG(SOLVED,{interactive:true,labels:true});
+  netCells=[...document.querySelectorAll('#netbox .net-cell')];
 }
 function netSync(moveKey){
   if(!netCells)return;
@@ -283,11 +271,9 @@ function netSync(moveKey){
     for(let k=0;k<9;k++){ if(k===4)continue; if(p[f*9+k]===f*9+k){full=false;break;} }
     if(full) on.add(f*9+4);
   }
-  netCells.forEach(r=>{
-    const i=+r.dataset.p;
-    r.setAttribute('stroke', on.has(i)?'var(--hl)':'var(--dline)');
-    r.setAttribute('stroke-width', on.has(i)?'2.4':'1');
-  });
+  const svg=$('#netbox .cube-net');
+  svg?.classList.toggle('has-highlight',on.size>0);
+  netCells.forEach(r=>r.classList.toggle('is-moving',on.has(+r.dataset.p)));
 }
 /* ================= named algorithms ================= */
 const NAMED=[
@@ -299,9 +285,9 @@ const NAMED=[
  ["Yパーム","F R U' R' U' R U R' F' R U R' U' R' F R F'","PLL。後半=セクシー+スレッジ"],
 ];
 function buildNamed(){
-  $('#ckLegend').innerHTML=CHUNKS.map(([nm,cls])=>`<span class="ck ck-${cls}">( )</span>=${nm}`).join(' ');
+  $('#ckLegend').innerHTML=CHUNKS.map(([nm,cls])=>`<span class="cklegend-item ck-${cls}"><span class="ckmark mono" aria-hidden="true">( )</span><b>${nm}</b></span>`).join('');
   $('#namedAlgs').innerHTML=NAMED.map(([n,a,d])=>
-    `<div class="trg" data-alg="${a}" data-name="${n}" style="flex-direction:column;align-items:flex-start;gap:5px"><b>${n} <span style="color:var(--tx3);font-weight:500;font-size:.68rem">${hm(a)}手</span></b><span class="alg mono" style="font-size:.8rem">${chunk(a)}</span><span class="cycle">${cycleText(a)}</span><span style="font-size:.68rem;color:var(--tx3)">${d}</span><button class="playmini">3Dで再生</button></div>`).join('');
+    `<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}</b><span class="alg mono">${chunk(a)}</span><span class="carddesc">${d}</span><div class="algmeta"><span class="mv">${hm(a)}手</span><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#namedAlgs [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,d.dataset.name.includes('パーム')?'pll':'oll'));
 }
 /* ================= cross insertion patterns ================= */
@@ -336,14 +322,14 @@ function isoCrossSVG(st){
 }
 function buildCrossPatterns(){
   $('#crossPatterns').innerHTML=CROSSP.map(([t,a,d])=>
-    `<div class="acard fcard" style="cursor:default" data-alg="${a}" data-name="${t}">${isoCrossSVG(caseState(a))}<div class="bd"><div class="nm">${t}</div><div class="alg mono">${chunk(a)}</div><div class="mv">${hm(a)}手 — ${d}</div><button class="playmini">3Dで再生</button></div></div>`).join('');
+    `<div class="acard fcard" style="cursor:default" data-alg="${a}" data-name="${t}">${isoCrossSVG(caseState(a))}<div class="bd algbody"><div class="nm">${t}</div><div class="alg mono">${chunk(a)}</div><div class="carddesc">${d}</div><div class="algmeta"><span class="mv">${hm(a)}手</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#crossPatterns [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,'cross'));
 }
 
 /* basics */
 function buildBasics(){
   const T=[["セクシームーブ","R U R' U'"],["逆セクシー","U R U' R'"],["スレッジハンマー","R' F R F'"],["ヘッジスラマー","F R' F' R"]];
-  $('#triggers').innerHTML=T.map(([n,a])=>`<div class="trg" data-alg="${a}" data-name="${n}"><b>${n}</b><span class="alg mono">${a}</span><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div>`).join('');
+  $('#triggers').innerHTML=T.map(([n,a])=>`<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}</b><span class="alg mono">${chunk(a)}</span><div class="algmeta"><span class="mv">${hm(a)}手</span><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#triggers [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,'trigger'));
 }
 
@@ -395,6 +381,10 @@ function n3init(){
     box.classList.add('ngrid');
     N3B.filter(b=>b.g===box.dataset.n3g).forEach(b=>{
       const variants=box.dataset.n3g==='base'?[b.k,b.k+"'",b.k+'2']:(box.dataset.n3g==='wide'?[b.k]:[b.k,b.k+"'"]);
+      const group=document.createElement('div');
+      group.className=`nmovegroup variants-${variants.length}${box.dataset.n3g==='rot'?' axisgroup':''}`;
+      group.dataset.move=b.k;
+      group.innerHTML=`<div class="nmovegrouptitle"><b class="mono">${b.k.toUpperCase()}</b><span>${b.jp}</span></div>`;
       variants.forEach(tok=>{
         const bt=document.createElement('button');bt.className='ncard';bt.dataset.tok=tok;
         bt.innerHTML=triboxSVG(tok)+`<b class="mono">${tok}</b>`;
@@ -405,10 +395,23 @@ function n3init(){
           ncardAnimate(bt,tok);
           n3loadAlg(tok,`${b.jp} ${tok}`,true,false);
         });
-        box.appendChild(bt);
+        group.appendChild(bt);
       });
+      box.appendChild(group);
     });
   });
+  // 持ち替えは、表示領域に入った時だけ一度ずつ実回転して方向を伝える。
+  // 常時回し続けず、タップ時のアニメーションはいつでも割り込めるようにする。
+  const axisGrid=document.querySelector('.nchips[data-n3g="rot"]');
+  if(axisGrid&&'IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const axisObserver=new IntersectionObserver(entries=>{
+      if(!entries.some(e=>e.isIntersecting))return;
+      const cards=[...axisGrid.querySelectorAll('.ncard')];
+      cards.forEach((card,i)=>setTimeout(()=>ncardAnimate(card,card.dataset.tok),140+i*110));
+      axisObserver.unobserve(axisGrid);
+    },{threshold:.34});
+    axisObserver.observe(axisGrid);
+  }
   $('#n3view').addEventListener('click',()=>{N3.yaw=-35;N3.pitch=-25;n3view();});
   // drag orbit
   const st=$('#n3stage');let drag=null;
@@ -501,8 +504,8 @@ const ARROWS={
 function arrowSVG(spec,mod){
   const flip=mod.includes("'")?-1:1;
   let body='';
-  const head=(x,y,ang)=>`<polygon points="0,-8 14,0 0,8" transform="translate(${x},${y}) rotate(${ang})" fill="#fff" stroke="#111" stroke-width="1.5"/>`;
-  const lineS='stroke="#fff" stroke-width="4.4" stroke-linecap="round" fill="none"';
+  const head=(x,y,ang)=>`<polygon points="0,-9 16,0 0,9" transform="translate(${x},${y}) rotate(${ang})" fill="#fff" stroke="#111" stroke-width="2"/>`;
+  const lineS='stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"';
   if(spec.k==='arc'){
     const cw=spec.d*flip>0;
     const R=56,a0=cw?140:40,a1=cw?-70:250;
@@ -523,7 +526,7 @@ function arrowSVG(spec,mod){
       body+=head(o,dd*58,dd>0?90:-90);
     }
   }
-  if(mod.includes('2')) body+=`<text x="0" y="6" text-anchor="middle" font-size="26" font-weight="900" fill="#fff" stroke="#111" stroke-width="2.8" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
+  if(mod.includes('2')) body+=`<text x="0" y="6" text-anchor="middle" font-size="26" font-weight="900" fill="#fff" stroke="#111" stroke-width="3.5" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
   return `<svg viewBox="-78 -78 156 156">${body}</svg>`;
 }
 function n3arrow(token){
@@ -591,8 +594,12 @@ function n3updatePlayer(){
   $('#applay').textContent=lbl;
   $('#apmoves').innerHTML=chunkMoves(N3.seq,N3.step);
   const now=$('#apmoves .now');
-  if(now){const c=$('#apmoves');const target=now.offsetLeft-c.clientWidth/2+now.offsetWidth/2;
-    if(c.scrollTo)try{c.scrollTo({left:target,behavior:'smooth'});}catch(e){c.scrollLeft=target;}else c.scrollLeft=target;}
+  if(now){
+    const c=$('#apmoves'),cr=c.getBoundingClientRect(),nr=now.getBoundingClientRect();
+    const target=Math.max(0,c.scrollTop+(nr.top-cr.top)-c.clientHeight/2+nr.height/2);
+    const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+    if(c.scrollTo)try{c.scrollTo({top:target,behavior});}catch(e){c.scrollTop=target;}else c.scrollTop=target;
+  }
 }
 function n3setStep(step){
   N3.step=Math.max(0,Math.min(N3.seq.length,step));N3.state=(N3.start||SOLVED).slice();
@@ -667,6 +674,7 @@ function ncardAnimate(bt,tok){
 function triboxSVG(token,prog){
   const base=token.replace(/['2]/g,''),mod=token.replace(base,'');
   const def=N3B.find(b=>b.k===base);if(!def)return '';
+  if(def.g==='rot')return axisRotationSVG(token,prog);
   const total=mod.includes('2')?180:90;
   if(prog===undefined)prog=36;
   const lift=0.19*Math.sin(Math.PI*Math.min(prog,total)/total); // 完了時に層が収まる
@@ -684,7 +692,7 @@ function triboxSVG(token,prog){
   const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
   const axI={X:0,Y:1,Z:2}[def.ax];
   const movingLv=[-1,0,1].filter(L=>{const c={x:0,y:0,z:0};c[def.ax.toLowerCase()]=L;return def.ly(c);});
-  const MOV='#FFFF55',STA='#FFFFFF',BODY='#1d1e25';
+  const MOV='#FFFF55',STA='#FFFFFF',BODY='var(--panel2)';
   // スラブを奥→手前の順に描く(凸体×分離平面なので順序は厳密に正しい)
   const slabs=[-1,0,1].map(L=>{
     const mv=movingLv.includes(L);
@@ -731,14 +739,14 @@ function triboxSVG(token,prog){
         stkQ.push(sp.map(tf));
       }
     }
-    for(const q of bodyQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${BODY}" stroke="#454a56" stroke-width="0.4"/>`;
-    for(const q of stkQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${mv?MOV:STA}" stroke="#14151a" stroke-width="0.45"/>`;
+    for(const q of bodyQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${BODY}" fill-opacity=".76" stroke="var(--tx2)" stroke-opacity=".62" stroke-width="0.46" stroke-linejoin="round"/>`;
+    for(const q of stkQ)out+=`<polygon points="${q.map(p=>{const s2=proj(p);return s2[0].toFixed(1)+','+s2[1].toFixed(1);}).join(' ')}" fill="${mv?MOV:STA}" stroke="var(--dline)" stroke-opacity=".9" stroke-width="0.52" stroke-linejoin="round"/>`;
   }
   /* ---- 直線矢印のみ(層と一緒に回した位置に描く) ---- */
-  const head=(x,y,ang)=>`<polygon points="-1,-4.4 6.6,0 -1,4.4" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="#fff" stroke="#14151a" stroke-width="1.1" stroke-linejoin="round"/>`;
+  const head=(x,y,ang)=>`<polygon points="-1,-3.4 5.8,0 -1,3.4" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="var(--tx)" stroke="var(--bg)" stroke-width="0.7" stroke-linejoin="round"/>`;
   const line3=(a,b)=>{const A=proj(a),B=proj(b);
-    return `<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#14151a" stroke-width="3.4" stroke-linecap="round"/>`
-      +`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`
+    return `<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="var(--bg)" stroke-opacity=".88" stroke-width="3" stroke-linecap="round"/>`
+      +`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="var(--tx)" stroke-width="1.55" stroke-linecap="round"/>`
       +head(B[0],B[1],Math.atan2(B[1]-A[1],B[0]-A[0])*180/Math.PI);};
   const dir=Math.sign(th);
   const tfA=(p,L)=>{const q=p.slice();q[axI]+=(L!==0?L*lift:0);return rot(q);};
@@ -752,8 +760,77 @@ function triboxSVG(token,prog){
     // Z軸系: 上面ストリップに水平矢印。x'=x c − y s ⇒ 上面(y<0)は +dir 方向へ
     for(const L of movingLv)out+=line3(tfA([-1.15*dir,-1.72,L],L),tfA([1.15*dir,-1.72,L],L));
   }
-  if(mod.includes('2'))out+=`<text x="26" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" stroke="#14151a" stroke-width="2.6" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
-  return `<svg viewBox="-6 -8 112 120" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
+  if(mod.includes('2'))out+=`<text x="26" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="var(--tx)" stroke="var(--bg)" stroke-width="2" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
+  return `<svg class="turnnotation" viewBox="-6 -8 112 120" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
+}
+
+function axisRotationSVG(token,prog){
+  const base=token[0],prime=token.includes("'"),active=base.toLowerCase();
+  const colors={x:'#ff453a',y:'#30d158',z:'#0a84ff'};
+  const axes={
+    x:{a:[16,82],b:[101,34],label:[114,17],ring:-28},
+    y:{a:[60,102],b:[60,9],label:[47,9],ring:90},
+    z:{a:[14,30],b:[101,79],label:[112,95],ring:28},
+  };
+  const markerId=`axis-${active}-${prime?'p':'n'}`;
+  const arrow=(x,y,ang,color,opacity)=>`<polygon points="-1,-4 7,0 -1,4" transform="translate(${x} ${y}) rotate(${ang})" fill="${color}" opacity="${opacity}"/>`;
+  let axisLines='';
+  for(const k of ['x','y','z']){
+    const a=axes[k],on=k===active,color=colors[k],opacity=on?1:.34,width=on?3:1.35;
+    const ang=Math.atan2(a.b[1]-a.a[1],a.b[0]-a.a[0])*180/Math.PI;
+    axisLines+=`<line x1="${a.a[0]}" y1="${a.a[1]}" x2="${a.b[0]}" y2="${a.b[1]}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" opacity="${opacity}"/>`;
+    axisLines+=arrow(a.b[0],a.b[1],ang,color,opacity);
+    axisLines+=`<text x="${a.label[0]}" y="${a.label[1]}" text-anchor="middle" dominant-baseline="middle" fill="${color}" stroke="var(--panel)" stroke-width="3" paint-order="stroke" opacity="${on?1:.58}" font-size="${on?13:10}" font-weight="900" font-family="ui-monospace,Menlo,monospace">${k}</text>`;
+  }
+  const sweep=prime?0:1;
+  const start=prime?'82 52':'39 35',end=prime?'39 35':'82 52';
+  const ring=`<path class="axis-turn-path" d="M ${start} A 27 18 ${axes[active].ring} 1 ${sweep} ${end}" fill="none" stroke="${colors[active]}" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="8 5" marker-end="url(#${markerId})"/>`;
+
+  // 色つき半透明キューブを実際にxyz軸まわりへ回す。見えている面だけを描画する。
+  const def=N3B.find(b=>b.k===base);
+  const angle=(prog===undefined?0:Math.min(prog,90))*Math.PI/180*def.sg*(prime?-1:1);
+  const c=Math.cos(angle),s=Math.sin(angle);
+  const rot=p=>{
+    const [x,y,z]=p;
+    if(def.ax==='X')return [x,y*c-z*s,y*s+z*c];
+    if(def.ax==='Y')return [x*c+z*s,y,-x*s+z*c];
+    return [x*c-y*s,x*s+y*c,z];
+  };
+  const C=[60,55],S=12.2,d1=[Math.sqrt(3)/2*S,.5*S],d2=[-Math.sqrt(3)/2*S,.5*S],vv=[0,S];
+  const project=p=>[C[0]+p[0]*d1[0]+p[1]*vv[0]+p[2]*d2[0],C[1]+p[0]*d1[1]+p[1]*vv[1]+p[2]*d2[1]];
+  const V=[1,-1,1],dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+  const faceColors={xp:FC[1],xn:FC[4],yp:FC[3],yn:FC[0],zp:FC[2],zn:FC[5]};
+  const faces=[];
+  for(const fi of [0,1,2])for(const sg of [-1,1]){
+    const normal=[0,0,0];normal[fi]=sg;
+    const nr=rot(normal),visibility=dot(nr,V);
+    if(visibility<=.025)continue;
+    const ui=(fi+1)%3,wi=(fi+2)%3,fv=sg*1.5;
+    const point=(u,w)=>{const p=[0,0,0];p[fi]=fv;p[ui]=u;p[wi]=w;return rot(p);};
+    const points=[point(-1.5,-1.5),point(1.5,-1.5),point(1.5,1.5),point(-1.5,1.5)];
+    const key=`${['x','y','z'][fi]}${sg>0?'p':'n'}`;
+    const lines=[];
+    for(const q of [-.5,.5]){
+      lines.push([point(q,-1.5),point(q,1.5)]);
+      lines.push([point(-1.5,q),point(1.5,q)]);
+    }
+    faces.push({points,lines,color:faceColors[key],depth:dot(rot(normal.map(v=>v*1.5)),V),visibility});
+  }
+  faces.sort((a,b)=>a.depth-b.depth);
+  const cubeFaces=faces.map(face=>{
+    const pts=face.points.map(p=>project(p).map(v=>v.toFixed(1)).join(',')).join(' ');
+    const alpha=Math.min(.9,.7+face.visibility*.1).toFixed(2);
+    const grid=face.lines.map(([a,b])=>{const A=project(a),B=project(b);return `<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}"/>`;}).join('');
+    return `<g class="axis-face"><polygon points="${pts}" fill="${face.color}" fill-opacity="${alpha}" stroke="var(--tx)" stroke-opacity=".68" stroke-width="1.1"/>${grid}</g>`;
+  }).join('');
+  const pulse=prog===undefined?1:.8+.2*Math.sin(Math.min(prog,90)*Math.PI/180);
+  return `<svg class="axisrotation axis-${active}${prog===undefined?'':' axis-playing'}" viewBox="0 0 124 110" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="${colors[active]}"/></marker></defs>
+    <g class="axis-cube-shape">${cubeFaces}</g>
+    ${axisLines}<g opacity="${pulse.toFixed(2)}">${ring}</g>
+    <rect x="8" y="8" width="28" height="22" rx="8" fill="${colors[active]}" fill-opacity=".18" stroke="${colors[active]}" stroke-opacity=".62"/>
+    <text x="22" y="19" text-anchor="middle" dominant-baseline="middle" fill="${colors[active]}" font-size="13" font-weight="900" font-family="ui-monospace,Menlo,monospace">${token}</text>
+  </svg>`;
 }
 
 /* ================= cube structure (home) ================= */
@@ -1182,25 +1259,6 @@ function fpSolvePlan(){
   const simple=(typeof mode!=='undefined'&&mode==='s');
   let cur=FP.state.slice();
   const all=[];
-  // 2層回し・中層・持ち替えでセンターの向きが変わっていたら、まず持ち替えで基準(黄上・青前)に戻す
-  if(cur[4]!==4||cur[22]!==22){
-    const P=['','x',"x'",'x2','z',"z'"],Y=['','y',"y'",'y2'];
-    let fix=null;
-    outer:for(const a of P)for(const b of Y){
-      const s=(a+' '+b).trim();
-      const t2=s?run(cur,s):cur;
-      if(t2[4]===4&&t2[22]===22){fix=s;break outer;}
-    }
-    if(!fix)return null;
-    all.push({
-      stage:tj('持ち替え','Reorient'),
-      t:tj('向きを基準に戻す','Reorient the cube'),
-      j:tj('2層回しや中層回しでキューブごと向きが変わっている。黄センターを上・青センターを正面に持ち替えてから解く',
-           'Wide/slice turns rotated the whole cube. Bring the yellow center up and the blue center to the front first'),
-      alg:fix,mv:toks(fix),hi:null,view:[-25,-35]
-    });
-    cur=run(cur,fix);
-  }
   const c=svCross(cur);if(!c)return null;all.push(...c.steps);cur=c.st;
   const f=svF2L(cur);if(!f)return null;all.push(...f.steps);cur=f.st;
   const o=svOLL(cur,simple);if(!o)return null;all.push(...o.steps);cur=o.st;
@@ -1264,21 +1322,14 @@ function fpInit(){
     };
     next();
   }
-  // スクランブルは「完成状態から」が定義。直前の自由回しはリセットしてから適用する
-  const fpSoftReset=()=>{
-    FP.state=SOLVED.slice();FP.hist=[];FP.moves=0;fpPaint();
-    $('#fpCount').textContent=(typeof LANG!=='undefined'&&LANG==='en')?'0 moves':'0手';
-    const sb=$('#fpSolved');if(sb)sb.hidden=true;
-  };
   $('#fpScramble').addEventListener('click',()=>{
     if(FP.anim||FP.solving)return;
-    if(WCA.ready&&!WCA.failed){WCA.cb=s2=>{fpSoftReset();fpApplySeq(toks(s2));};WCA.cbSent=true;WCA.worker.postMessage('scramble');}
-    else if(!WCA.failed&&typeof Worker!=='undefined'){WCA.cb=s2=>{fpSoftReset();fpApplySeq(toks(s2));};WCA.cbSent=false;wcaInit();}
-    else{fpSoftReset();fpApplySeq(toks(scrRandom(18)));}
+    if(WCA.ready&&!WCA.failed){WCA.cb=s2=>fpApplySeq(toks(s2));WCA.cbSent=true;WCA.worker.postMessage('scramble');}
+    else if(!WCA.failed&&typeof Worker!=='undefined'){WCA.cb=s2=>fpApplySeq(toks(s2));WCA.cbSent=false;wcaInit();}
+    else fpApplySeq(toks(scrRandom(18)));
   });
   $('#fpPerfect').addEventListener('click',()=>{
     if(FP.anim||FP.solving)return;
-    fpSoftReset();
     fpApplySeq(toks(PERFECT[Math.floor(Math.random()*2)]));
   });
   $('#fpReset').addEventListener('click',()=>{
@@ -1500,18 +1551,7 @@ function fpInit(){
 
 /* ================= scramble editor ================= */
 function netStateSVG(state){
-  const C=15,G=1.4,FP=4.5,FW=3*C+2*G;
-  const facePos={0:[1,0],4:[0,1],2:[1,1],1:[2,1],5:[3,1],3:[1,2]};
-  let out='';
-  for(const [f,[gc,gr]] of Object.entries(facePos)){
-    const ox=gc*(FW+FP),oy=gr*(FW+FP);
-    for(let k=0;k<9;k++){
-      const r=Math.floor(k/3),c=k%3,p=+f*9+k;
-      out+=`<rect x="${(ox+c*(C+G)).toFixed(1)}" y="${(oy+r*(C+G)).toFixed(1)}" width="${C}" height="${C}" rx="2.2" fill="${FC[Math.floor(state[p]/9)]}" stroke="var(--dline)" stroke-width="1"/>`;
-    }
-  }
-  const W=4*FW+3*FP,H=3*FW+2*FP;
-  return `<svg viewBox="-2 -2 ${W+4} ${H+4}" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
+  return cubeNetSVG(state);
 }
 
 /* ===== WCA準拠 random-state スクランブル(cubejs MIT https://github.com/ldez/cubejs をWorker内で実行) ===== */
@@ -1842,93 +1882,7 @@ go(location.hash.slice(1)||'home','replace');
 document.querySelectorAll('#langSeg button').forEach(b=>b.addEventListener('click',()=>setLanguage(b.dataset.lang)));
 document.getElementById('lgIco').addEventListener('click',()=>setLanguage(LANG==='ja'?'en':'ja'));
 document.getElementById('thIco').addEventListener('click',()=>setTheme(THEME==='dark'?'light':'dark'));
-document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click',()=>{
-  if(b.dataset.p===document.body.dataset.page&&typeof window.__tocToggle==='function')window.__tocToggle();
-  else go(b.dataset.p);
-}));
-/* ===== フローティングピル: ジェスチャー & Liquid Glass風挙動 ===== */
-(function(){
-  const bar=document.getElementById('tabbar');
-  const sheet=document.getElementById('tocSheet'),list=document.getElementById('tocList');
-  if(!bar||!sheet)return;
-  const mq=matchMedia('(max-width:760px)');
-  const PAGES=[...bar.querySelectorAll('button')].map(b=>b.dataset.p);
-  const closeToc=()=>{sheet.hidden=true;};
-  function openToc(){
-    const pg=document.querySelector('.page.on');if(!pg)return;
-    const hs=[...pg.querySelectorAll('h2.sec')].filter(h=>h.offsetParent);
-    if(!hs.length){closeToc();return;}
-    list.innerHTML='';
-    const top=document.createElement('button');
-    top.textContent='⤒ ページ先頭';
-    top.addEventListener('click',()=>{closeToc();window.scrollTo({top:0,behavior:'smooth'});});
-    list.appendChild(top);
-    hs.forEach(h=>{
-      const b=document.createElement('button');
-      b.textContent=(h.firstChild&&h.firstChild.textContent||'').trim()||h.textContent.trim();
-      b.addEventListener('click',()=>{closeToc();h.scrollIntoView({behavior:'smooth',block:'start'});});
-      list.appendChild(b);
-    });
-    sheet.hidden=false;
-  }
-  document.addEventListener('pointerdown',e=>{
-    if(!sheet.hidden&&!sheet.contains(e.target)&&!bar.contains(e.target))closeToc();
-  },true);
-  // iOS Safari: ピル上で始まったタッチのラバーバンドスクロールを確実に抑止
-  bar.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
-  // 現在ページのタブ再タップ=目次(上スワイプの代替。システムジェスチャーと衝突しない)
-  window.__tocToggle=()=>{sheet.hidden?openToc():closeToc();};
-  // スワイプ: 横=前後ページ / 上=このページの目次
-  // 指がピルの外に出ても追跡できるよう、ジェスチャー中だけwindowでmoveを監視する
-  let g=null,swiped=false;
-  let pending=null; // 閾値到達でラッチ→指を離した瞬間に遷移(タッチ中のscrollTo起因のバウンスを防ぐ)
-  const gMove=e=>{
-    if(!g||swiped)return;
-    const dx=e.clientX-g.x,dy=e.clientY-g.y;
-    if(Math.abs(dx)>44&&Math.abs(dx)>Math.abs(dy)*1.4){
-      swiped=true;
-      const i=PAGES.indexOf(document.body.dataset.page);
-      const ni=dx<0?i+1:i-1;
-      if(ni>=0&&ni<PAGES.length)pending={p:PAGES[ni],dir:dx<0?'l':'r'};
-    }
-  };
-  const gEnd=e=>{
-    g=null;setTimeout(()=>{swiped=false;},80);
-    removeEventListener('pointermove',gMove);
-    removeEventListener('pointerup',gEnd);removeEventListener('pointercancel',gEnd);
-    if(pending&&e&&e.type==='pointerup'){const t=pending;pending=null;slideGo(t.p,t.dir);}
-    else pending=null;
-  };
-  bar.addEventListener('pointerdown',e=>{
-    g={x:e.clientX,y:e.clientY};swiped=false;
-    addEventListener('pointermove',gMove);
-    addEventListener('pointerup',gEnd);addEventListener('pointercancel',gEnd);
-  });
-  bar.addEventListener('click',e=>{if(swiped){e.stopPropagation();e.preventDefault();}},true);
-  function slideGo(p,dir){
-    go(p);
-    const pg=document.querySelector('.page.on');
-    if(pg&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
-      pg.classList.remove('slide-l','slide-r');void pg.offsetWidth;
-      pg.classList.add(dir==='l'?'slide-l':'slide-r');
-      setTimeout(()=>pg.classList.remove('slide-l','slide-r'),240);
-    }
-  }
-  // 下スクロールでミニピル化、上スクロールで復帰
-  let lastY=scrollY,acc=0;
-  addEventListener('scroll',()=>{
-    if(!mq.matches)return;
-    const y=scrollY,dy=y-lastY;lastY=y;
-    if(!sheet.hidden)return;
-    acc=(dy>0)===(acc>0)?acc+dy:dy;
-    if(y>150&&acc>26)bar.classList.add('mini');
-    else if(acc<-20||y<90)bar.classList.remove('mini');
-  },{passive:true});
-  bar.addEventListener('click',()=>bar.classList.remove('mini'));
-  // ナビゲーション時、目次が開いていれば新ページの内容に動的更新
-  const _go=go;
-  window.go=(p,h)=>{const keep=!sheet.hidden;_go(p,h);if(keep)openToc();};
-})();
+document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.p)));
 document.querySelectorAll('#themeSeg button').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
 new MutationObserver(queueLanguage).observe(document.body,{subtree:true,childList:true,characterData:true});
 applyTheme();
