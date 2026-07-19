@@ -123,9 +123,17 @@ body[data-theme="light"] .navmode,body[data-theme="light"] .navtheme .seg,body[d
   width:100%;border:0;background:transparent;color:var(--tx2);font:inherit;text-align:left;
   font-size:.76rem;font-weight:800;letter-spacing:.02em;padding:10px 10px;cursor:pointer;display:flex;align-items:center;gap:9px;
 }
-.navmain::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--navc);opacity:.72;box-shadow:0 0 0 3px color-mix(in srgb,var(--navc) 12%,transparent);flex:none}
+.navmain::before{content:"";width:10px;height:10px;border-radius:3px;box-sizing:border-box;flex:none;
+  background:var(--dOff);border:1.5px solid var(--dline);
+  transition:background .15s ease,border-color .15s ease,transform .15s ease,box-shadow .15s ease}
+.navmain:hover::before{background:var(--navs,var(--navc));border-color:#14151a}
+.navitem.current>.navmain::before{background:var(--navs,var(--navc));border-color:#14151a;transform:scale(1.15);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--navs,var(--navc)) 18%,transparent)}
 .navitem.current{background:color-mix(in srgb,var(--navc) 8%,transparent)}
 .navitem.current>.navmain{color:var(--navc);box-shadow:inset 3px 0 0 var(--navc)}
+.navitem[data-nav="home"],.navitem[data-nav="oll"]{--navs:#FFFF55}
+.navitem[data-nav="basic"]{--navs:#449751}.navitem[data-nav="cross"]{--navs:#FFFFFF}
+.navitem[data-nav="f2l"]{--navs:#EB632B}.navitem[data-nav="pll"]{--navs:#1B45A6}.navitem[data-nav="quiz"]{--navs:#D92E20}
 .navitem[data-nav="home"]{--navc:#FFD21E}.navitem[data-nav="basic"]{--navc:#1ca34a}.navitem[data-nav="cross"]{--navc:#f4f4f6}.navitem[data-nav="f2l"]{--navc:#E85D04}.navitem[data-nav="oll"]{--navc:#FFD21E}.navitem[data-nav="pll"]{--navc:#2f6fe4}.navitem[data-nav="quiz"]{--navc:#E5342B}
 .subnav{display:none;padding:0 7px 9px 27px}.navitem.current .subnav{display:grid;gap:2px}
 .toclink{position:relative;border:0;background:transparent;color:var(--tx3);font:inherit;text-align:left;font-size:.66rem;line-height:1.35;padding:5px 7px 5px 12px;cursor:pointer;border-radius:6px}
@@ -385,30 +393,68 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   .mOnly{display:flex!important}
   h2.sec.mOnly{display:flex!important}
   nav{display:none!important}
-  body{padding-left:0!important;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  body{padding-left:0!important;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  /* フローティングピル: ホームインジケータの上に浮かぶカプセル型ナビ */
   .tabbar{
-    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:90;
-    background:color-mix(in srgb,var(--bg) 88%,transparent);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    border-top:1px solid var(--line);
-    padding:5px 2px calc(5px + env(safe-area-inset-bottom));
+    display:flex;position:fixed;left:10px;right:10px;z-index:90;
+    bottom:calc(8px + env(safe-area-inset-bottom,8px));
+    background:color-mix(in srgb,var(--bg) 80%,transparent);
+    backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+    border:1px solid var(--line);border-radius:26px;
+    padding:5px 6px;touch-action:none;
+    box-shadow:0 8px 28px rgba(0,0,0,.28),0 1px 0 rgba(255,255,255,.04) inset;
   }
   .tabbar button{
     flex:1;border:0;background:transparent;color:var(--tx3);font:inherit;
-    font-size:.6rem;font-weight:800;letter-spacing:.01em;padding:4px 0 2px;cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;
-    position:relative;border-radius:0;margin:0;transition:background .18s ease,box-shadow .18s ease,color .18s ease;
+    font-size:.6rem;font-weight:800;letter-spacing:.02em;padding:5px 0 3px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;min-height:42px;
+    border-radius:12px;margin:0;transition:color .18s ease;
   }
-  .tabbar button i{width:7px;height:7px;border-radius:2.5px;background:var(--tx3);opacity:.5}
-  .tabbar button.on{color:var(--tc,var(--yl));background:linear-gradient(180deg,color-mix(in srgb,var(--tc,var(--yl)) 17%,transparent),color-mix(in srgb,var(--tc,var(--yl)) 5%,transparent));box-shadow:inset 0 2px 0 color-mix(in srgb,var(--tc,var(--yl)) 84%,transparent)}
-  .tabbar button.on i{background:var(--tc,var(--yl));opacity:1}
-  .tabbar [data-p="home"],.tabbar [data-p="oll"]{--tc:var(--yl)}
-  .tabbar [data-p="basic"]{--tc:var(--gn)}
-  .tabbar [data-p="cross"]{--tc:var(--wh)}
-  .tabbar [data-p="f2l"]{--tc:var(--or)}
-  .tabbar [data-p="pll"]{--tc:var(--bl)}
-  .tabbar [data-p="quiz"]{--tc:var(--rd)}
-  .pprestore{bottom:calc(72px + env(safe-area-inset-bottom))!important}
+  /* ドット=キューブのステッカー。現在ページだけ面の色に点灯、他はグレーのマスク */
+  .tabbar button i{
+    width:11px;height:11px;border-radius:3px;
+    background:var(--dOff);border:1.5px solid var(--dline);box-sizing:border-box;
+    transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+  }
+  .tabbar button.on{color:var(--tx)}
+  .tabbar button.on i{
+    background:var(--tc,var(--yl));border-color:#14151a;transform:scale(1.2);
+    box-shadow:0 1px 7px color-mix(in srgb,var(--tc,var(--yl)) 60%,transparent);
+  }
+  /* ステッカーは実キューブ配色(テーマ非依存) */
+  .tabbar [data-p="home"],.tabbar [data-p="oll"]{--tc:#FFFF55}
+  .tabbar [data-p="basic"]{--tc:#449751}
+  .tabbar [data-p="cross"]{--tc:#FFFFFF}
+  .tabbar [data-p="f2l"]{--tc:#EB632B}
+  .tabbar [data-p="pll"]{--tc:#1B45A6}
+  .tabbar [data-p="quiz"]{--tc:#D92E20}
+  /* Liquid Glass風: 下スクロールでラベルが畳まれミニピル化 */
+  .tabbar button b{display:block;font-weight:inherit;height:12px;line-height:12px;overflow:hidden;
+    transition:height .18s ease,opacity .18s ease}
+  .tabbar.mini button b{height:0;opacity:0}
+  .tabbar.mini button{min-height:0}
+  /* ページ遷移マイクロスライド(160ms) */
+  .page.slide-l{animation:pgSlideL .16s ease-out}
+  .page.slide-r{animation:pgSlideR .16s ease-out}
+  @keyframes pgSlideL{from{opacity:.35;transform:translateX(20px)}to{opacity:1;transform:none}}
+  @keyframes pgSlideR{from{opacity:.35;transform:translateX(-20px)}to{opacity:1;transform:none}}
+  /* 目次シェルフ(ピル直上のアクセサリ) */
+  .tocsheet{position:fixed;left:14px;right:14px;z-index:89;
+    bottom:calc(66px + env(safe-area-inset-bottom,8px));
+    background:color-mix(in srgb,var(--bg) 84%,transparent);
+    backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+    border:1px solid var(--line);border-radius:18px;padding:9px 6px 7px;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+    animation:tocIn .18s ease-out;max-height:52vh;overflow:auto;overscroll-behavior:contain}
+  .tocsheet[hidden]{display:none}
+  @keyframes tocIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .tochead{font-size:.6rem;font-weight:800;color:var(--tx3);letter-spacing:.14em;padding:1px 12px 6px}
+  .tocsheet button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--tx);
+    font:inherit;font-size:.84rem;font-weight:700;padding:11px 12px;border-radius:10px;cursor:pointer;min-height:44px}
+  .tocsheet button:active{background:color-mix(in srgb,var(--tx) 9%,transparent)}
+  body[data-theme="light"] .tocsheet{background:color-mix(in srgb,#ffffff 88%,transparent);box-shadow:0 10px 28px rgba(15,23,42,.16)}
+  @media(prefers-reduced-motion:reduce){.page.slide-l,.page.slide-r,.tocsheet{animation:none}}
+  .pprestore{bottom:calc(80px + env(safe-area-inset-bottom))!important}
   header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px}
   #where{justify-self:start;min-width:0;max-width:100%;gap:5px;overflow:hidden}
   #where .whereBrandText{display:block}
@@ -425,7 +471,7 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   #lgIco{font-size:1rem}
   header{padding-right:10px}
 }
-body[data-theme="light"] .tabbar{background:color-mix(in srgb,#ffffff 90%,transparent);box-shadow:0 -4px 18px rgba(15,23,42,.06)}
+body[data-theme="light"] .tabbar{background:color-mix(in srgb,#ffffff 84%,transparent);box-shadow:0 8px 26px rgba(15,23,42,.14)}
 @media(prefers-reduced-motion:reduce){.tabbar button{transition:none}}
 
 /* ===== PLL identification guide ===== */
@@ -807,4 +853,57 @@ button.chk{cursor:pointer;background:transparent}.acard>.chk:focus-visible,.task
 @media(prefers-reduced-motion:reduce){
   .acard,.trg,.playmini{transition:none!important;transform:none!important}
   .axisrotation .axis-turn-path{animation:none}
+}
+
+/* ===== View Transitions(デスクトップのページ切替) ===== */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.14s}
+/* ===== HIG: キーボードフォーカスの可視化 ===== */
+:where(button,a,input,[tabindex]):focus-visible{outline:2px solid var(--yl);outline-offset:2px;border-radius:6px}
+/* ===== ⌘K コマンドパレット ===== */
+.cmdk{position:fixed;inset:0;z-index:200;background:rgba(9,11,17,.46);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  display:flex;align-items:flex-start;justify-content:center;padding-top:13vh}
+.cmdk[hidden]{display:none}
+.cmdkPanel{width:min(580px,92vw);background:var(--panel2,#1b1c23);border:1px solid var(--line);
+  border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.45);overflow:hidden;
+  animation:cmdkIn .14s ease-out}
+@keyframes cmdkIn{from{opacity:0;transform:translateY(-8px) scale(.985)}to{opacity:1;transform:none}}
+#cmdkInput{width:100%;border:0;background:transparent;color:var(--tx);font:inherit;font-size:1rem;
+  padding:15px 18px;outline:none;border-bottom:1px solid var(--line);box-sizing:border-box}
+#cmdkList{max-height:46vh;overflow:auto;padding:6px;overscroll-behavior:contain}
+.cmdkItem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;
+  color:var(--tx);font-size:.9rem;font-weight:600;min-height:40px}
+.cmdkItem i{width:10px;height:10px;border-radius:3px;border:1.5px solid #14151a;background:var(--ci,var(--dOff));flex:none}
+.cmdkItem small{color:var(--tx3);margin-left:auto;font-size:.68rem;font-weight:700;flex:none;padding-left:10px}
+.cmdkItem span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmdkItem.sel{background:color-mix(in srgb,var(--yl) 15%,transparent)}
+.cmdkEmpty{padding:20px;color:var(--tx3);font-size:.85rem;text-align:center}
+.cmdkHint{display:flex;gap:16px;padding:8px 16px;border-top:1px solid var(--line);color:var(--tx3);font-size:.64rem;font-weight:700}
+body[data-theme="light"] .cmdkPanel{background:#ffffff}
+@media(prefers-reduced-motion:reduce){.cmdkPanel{animation:none}}
+
+/* ===== apple-design skill 準拠の改善 ===== */
+/* §1 応答: タップ遅延排除+押下瞬間のフィードバック */
+button,.trg,.acard,.navmain{touch-action:manipulation}
+.tabbar button:active i{transform:scale(.88);transition:transform 100ms ease-out}
+.tabbar button.on:active i{transform:scale(1.05)}
+.btn:active,.hico:active{transform:scale(.96);transition:transform 100ms ease-out}
+.cmdkItem:active,.tocsheet button:active{transform:scale(.985);transition:transform 100ms ease-out}
+/* §15 タイポ: 大きい見出しはネガティブトラッキング+タイトなleading */
+.pgtitle{letter-spacing:-0.02em;line-height:1.12}
+/* §7 空間的一貫性: 目次シェルフは入ってきた道(下)へ帰る */
+.tocsheet.closing{animation:tocOut .14s ease-in forwards}
+@keyframes tocOut{to{opacity:0;transform:translateY(10px)}}
+/* §12/§14: 透明度削減・高コントラスト設定への応答 */
+@media(prefers-reduced-transparency:reduce){
+  .tabbar,.tocsheet,.cmdkPanel{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+  body[data-theme="light"] .tabbar,body[data-theme="light"] .tocsheet{background:#ffffff}
+}
+@media(prefers-contrast:more){
+  .tabbar,.tocsheet,.cmdkPanel{border-color:var(--tx3)}
+}
+@media(prefers-reduced-motion:reduce){
+  .tocsheet.closing{animation:none}
+  .tabbar button:active i,.btn:active,.hico:active,.cmdkItem:active,.tocsheet button:active{transform:none;transition:none}
+  .tabbar{transition:none}
 }

@@ -1,5 +1,5 @@
 /* CFOP Trainer Service Worker — online-first with offline fallback */
-const CACHE = 'cfop-runtime-v36';
+const CACHE = 'cfop-runtime-v42';
 const CORE = [
   './',
   './index.html',
