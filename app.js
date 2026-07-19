@@ -1842,7 +1842,93 @@ go(location.hash.slice(1)||'home','replace');
 document.querySelectorAll('#langSeg button').forEach(b=>b.addEventListener('click',()=>setLanguage(b.dataset.lang)));
 document.getElementById('lgIco').addEventListener('click',()=>setLanguage(LANG==='ja'?'en':'ja'));
 document.getElementById('thIco').addEventListener('click',()=>setTheme(THEME==='dark'?'light':'dark'));
-document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.p)));
+document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.p===document.body.dataset.page&&typeof window.__tocToggle==='function')window.__tocToggle();
+  else go(b.dataset.p);
+}));
+/* ===== フローティングピル: ジェスチャー & Liquid Glass風挙動 ===== */
+(function(){
+  const bar=document.getElementById('tabbar');
+  const sheet=document.getElementById('tocSheet'),list=document.getElementById('tocList');
+  if(!bar||!sheet)return;
+  const mq=matchMedia('(max-width:760px)');
+  const PAGES=[...bar.querySelectorAll('button')].map(b=>b.dataset.p);
+  const closeToc=()=>{sheet.hidden=true;};
+  function openToc(){
+    const pg=document.querySelector('.page.on');if(!pg)return;
+    const hs=[...pg.querySelectorAll('h2.sec')].filter(h=>h.offsetParent);
+    if(!hs.length){closeToc();return;}
+    list.innerHTML='';
+    const top=document.createElement('button');
+    top.textContent='⤒ ページ先頭';
+    top.addEventListener('click',()=>{closeToc();window.scrollTo({top:0,behavior:'smooth'});});
+    list.appendChild(top);
+    hs.forEach(h=>{
+      const b=document.createElement('button');
+      b.textContent=(h.firstChild&&h.firstChild.textContent||'').trim()||h.textContent.trim();
+      b.addEventListener('click',()=>{closeToc();h.scrollIntoView({behavior:'smooth',block:'start'});});
+      list.appendChild(b);
+    });
+    sheet.hidden=false;
+  }
+  document.addEventListener('pointerdown',e=>{
+    if(!sheet.hidden&&!sheet.contains(e.target)&&!bar.contains(e.target))closeToc();
+  },true);
+  // iOS Safari: ピル上で始まったタッチのラバーバンドスクロールを確実に抑止
+  bar.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+  // 現在ページのタブ再タップ=目次(上スワイプの代替。システムジェスチャーと衝突しない)
+  window.__tocToggle=()=>{sheet.hidden?openToc():closeToc();};
+  // スワイプ: 横=前後ページ / 上=このページの目次
+  // 指がピルの外に出ても追跡できるよう、ジェスチャー中だけwindowでmoveを監視する
+  let g=null,swiped=false;
+  let pending=null; // 閾値到達でラッチ→指を離した瞬間に遷移(タッチ中のscrollTo起因のバウンスを防ぐ)
+  const gMove=e=>{
+    if(!g||swiped)return;
+    const dx=e.clientX-g.x,dy=e.clientY-g.y;
+    if(Math.abs(dx)>44&&Math.abs(dx)>Math.abs(dy)*1.4){
+      swiped=true;
+      const i=PAGES.indexOf(document.body.dataset.page);
+      const ni=dx<0?i+1:i-1;
+      if(ni>=0&&ni<PAGES.length)pending={p:PAGES[ni],dir:dx<0?'l':'r'};
+    }
+  };
+  const gEnd=e=>{
+    g=null;setTimeout(()=>{swiped=false;},80);
+    removeEventListener('pointermove',gMove);
+    removeEventListener('pointerup',gEnd);removeEventListener('pointercancel',gEnd);
+    if(pending&&e&&e.type==='pointerup'){const t=pending;pending=null;slideGo(t.p,t.dir);}
+    else pending=null;
+  };
+  bar.addEventListener('pointerdown',e=>{
+    g={x:e.clientX,y:e.clientY};swiped=false;
+    addEventListener('pointermove',gMove);
+    addEventListener('pointerup',gEnd);addEventListener('pointercancel',gEnd);
+  });
+  bar.addEventListener('click',e=>{if(swiped){e.stopPropagation();e.preventDefault();}},true);
+  function slideGo(p,dir){
+    go(p);
+    const pg=document.querySelector('.page.on');
+    if(pg&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
+      pg.classList.remove('slide-l','slide-r');void pg.offsetWidth;
+      pg.classList.add(dir==='l'?'slide-l':'slide-r');
+      setTimeout(()=>pg.classList.remove('slide-l','slide-r'),240);
+    }
+  }
+  // 下スクロールでミニピル化、上スクロールで復帰
+  let lastY=scrollY,acc=0;
+  addEventListener('scroll',()=>{
+    if(!mq.matches)return;
+    const y=scrollY,dy=y-lastY;lastY=y;
+    if(!sheet.hidden)return;
+    acc=(dy>0)===(acc>0)?acc+dy:dy;
+    if(y>150&&acc>26)bar.classList.add('mini');
+    else if(acc<-20||y<90)bar.classList.remove('mini');
+  },{passive:true});
+  bar.addEventListener('click',()=>bar.classList.remove('mini'));
+  // ナビゲーション時、目次が開いていれば新ページの内容に動的更新
+  const _go=go;
+  window.go=(p,h)=>{const keep=!sheet.hidden;_go(p,h);if(keep)openToc();};
+})();
 document.querySelectorAll('#themeSeg button').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
 new MutationObserver(queueLanguage).observe(document.body,{subtree:true,childList:true,characterData:true});
 applyTheme();
