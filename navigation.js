@@ -1,6 +1,6 @@
 /* CFOP Trainer — 分割モジュール(クラシックスクリプト・ロード順依存)。元app.jsの行順を保持 */
 /* ================= nav & mode ================= */
-const PAGE_IDS=new Set(['home','basic','cross','f2l','oll','pll','quiz']);
+const PAGE_IDS=new Set(['home','basic','cross','f2l','oll','pll']);
 function go(p,historyMode='push'){
   const vt=document.startViewTransition
     &&matchMedia('(min-width:761px)').matches
@@ -157,8 +157,8 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
     if(!swiped&&Math.abs(dx)>44&&Math.abs(dx)>Math.abs(dy)*1.4){
       swiped=true;
       const i=PAGES.indexOf(document.body.dataset.page);
-      const ni=dx<0?i+1:i-1;
-      if(ni>=0&&ni<PAGES.length)pending={p:PAGES[ni],dir:dx<0?'l':'r'};
+      const ni=(i+(dx<0?1:-1)+PAGES.length)%PAGES.length;
+      pending={p:PAGES[ni],dir:dx<0?'l':'r'};
     }
     // §2 1:1追従(ラバーバンド)。端ページ方向はpendingが立たず抵抗だけ伝わる
     if(Math.abs(dx)>Math.abs(dy))setBarX(rubber(dx));
@@ -209,42 +209,52 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
   };
   if(fab)fab.addEventListener('click',e=>{e.stopPropagation();setMini(false);});
 
-  /* ===== プルアップ・ページ送り(教材ページのみ、モバイル) ===== */
-  const LEARN=['basic','cross','f2l','oll','pll'];
-  const PLABEL={basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL'};
+  /* ===== 端から引いて前後ページへ(全教材を循環、モバイル) ===== */
+  const LEARN=['home','basic','cross','f2l','oll','pll'];
+  const PLABEL={home:'Home',basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL'};
   const pull=document.getElementById('pullNav'),pFill=document.getElementById('pullFill'),
         pText=document.getElementById('pullText'),pArrow=document.getElementById('pullArrow');
   if(pull){
     const THRESH=92; // 引き上げ確定距離
     // 除外領域: これらの中で始まったタッチはページ送りにしない
     const EXCLUDE='#n3stage,.n3wrap,#netbox,.netwrap,#fpSwipe,.fpstage,input,textarea,select,.cmdk,.tocsheet,.pp,[data-hscroll]';
-    let pg=null,startY=0,dist=0,armed=false,active=false;
+    let pg=null,startY=0,dist=0,armed=false,active=false,dir=null,fromTop=false,fromBottom=false;
+    const atTop=()=>window.scrollY<=2;
     const atBottom=()=>window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2;
-    const nextOf=p=>{const i=LEARN.indexOf(p);return i>=0&&i<LEARN.length-1?LEARN[i+1]:null;};
+    const siblingOf=(p,step)=>{const i=LEARN.indexOf(p);return i<0?null:LEARN[(i+step+LEARN.length)%LEARN.length];};
     const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
     addEventListener('touchstart',e=>{
       if(!mq.matches)return;
       const p=document.body.dataset.page;
-      if(LEARN.indexOf(p)<0||!nextOf(p)){active=false;return;}
+      if(LEARN.indexOf(p)<0){active=false;return;}
       if(e.target.closest(EXCLUDE)){active=false;return;}
-      if(!atBottom()){active=false;return;}
+      fromTop=atTop();fromBottom=atBottom();
+      if(!fromTop&&!fromBottom){active=false;return;}
       // タッチ開始点の実要素でも除外判定(重なり対策)
       const t0=e.touches[0];
       const el0=document.elementFromPoint(t0.clientX,t0.clientY);
       if(el0&&el0.closest(EXCLUDE)){active=false;return;}
-      active=true;pg=nextOf(p);startY=t0.clientY;dist=0;armed=false;
-      pText.textContent=(LANG==='en'?'Next: ':'次へ: ')+PLABEL[pg];
+      active=true;pg=null;dir=null;startY=t0.clientY;dist=0;armed=false;
     },{passive:true});
     addEventListener('touchmove',e=>{
       if(!active)return;
-      const dy=startY-e.touches[0].clientY; // 上へ引く量
-      if(dy<=0){dist=0;pull.classList.remove('show','armed');pull.hidden=true;pull.setAttribute('aria-hidden','true');return;}
-      // 最下部を維持している間だけ(下へスクロール開始したら解除)
-      if(!atBottom()){active=false;pull.classList.remove('show','armed');pull.hidden=true;return;}
+      const dy=startY-e.touches[0].clientY; // 上へ=正(次)、下へ=負(前)
+      const wanted=dy>0?'next':dy<0?'prev':null;
+      const allowed=wanted==='next'?fromBottom:wanted==='prev'?fromTop:false;
+      if(!allowed){
+        dist=0;dir=null;pg=null;
+        pull.classList.remove('show','armed','prev');pull.hidden=true;pull.setAttribute('aria-hidden','true');
+        return;
+      }
       // standalone PWAではSafariのラバーバンド表示に隠されないよう、
-      // プルアップ開始後だけネイティブのオーバースクロールを止める。
+      // 端からのページ送り開始後だけネイティブのオーバースクロールを止める。
       if(e.cancelable)e.preventDefault();
-      dist=dy;
+      dir=wanted;dist=Math.abs(dy);
+      const current=document.body.dataset.page;
+      pg=siblingOf(current,dir==='next'?1:-1);
+      pull.classList.toggle('prev',dir==='prev');
+      pArrow.textContent=dir==='prev'?'↓':'↑';
+      pText.textContent=(LANG==='en'?(dir==='prev'?'Previous: ':'Next: '):(dir==='prev'?'前へ: ':'次へ: '))+PLABEL[pg];
       if(pull.hidden){pull.hidden=false;pull.setAttribute('aria-hidden','false');requestAnimationFrame(()=>pull.classList.add('show'));}
       const pct=Math.min(1,dist/THRESH);
       pFill.style.width=(pct*100).toFixed(0)+'%';
@@ -254,20 +264,20 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
         if(armed&&navigator.vibrate)navigator.vibrate(8); // 閾値到達の触覚
       }
     },{passive:false});
-    const endPull=()=>{
+    const endPull=(commit=true)=>{
       if(!active){return;}
       active=false;
-      const go2=armed&&pg;
+      const go2=commit&&armed&&pg;
       pull.classList.remove('show','armed');
-      setTimeout(()=>{pull.hidden=true;pull.setAttribute('aria-hidden','true');pFill.style.width='0';},reduce?0:130);
+      setTimeout(()=>{pull.hidden=true;pull.classList.remove('prev');pull.setAttribute('aria-hidden','true');pFill.style.width='0';},reduce?0:130);
       if(go2){
         if(reduce)go(pg);
-        else slideGo(pg,'l');
+        else slideGo(pg,dir==='prev'?'r':'l');
       }
-      pg=null;dist=0;armed=false;
+      pg=null;dir=null;dist=0;armed=false;
     };
-    addEventListener('touchend',endPull);
-    addEventListener('touchcancel',endPull);
+    addEventListener('touchend',()=>endPull(true));
+    addEventListener('touchcancel',()=>endPull(false));
   }
   bar.addEventListener('click',()=>setMini(false));
   // ナビゲーション時、目次が開いていれば新ページの内容に動的更新
@@ -288,9 +298,9 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
 })();
 /* ===== デスクトップ: ⌘K コマンドパレット & キーボードショートカット ===== */
 (function(){
-  const PAGE_ORDER=['home','basic','cross','f2l','oll','pll','quiz'];
-  const PAGE_LABEL={home:'Home',basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL',quiz:'Quiz'};
-  const STICKER={home:'#FFFF55',oll:'#FFFF55',basic:'#449751',cross:'#FFFFFF',f2l:'#EB632B',pll:'#1B45A6',quiz:'#D92E20'};
+  const PAGE_ORDER=['home','basic','cross','f2l','oll','pll'];
+  const PAGE_LABEL={home:'Home',basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL'};
+  const STICKER={home:'#FFFF55',oll:'#FFFF55',basic:'#449751',cross:'#FFFFFF',f2l:'#EB632B',pll:'#1B45A6'};
   const box=$('#cmdk'),inp=$('#cmdkInput'),list=$('#cmdkList');
   if(!box)return;
   let items=[],sel=0;
@@ -360,13 +370,13 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
     // ←/→単独は3Dプレイヤーのステップ操作に使われているため、ページ移動はShift併用
     if(e.shiftKey&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){
       const i2=PAGE_ORDER.indexOf(document.body.dataset.page);
-      const ni=e.key==='ArrowRight'?i2+1:i2-1;
-      if(ni>=0&&ni<PAGE_ORDER.length){e.preventDefault();go(PAGE_ORDER[ni]);}
+      const ni=(i2+(e.key==='ArrowRight'?1:-1)+PAGE_ORDER.length)%PAGE_ORDER.length;
+      e.preventDefault();go(PAGE_ORDER[ni]);
       return;
     }
     if(e.shiftKey)return;
     if(e.key==='/'){e.preventDefault();open();}
-    else if(/^[1-7]$/.test(e.key)&&document.body.dataset.page!=='quiz'){go(PAGE_ORDER[+e.key-1]);}
+    else if(/^[1-6]$/.test(e.key)){go(PAGE_ORDER[+e.key-1]);}
     else if(e.key.toLowerCase()==='t'){setTheme(THEME==='dark'?'light':'dark');}
   });
 })();
@@ -380,4 +390,3 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
     try{const registration=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});await registration.update();}catch(e){}
   });
 }
-
