@@ -71,7 +71,10 @@ function n3init(){
   $('#n3view').addEventListener('click',()=>{N3.yaw=-35;N3.pitch=-25;n3view();});
   // drag orbit
   const st=$('#n3stage');let drag=null;
-  st.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];st.setPointerCapture(e.pointerId);});
+  st.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button'))return;
+    drag=[e.clientX,e.clientY];st.setPointerCapture(e.pointerId);
+  });
   st.addEventListener('pointermove',e=>{
     if(!drag)return;
     N3.yaw+=(e.clientX-drag[0])*.45; N3.pitch-=(e.clientY-drag[1])*.45;
@@ -224,12 +227,11 @@ function n3showToken(token,detail){
   netSync(token);n3arrow(token);return b;
 }
 function n3previewNext(index){
-  const box=$('#n3next'),token=$('#n3nexttoken'),next=N3.seq[index];
-  if(!next){box.hidden=true;token.textContent='';return;}
-  box.hidden=false;
-  if(token.textContent!==next){
-    token.textContent=next;box.classList.remove('step-in');void box.offsetWidth;box.classList.add('step-in');
-  }
+  const box=$('#n3next'),slots=[...box.querySelectorAll('b')],next=N3.seq.slice(index,index+3);
+  const before=slots.map(x=>x.textContent).join('|'),after=next.join('|');
+  slots.forEach((slot,i)=>{slot.textContent=next[i]||'';slot.hidden=!next[i];});
+  box.hidden=!next.length;
+  if(next.length&&before!==after){box.classList.remove('step-in');void box.offsetWidth;box.classList.add('step-in');}
 }
 function n3sync(){
   const b=n3base();

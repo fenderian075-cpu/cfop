@@ -200,12 +200,12 @@
     <div class="n3playerlayout">
     <div class="n3wrap">
       <button class="n3dockhandle" id="n3DockHandle" type="button" aria-label="上・左・右へスワイプして図を隠す"><span></span></button>
-      <div class="n3stage" id="n3stage"><button class="btn viewreset" id="n3view">↺ 視点</button><div class="n3orbit" id="n3orbit"></div></div>
+      <div class="n3stage" id="n3stage"><button class="btn viewreset" id="n3view">↺ 視点</button><div class="n3orbit" id="n3orbit"></div><button class="apnettoggle netstage" id="apNetToggle" type="button" aria-pressed="false" aria-label="展開図を表示">▦ <span>展開図</span></button></div>
       <div class="netwrap">
         <div id="netbox"></div>
         <div class="netnote">本サイトの基準配色:上=黄・前=青・右=赤。対面は 白⇔黄 / 青⇔緑 / 赤⇔橙</div>
       </div>
-      <div class="n3info"><div class="n3turnline"><div class="big mono" id="n3label">R</div><div class="n3next mono" id="n3next" hidden><span>次</span><b id="n3nexttoken"></b></div></div><div class="ds" id="n3desc"></div></div>
+      <div class="n3info"><div class="n3turnline"><div class="big mono" id="n3label">R</div><div class="n3next mono" id="n3next" hidden><b></b><b></b><b></b></div></div><div class="ds" id="n3desc"></div></div>
     </div>
     <button class="n3dockrestore" id="n3DockRestore" type="button" aria-label="回転図と展開図を表示" hidden>
       <img class="n3restoreDark" src="icon-home-dark-v8.png" alt="" width="30" height="30">
@@ -229,7 +229,7 @@
         <button data-st="case"><span class="aplabel-full">ケースから解く</span><span class="aplabel-short">ケースから</span></button><button data-st="solved" class="on"><span class="aplabel-full">完成から適用</span><span class="aplabel-short">完成から</span></button>
       </div><div class="seg" id="apfocus">
         <button data-f="1" class="on">フォーカス</button><button data-f="0">全色</button>
-      </div><button class="apnettoggle" id="apNetToggle" type="button" aria-pressed="false" aria-label="展開図を表示">▦ <span>展開図</span></button></div>
+      </div></div>
     </div>
     </div>
     <h2 class="sec">基本回転</h2>
