@@ -241,6 +241,9 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
       if(dy<=0){dist=0;pull.classList.remove('show','armed');pull.hidden=true;pull.setAttribute('aria-hidden','true');return;}
       // 最下部を維持している間だけ(下へスクロール開始したら解除)
       if(!atBottom()){active=false;pull.classList.remove('show','armed');pull.hidden=true;return;}
+      // standalone PWAではSafariのラバーバンド表示に隠されないよう、
+      // プルアップ開始後だけネイティブのオーバースクロールを止める。
+      if(e.cancelable)e.preventDefault();
       dist=dy;
       if(pull.hidden){pull.hidden=false;pull.setAttribute('aria-hidden','false');requestAnimationFrame(()=>pull.classList.add('show'));}
       const pct=Math.min(1,dist/THRESH);
@@ -250,7 +253,7 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
         armed=nowArmed;pull.classList.toggle('armed',armed);
         if(armed&&navigator.vibrate)navigator.vibrate(8); // 閾値到達の触覚
       }
-    },{passive:true});
+    },{passive:false});
     const endPull=()=>{
       if(!active){return;}
       active=false;
@@ -378,65 +381,3 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
   });
 }
 
-
-/* ===== プルアップページ送り(教材ページ最下部で上に引いて次へ) ===== */
-(function(){
-  const COURSE=['basic','cross','f2l','oll','pll'];
-  const NAME={basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL',home:'Home'};
-  const mq=matchMedia('(max-width:760px)');
-  const TH=92; // 発動閾値(px)
-  const panel=document.createElement('div');
-  panel.className='pullnav';panel.hidden=true;
-  panel.innerHTML='<div class="pnArrow">↑</div><div class="pnLabel"></div><div class="pnBar"><i></i></div>';
-  document.body.appendChild(panel);
-  const label=panel.querySelector('.pnLabel'),fill=panel.querySelector('.pnBar i');
-  // これらの上で始まったスワイプは対象外(3D・展開図・パッド・横スクロール・入力・モーダル・フリープレイ)
-  const EXCLUDE='.n3stage,.fpstage,#fpSwipe,.cube-net,.netwrap,.apmoves,.nchips,input,textarea,select,.pp,.cmdk,.fpwrap';
-  const atBottom=()=>scrollY+innerHeight>=document.documentElement.scrollHeight-2;
-  let st=null;
-  addEventListener('touchstart',e=>{
-    st=null;
-    if(!mq.matches)return;
-    const p=document.body.dataset.page,i=COURSE.indexOf(p);
-    if(i<0)return;
-    if(e.target.closest(EXCLUDE))return;
-    if(!atBottom())return;
-    st={y0:e.touches[0].clientY,pull:0,nx:i<COURSE.length-1?COURSE[i+1]:'home',buzzed:false};
-  },{passive:true});
-  addEventListener('touchmove',e=>{
-    if(!st)return;
-    const dy=st.y0-e.touches[0].clientY; // 上へ引く=正
-    if(dy<=0){if(st.pull>0){st.pull=0;render();}return;}
-    st.pull=dy;
-    e.preventDefault(); // iOSのラバーバンドと競合させない
-    render();
-  },{passive:false});
-  function render(){
-    const p=st?st.pull:0;
-    if(p<6){panel.hidden=true;return;}
-    panel.hidden=false;
-    panel.style.height=Math.min(96,16+p*.62)+'px';
-    const pct=Math.min(1,p/TH);
-    fill.style.transform=`scaleX(${pct.toFixed(3)})`;
-    panel.classList.toggle('ready',pct>=1);
-    label.textContent=st.nx==='home'?tj('ホームへ戻る','Back to Home'):tj('次へ: ','Next: ')+NAME[st.nx];
-    if(pct>=1&&!st.buzzed){st.buzzed=true;try{navigator.vibrate&&navigator.vibrate(12);}catch(_){}}
-    if(pct<1)st.buzzed=false;
-  }
-  function finish(commit){
-    const nx=st&&st.nx,past=st&&st.pull>=TH;
-    st=null;
-    panel.classList.remove('ready');panel.style.height='';panel.hidden=true;
-    if(commit&&past&&nx){
-      go(nx);
-      const pg=document.querySelector('.page.on');
-      if(pg&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
-        pg.classList.remove('slide-up');void pg.offsetWidth;
-        pg.classList.add('slide-up');
-        setTimeout(()=>pg.classList.remove('slide-up'),300);
-      }
-    }
-  }
-  addEventListener('touchend',()=>finish(true),{passive:true});
-  addEventListener('touchcancel',()=>finish(false),{passive:true});
-})();
