@@ -198,7 +198,7 @@
 
     <h2 class="sec">回転記号</h2>
     <div class="n3wrap">
-      <button class="n3dockhandle" id="n3DockHandle" type="button" aria-label="上へスワイプして図を隠す"><span></span></button>
+      <button class="n3dockhandle" id="n3DockHandle" type="button" aria-label="上・左・右へスワイプして図を隠す"><span></span></button>
       <div class="n3stage" id="n3stage"><button class="btn viewreset" id="n3view">↺ 視点</button><div class="n3orbit" id="n3orbit"></div></div>
       <div class="netwrap">
         <div id="netbox"></div>
@@ -208,7 +208,10 @@
 
       <div class="n3hint">ドラッグで視点を回せる(D・B・Lの確認用)</div>
     </div>
-    <button class="n3dockrestore" id="n3DockRestore" type="button" aria-label="回転図と展開図を表示" hidden>図</button>
+    <button class="n3dockrestore" id="n3DockRestore" type="button" aria-label="回転図と展開図を表示" hidden>
+      <img class="n3restoreDark" src="icon-home-dark-v8.png" alt="" width="30" height="30">
+      <img class="n3restoreLight" src="icon-home-light-v8.png" alt="" width="30" height="30">
+    </button>
     <div class="algplayer" id="algPlayer">
       <div class="aphead"><b>3D 手順プレイヤー</b><span id="apcount">0 / 0手</span></div>
       <select class="apselect" id="appreset" aria-label="再生する手順を選択">

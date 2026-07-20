@@ -93,20 +93,21 @@ function rebuild(){
     });
   },{passive:true});
 })();
-/* ===== 基礎編: 3D/展開図ドックを上スワイプで隠す ===== */
+/* ===== 基礎編: 3D/展開図ドックを上・左・右スワイプで隠す ===== */
 (()=>{
   const dock=$('.n3wrap'),handle=$('#n3DockHandle'),restore=$('#n3DockRestore');
   if(!dock||!handle||!restore)return;
   const mq=matchMedia('(max-width:760px)');
-  let active=false,pid=null,startY=0,dy=0;
+  let active=false,pid=null,startX=0,startY=0,dx=0,dy=0;
   const clearDrag=()=>{
-    active=false;pid=null;dy=0;dock.classList.remove('dock-dragging');
+    active=false;pid=null;dx=0;dy=0;dock.classList.remove('dock-dragging');
     dock.style.transform='';dock.style.opacity='';
   };
-  const hideDock=()=>{
+  const hideDock=(dir='up')=>{
     if(!mq.matches||dock.classList.contains('dock-collapsed'))return;
     active=false;dock.classList.remove('dock-dragging');
-    dock.style.transform='translateY(-28px) scale(.985)';dock.style.opacity='0';
+    const out=dir==='left'?'translateX(-110%)':dir==='right'?'translateX(110%)':'translateY(-110%)';
+    dock.style.transform=`${out} scale(.985)`;dock.style.opacity='0';
     setTimeout(()=>{
       dock.classList.add('dock-collapsed');dock.style.transform='';dock.style.opacity='';
       restore.hidden=false;
@@ -121,21 +122,27 @@ function rebuild(){
   };
   handle.addEventListener('pointerdown',e=>{
     if(!mq.matches)return;
-    active=true;pid=e.pointerId;startY=e.clientY;dy=0;dock.classList.add('dock-dragging');
+    active=true;pid=e.pointerId;startX=e.clientX;startY=e.clientY;dx=0;dy=0;dock.classList.add('dock-dragging');
     try{handle.setPointerCapture(pid);}catch(_){}
   });
   handle.addEventListener('pointermove',e=>{
     if(!active||e.pointerId!==pid)return;
-    dy=e.clientY-startY;
-    const y=Math.max(-72,Math.min(0,dy));
-    dock.style.transform=`translateY(${y}px)`;dock.style.opacity=String(1-Math.min(1,Math.abs(y)/110));
+    dx=e.clientX-startX;dy=e.clientY-startY;
+    const horizontal=Math.abs(dx)>Math.abs(dy);
+    const x=horizontal?Math.max(-120,Math.min(120,dx)):0;
+    const y=horizontal?0:Math.max(-90,Math.min(12,dy*.22));
+    const dist=horizontal?Math.abs(x):Math.max(0,-y);
+    dock.style.transform=`translate(${x}px,${y}px)`;dock.style.opacity=String(1-Math.min(1,dist/170));
   });
   const end=e=>{
     if(!active||(e&&e.pointerId!==pid))return;
-    const commit=dy<-36;clearDrag();if(commit)hideDock();
+    const horizontal=Math.abs(dx)>Math.abs(dy);
+    const dir=horizontal?(dx<0?'left':'right'):'up';
+    const commit=horizontal?Math.abs(dx)>52:dy<-44;
+    clearDrag();if(commit)hideDock(dir);
   };
   handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',end);
-  handle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();hideDock();}});
+  handle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();hideDock('up');}});
   restore.addEventListener('click',()=>showDock(true));
   const resetWide=e=>{if(!e.matches)showDock(false);};
   if(mq.addEventListener)mq.addEventListener('change',resetWide);else mq.addListener(resetWide);

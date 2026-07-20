@@ -20,7 +20,7 @@ const EN={
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
   '目次':'Contents','⤒ ページ先頭':'⤒ Top of page','ページ切替。左右スワイプで前後ページ':'Page navigation. Swipe horizontally for previous or next',
-  '上へスワイプして図を隠す':'Swipe up to hide the diagrams','回転図と展開図を表示':'Show the 3D and net diagrams',
+  '上・左・右へスワイプして図を隠す':'Swipe up, left, or right to hide the diagrams','回転図と展開図を表示':'Show the 3D and net diagrams',
   '指使いの基本':'Finger tricks','大きく持ち替えず、指と手首は最小限に':'Minimal regrips, minimal motion',
   '回転':'Move','指':'Finger','コツ':'Tip',
   '右人差し指':'Right index','左人差し指':'Left index','右人差し指→中指':'Right index → middle','右手首':'Right wrist','左手首':'Left wrist','右親指':'Right thumb','薬指':'Ring finger','M系':'M slices',
