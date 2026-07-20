@@ -600,8 +600,8 @@ function fpInit(){
       const el=$('#fpPlanStat');
       if(el){
         el.innerHTML=
-          `<span class="${curIsS?'now':''}">${tj('簡易','Easy')} ${sS?sS[0]+tj('段','st')+' / '+sS[1]+tj('手','mv'):'—'}</span>`+
-          `<span class="${curIsS?'':'now'}">${tj('本格','Full')} ${sF?sF[0]+tj('段','st')+' / '+sF[1]+tj('手','mv'):'—'}</span>`;
+          `<span class="${curIsS?'now':''}">${tj('簡易','Simple')} ${sS?sS[0]+tj('段','st ')+' / '+sS[1]+tj('手','mv'):'—'}</span>`+
+          `<span class="${curIsS?'':'now'}">${tj('本格','Adv.')} ${sF?sF[0]+tj('段','st ')+' / '+sF[1]+tj('手','mv'):'—'}</span>`;
         el.hidden=false;
       }
     }

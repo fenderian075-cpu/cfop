@@ -199,10 +199,16 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
     const y=scrollY,dy=y-lastY;lastY=y;
     if(!sheet.hidden)return;
     acc=(dy>0)===(acc>0)?acc+dy:dy;
-    if(y>150&&acc>26)bar.classList.add('mini');
-    else if(acc<-20||y<90)bar.classList.remove('mini');
+    if(y>150&&acc>26)setMini(true);
+    else if(acc<-20||y<90)setMini(false);
   },{passive:true});
-  bar.addEventListener('click',()=>bar.classList.remove('mini'));
+  const fab=document.getElementById('pillFab');
+  const setMini=on=>{
+    bar.classList.toggle('mini',on);
+    if(fab){fab.setAttribute('aria-expanded',String(!on));fab.tabIndex=on?0:-1;}
+  };
+  if(fab)fab.addEventListener('click',e=>{e.stopPropagation();setMini(false);});
+  bar.addEventListener('click',()=>setMini(false));
   // ナビゲーション時、目次が開いていれば新ページの内容に動的更新
   const _go=go;
   window.go=(p,h)=>{const keep=!sheet.hidden;_go(p,h);if(keep)openToc();};
@@ -314,3 +320,65 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
   });
 }
 
+
+/* ===== プルアップページ送り(教材ページ最下部で上に引いて次へ) ===== */
+(function(){
+  const COURSE=['basic','cross','f2l','oll','pll'];
+  const NAME={basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL',home:'Home'};
+  const mq=matchMedia('(max-width:760px)');
+  const TH=92; // 発動閾値(px)
+  const panel=document.createElement('div');
+  panel.className='pullnav';panel.hidden=true;
+  panel.innerHTML='<div class="pnArrow">↑</div><div class="pnLabel"></div><div class="pnBar"><i></i></div>';
+  document.body.appendChild(panel);
+  const label=panel.querySelector('.pnLabel'),fill=panel.querySelector('.pnBar i');
+  // これらの上で始まったスワイプは対象外(3D・展開図・パッド・横スクロール・入力・モーダル・フリープレイ)
+  const EXCLUDE='.n3stage,.fpstage,#fpSwipe,.cube-net,.netwrap,.apmoves,.nchips,input,textarea,select,.pp,.cmdk,.fpwrap';
+  const atBottom=()=>scrollY+innerHeight>=document.documentElement.scrollHeight-2;
+  let st=null;
+  addEventListener('touchstart',e=>{
+    st=null;
+    if(!mq.matches)return;
+    const p=document.body.dataset.page,i=COURSE.indexOf(p);
+    if(i<0)return;
+    if(e.target.closest(EXCLUDE))return;
+    if(!atBottom())return;
+    st={y0:e.touches[0].clientY,pull:0,nx:i<COURSE.length-1?COURSE[i+1]:'home',buzzed:false};
+  },{passive:true});
+  addEventListener('touchmove',e=>{
+    if(!st)return;
+    const dy=st.y0-e.touches[0].clientY; // 上へ引く=正
+    if(dy<=0){if(st.pull>0){st.pull=0;render();}return;}
+    st.pull=dy;
+    e.preventDefault(); // iOSのラバーバンドと競合させない
+    render();
+  },{passive:false});
+  function render(){
+    const p=st?st.pull:0;
+    if(p<6){panel.hidden=true;return;}
+    panel.hidden=false;
+    panel.style.height=Math.min(96,16+p*.62)+'px';
+    const pct=Math.min(1,p/TH);
+    fill.style.transform=`scaleX(${pct.toFixed(3)})`;
+    panel.classList.toggle('ready',pct>=1);
+    label.textContent=st.nx==='home'?tj('ホームへ戻る','Back to Home'):tj('次へ: ','Next: ')+NAME[st.nx];
+    if(pct>=1&&!st.buzzed){st.buzzed=true;try{navigator.vibrate&&navigator.vibrate(12);}catch(_){}}
+    if(pct<1)st.buzzed=false;
+  }
+  function finish(commit){
+    const nx=st&&st.nx,past=st&&st.pull>=TH;
+    st=null;
+    panel.classList.remove('ready');panel.style.height='';panel.hidden=true;
+    if(commit&&past&&nx){
+      go(nx);
+      const pg=document.querySelector('.page.on');
+      if(pg&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
+        pg.classList.remove('slide-up');void pg.offsetWidth;
+        pg.classList.add('slide-up');
+        setTimeout(()=>pg.classList.remove('slide-up'),300);
+      }
+    }
+  }
+  addEventListener('touchend',()=>finish(true),{passive:true});
+  addEventListener('touchcancel',()=>finish(false),{passive:true});
+})();
