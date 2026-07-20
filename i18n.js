@@ -185,8 +185,6 @@ function applyTheme(){
   document.body.dataset.theme=THEME;document.documentElement.dataset.theme=THEME;
   const chromeColor=THEME==='light'?'#f2f4f9':'#101014';
   document.querySelectorAll('meta[name="theme-color"]').forEach(meta=>meta.content=chromeColor);
-  const statusBar=document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-  if(statusBar)statusBar.content=THEME==='light'?'default':'black-translucent';
   document.querySelectorAll('#themeSeg button').forEach(b=>{const on=b.dataset.theme===THEME;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
   const thi=document.getElementById('thIco');if(thi)thi.textContent=THEME==='dark'?'☀':'☾';
 }

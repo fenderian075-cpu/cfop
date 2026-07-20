@@ -55,6 +55,15 @@ body{
   line-height:1.55;
   transition:background .2s ease,color .2s ease;overflow-x:clip;
 }
+/* iOS standalone: black-translucent lets the document paint behind the status
+   bar. Keep a theme-matched fixed underlay there so no system-gray band appears. */
+html.standalone,html.standalone body{min-height:100%;background:#101014}
+html.standalone[data-theme="light"],html.standalone body[data-theme="light"]{background:#f2f4f9}
+html.standalone body::before{
+  content:"";position:fixed;z-index:19;left:0;right:0;top:0;
+  height:env(safe-area-inset-top,0px);background:#101014;pointer-events:none;
+}
+html.standalone body[data-theme="light"]::before{background:#f2f4f9}
 body[data-page="home"]{--accent:#FFD21E}body[data-page="basic"]{--accent:#1ca34a}
 body[data-page="cross"]{--accent:#f4f4f6}body[data-page="f2l"]{--accent:#E85D04}
 body[data-page="oll"]{--accent:#FFD21E}body[data-page="pll"]{--accent:#2f6fe4}
@@ -71,6 +80,8 @@ header{
   padding:10px 14px calc(10px); display:flex; align-items:center; gap:10px;
   padding-top:calc(10px + env(safe-area-inset-top,0px));
 }
+html.standalone header{background:rgba(16,16,20,.98)}
+html.standalone body[data-theme="light"] header{background:rgba(242,244,249,.98)}
 header::after{content:"";position:absolute;left:0;right:0;bottom:-12px;height:12px;pointer-events:none;
   background:linear-gradient(to bottom,rgba(0,0,0,.16),transparent);opacity:0;transition:opacity .16s ease}
 body[data-theme="light"] header::after{background:linear-gradient(to bottom,rgba(15,23,42,.11),transparent)}
