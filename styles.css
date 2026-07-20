@@ -311,6 +311,8 @@ body[data-theme="light"] .apselect,body[data-theme="light"] .apinput{background:
 
 /* ===== 3D notation viewer ===== */
 .n3wrap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 14px 16px;margin-bottom:4px}
+.n3wrap>.netwrap{display:none}
+.n3wrap.net-visible>.netwrap{display:block}
 .n3dockhandle,.n3dockrestore{display:none}
 .n3stage{height:236px;display:flex;align-items:center;justify-content:center;perspective:820px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 .n3stage{position:relative;overflow:hidden}
@@ -395,7 +397,11 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
 #n3arrow3d{position:absolute;width:156px;height:156px;left:-78px;top:-78px;pointer-events:none}
 #n3arrow3d svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 4px rgba(0,0,0,.85))}
 .algplayer{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:12px;margin:12px 0 2px}
-.aphead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.aphead b{font-size:.8rem}.aphead span{margin-left:auto;color:var(--tx2);font-size:.68rem}
+.aphead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.aphead b{font-size:.8rem}.aphead>#apcount{margin-left:auto;color:var(--tx2);font-size:.68rem}
+.apnettoggle span{font:inherit;color:inherit}
+.apnettoggle{min-height:36px;padding:5px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--tx2);
+  font:800 .66rem/1 -apple-system,BlinkMacSystemFont,sans-serif;white-space:nowrap;cursor:pointer}
+.apnettoggle.on{border-color:var(--accent);color:var(--tx);background:color-mix(in srgb,var(--accent) 12%,var(--panel2))}
 .apselect,.apinput{width:100%;background:#15161b;color:var(--tx);border:1px solid var(--line);border-radius:9px;font:inherit;font-size:.76rem;padding:8px 10px}
 .apinput{margin-top:7px;font-family:ui-monospace,"SF Mono",Menlo,monospace}
 .apbuttons{display:flex;gap:7px;justify-content:center;margin:9px 0 7px;flex-wrap:wrap}
@@ -653,7 +659,8 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
     padding:0;border:0;border-radius:inherit;background:transparent;touch-action:none;cursor:grab}
   #pg-basic .n3dockhandle:active{cursor:grabbing}
   #pg-basic .n3dockhandle span{display:none}
-  #pg-basic .n3wrap>.n3stage{--cs:.5;height:124px;grid-column:1;overflow:hidden}
+  #pg-basic .n3wrap>.n3stage{--cs:.44;height:104px;grid-column:1/-1;overflow:hidden;transition:height .18s ease}
+  #pg-basic .n3wrap.net-visible>.n3stage{--cs:.5;height:124px;grid-column:1}
   #pg-basic .n3wrap>.netwrap{grid-column:2;margin:0;padding:3px;border:0;border-radius:12px;background:transparent;box-shadow:none}
   #pg-basic .n3wrap>.netwrap svg{width:100%;max-width:150px}
   #pg-basic .n3wrap>.n3info,#pg-basic .n3wrap>.n3hint,#pg-basic .n3wrap .netnote,#pg-basic .n3wrap .viewreset{display:none}
@@ -975,20 +982,22 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
 .fingertbl td:nth-child(2){white-space:nowrap}
 /* デスクトップ: 3Dプレイヤーの横に展開図を並列 */
 @media(min-width:761px){
-  .n3wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
-  .n3wrap>.n3stage{grid-column:1}
-  .n3wrap>.n3info{grid-column:1}
-  .n3wrap>.netwrap{grid-column:2;grid-row:1/span 2;margin:0}
-  /* 3Dサイドパネル(約430px)内では2列グリッドを解除し、展開図は隠す */
+  .n3wrap{display:block}
+  .n3wrap.net-visible{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+  .n3wrap.net-visible>.n3stage{grid-column:1}
+  .n3wrap.net-visible>.n3info{grid-column:1}
+  .n3wrap.net-visible>.netwrap{grid-column:2;grid-row:1/span 2;margin:0}
+  /* 3Dサイドパネル(約430px)内では2列グリッドを解除し、ON時は縦に並べる */
   .ppbody .n3wrap{display:block}
   .ppbody .n3wrap>.netwrap{display:none}
+  .ppbody .n3wrap.net-visible>.netwrap{display:block;margin-top:8px}
 }
 
 @media(prefers-reduced-motion:reduce){.tabbar{transition:none}.tabbar .pillfab,.tabbar button{transition:none}}
 
 /* Apple-style mobile ergonomics: visual densityを保ちながら操作面は44pt以上にする */
 @media(max-width:760px){
-  .btn,.playmini,.nchip,.fchip,.apbuttons button,.fpbtns2 button,.fpsolve button{min-height:44px}
+  .btn,.playmini,.nchip,.fchip,.apbuttons button,.apnettoggle,.fpbtns2 button,.fpsolve button{min-height:44px}
   .btn,.playmini,.fchip{font-size:.72rem}
   .apinput,.apselect{min-height:44px;font-size:.78rem}
   .pgsub,.note,.scrhold,.carddesc,.stcard span,.ctrcard span,.pfd,.ruletx p{font-size:.72rem}

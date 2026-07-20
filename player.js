@@ -80,6 +80,20 @@ function n3init(){
   });
   st.addEventListener('pointerup',()=>drag=null);
   st.addEventListener('pointercancel',()=>drag=null);
+  const netToggle=$('#apNetToggle'),n3wrap=st.closest('.n3wrap');
+  const setNetVisible=on=>{
+    n3wrap.classList.toggle('net-visible',on);
+    netToggle.classList.toggle('on',on);
+    netToggle.setAttribute('aria-pressed',String(on));
+    netToggle.setAttribute('aria-label',on?tj('展開図を隠す','Hide net'):tj('展開図を表示','Show net'));
+    if(on){
+      n3wrap.classList.remove('dock-collapsed');
+      const restore=$('#n3DockRestore');if(restore)restore.hidden=true;
+    }
+    requestAnimationFrame(()=>n3view());
+  };
+  netToggle.addEventListener('click',()=>setNetVisible(!n3wrap.classList.contains('net-visible')));
+  setNetVisible(false);
   const preset=$('#appreset');
   NAMED.forEach(([n,a])=>{const o=document.createElement('option');o.value=a;o.textContent=n;o.dataset.kind=n.includes('パーム')?'pll':'oll';preset.appendChild(o);});
   preset.addEventListener('change',()=>{if(preset.value){const o=preset.options[preset.selectedIndex];n3loadAlg(preset.value,o.text,false,false,'case',o.dataset.kind||'trigger');}});
@@ -144,6 +158,7 @@ function n3paint(){
   N3.cubies.forEach(c=>Object.entries(c.faces).forEach(([f,el])=>{
     const i=n3facelet(c,f);if(i!==null)el.style.background=n3color(N3.state[i]);
   }));
+  netPaint(N3.state);
 }
 /* ===== 3D方向矢印(層の上に配置・回転と一緒に動く) ===== */
 const ARROWS={

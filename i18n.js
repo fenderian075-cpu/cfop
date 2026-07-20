@@ -19,6 +19,7 @@ const EN={
   '回転記号':'Turn Notation','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
+  '展開図を表示':'Show net','展開図を隠す':'Hide net',
   '目次':'Contents','⤒ ページ先頭':'⤒ Top of page','ページ切替。左右スワイプで前後ページ':'Page navigation. Swipe horizontally for previous or next',
   '上・左・右へスワイプして図を隠す':'Swipe up, left, or right to hide the diagrams','回転図と展開図を表示':'Show the 3D and net diagrams',
   '指使いの基本':'Finger tricks','大きく持ち替えず、指と手首は最小限に':'Minimal regrips, minimal motion',

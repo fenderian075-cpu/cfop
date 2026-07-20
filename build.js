@@ -204,7 +204,7 @@ function chunkLive(alg){
   return out.join(' ');
 }
 /* ================= net (unfolded cube) ================= */
-let netCells=null;
+let netCells=null,netFaceplates=null;
 function cubeNetSVG(state,{interactive=false,labels=false}={}){
   const C=15,G=1.65,FP=5.2;
   const FW=3*C+2*G;
@@ -213,7 +213,7 @@ function cubeNetSVG(state,{interactive=false,labels=false}={}){
   let s='';
   for(const [f,[gc,gr]] of Object.entries(facePos)){
     const ox=gc*(FW+FP), oy=gr*(FW+FP);
-    s+=`<rect class="net-faceplate" x="${(ox-2.25).toFixed(2)}" y="${(oy-2.25).toFixed(2)}" width="${(FW+4.5).toFixed(2)}" height="${(FW+4.5).toFixed(2)}" rx="5.2" fill="${FC[f]}" fill-opacity=".055"/>`;
+    s+=`<rect class="net-faceplate" data-f="${f}" x="${(ox-2.25).toFixed(2)}" y="${(oy-2.25).toFixed(2)}" width="${(FW+4.5).toFixed(2)}" height="${(FW+4.5).toFixed(2)}" rx="5.2" fill="${FC[f]}" fill-opacity=".055"/>`;
     for(let k=0;k<9;k++){
       const r=Math.floor(k/3),c=k%3,p=f*9+k;
       const color=FC[Math.floor((state?.[p]??p)/9)];
@@ -247,6 +247,18 @@ function cubeNetSVG(state,{interactive=false,labels=false}={}){
 function buildNet(){
   $('#netbox').innerHTML=cubeNetSVG(SOLVED,{interactive:true,labels:true});
   netCells=[...document.querySelectorAll('#netbox .net-cell')];
+  netFaceplates=[...document.querySelectorAll('#netbox .net-faceplate')];
+}
+function netPaint(state){
+  if(!state||!netCells)return;
+  netCells.forEach(r=>{
+    const p=+r.dataset.p,content=state[p];
+    r.setAttribute('fill',FC[Math.floor(content/9)]);
+  });
+  netFaceplates?.forEach(r=>{
+    const f=+r.dataset.f,content=state[f*9+4];
+    r.setAttribute('fill',FC[Math.floor(content/9)]);
+  });
 }
 function netSync(moveKey){
   if(!netCells)return;
@@ -319,4 +331,3 @@ function buildBasics(){
   $('#triggers').innerHTML=T.map(([n,a])=>`<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}</b><span class="alg mono">${chunk(a)}</span><div class="algmeta"><span class="mv">${hm(a)}手</span><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#triggers [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,'trigger'));
 }
-
