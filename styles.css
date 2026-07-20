@@ -452,7 +452,7 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   .tabbar [data-p="f2l"]{--tc:#EB632B}
   .tabbar [data-p="pll"]{--tc:#1B45A6}
   /* Liquid Glass風: 下スクロールでラベルが畳まれミニピル化 */
-  .tabbar button b{display:block;font-weight:inherit;height:12px;line-height:12px}
+  .tabbar button b{display:block;position:relative;top:2px;font-weight:inherit;height:12px;line-height:12px}
   /* 目次シェルフ(ピル直上のアクセサリ) */
   .tocsheet{position:fixed;left:14px;right:14px;z-index:89;
     bottom:calc(66px + env(safe-area-inset-bottom,8px));
