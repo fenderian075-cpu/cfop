@@ -19,7 +19,7 @@ const EN={
   '回転記号':'Turn Notation','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
-  '目次':'Contents','⤒ ページ先頭':'⤒ Top of page',
+  '目次':'Contents','⤒ ページ先頭':'⤒ Top of page','ページ切替。左右スワイプで前後ページ':'Page navigation. Swipe horizontally for previous or next',
   '指使いの基本':'Finger tricks','大きく持ち替えず、指と手首は最小限に':'Minimal regrips, minimal motion',
   '回転':'Move','指':'Finger','コツ':'Tip',
   '右人差し指':'Right index','左人差し指':'Left index','右人差し指→中指':'Right index → middle','右手首':'Right wrist','左手首':'Left wrist','右親指':'Right thumb','薬指':'Ring finger','M系':'M slices',
@@ -171,7 +171,7 @@ function applyLanguage(rebuildToc=true){
   document.querySelectorAll('#langSeg button').forEach(b=>{const on=b.dataset.lang===LANG;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
   document.querySelectorAll('[data-progress-id]').forEach(el=>syncProgressControl(el,el.dataset.progressId));
   const lgi=document.getElementById('lgIco');if(lgi){
-    lgi.textContent=LANG==='ja'?'🇯🇵':'🇬🇧';
+    lgi.textContent=LANG==='ja'?'JA':'EN';
     const label=LANG==='ja'?'Switch to English':'日本語に切り替え';lgi.setAttribute('aria-label',label);lgi.title=label;
   }
   if(typeof syncModeControls==='function')syncModeControls();

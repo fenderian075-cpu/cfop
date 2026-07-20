@@ -82,9 +82,10 @@ function rebuild(){
     if(tick)return;tick=true;
     requestAnimationFrame(()=>{
       tick=false;
+      const y=window.scrollY;
+      document.body.classList.toggle('scrolled',y>4);
       if(!window.matchMedia('(max-width:760px)').matches){document.body.classList.remove('navhide');return;}
       const nav=document.querySelector('nav');
-      const y=window.scrollY;
       if((nav&&nav.classList.contains('open'))||y<60){document.body.classList.remove('navhide');}
       else if(y-lastY>6){document.body.classList.add('navhide');}
       else if(lastY-y>6){document.body.classList.remove('navhide');}
@@ -115,7 +116,7 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
   const sheet=document.getElementById('tocSheet'),list=document.getElementById('tocList');
   if(!bar||!sheet)return;
   const mq=matchMedia('(max-width:760px)');
-  const PAGES=[...bar.querySelectorAll('button')].map(b=>b.dataset.p);
+  const PAGES=[...bar.querySelectorAll('button[data-p]')].map(b=>b.dataset.p);
   const closeToc=()=>{
     if(sheet.hidden)return;
     if(matchMedia('(prefers-reduced-motion:reduce)').matches){sheet.hidden=true;return;}
@@ -146,52 +147,122 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
   bar.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
   // 現在ページのタブ再タップ=目次(システムジェスチャーと衝突しない)
   window.__tocToggle=()=>{sheet.hidden?openToc():closeToc();};
-  // スワイプ: 横=前後ページ。閾値でラッチ→指を離した瞬間に遷移(タッチ中scrollTo起因のバウンス防止)
-  let g=null,swiped=false,pending=null,barX=0;
-  // §9 rubberband(apple-design skill): 端に近づくほど追従を弱める
-  const rubber=(x,dim=90,c=.55)=>(x*dim*c)/(dim+c*Math.abs(x));
-  const setBarX=v=>{barX=v;bar.style.transform=v?`translateX(${v.toFixed(1)}px)`:'';};
+  // スワイプ: 下部ナビを左右へ。10pxで方向を確定し、距離+速度で前後ページを決める。
+  let g=null,swiped=false,barX=0,pageX=0;
+  const reduceMotion=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+  // §9 rubberband: 操作対象は指へ即応しつつ、移動量は徐々に抵抗を増す。
+  const rubber=(x,dim=110,c=.55)=>(x*dim*c)/(dim+c*Math.abs(x));
+  const velocity=(samples,key)=>{
+    if(samples.length<2)return 0;
+    const last=samples[samples.length-1];
+    let first=samples[0];
+    for(let i=samples.length-2;i>=0;i--){if(last.t-samples[i].t>80)break;first=samples[i];}
+    const dt=Math.max(1,last.t-first.t);
+    return (last[key]-first[key])*1000/dt;
+  };
+  const resetDraggedPage=pg=>{
+    if(!pg)return;
+    pg.style.transform='';pg.style.opacity='';pg.style.willChange='';
+  };
+  const liveOffset=el=>{
+    if(!el)return{x:0,y:0,opacity:1};
+    const cs=getComputedStyle(el),tr=cs.transform;
+    let x=0,y=0;
+    if(tr&&tr!=='none'){
+      try{const Matrix=window.DOMMatrixReadOnly||window.WebKitCSSMatrix;if(Matrix){const m=new Matrix(tr);x=m.m41||0;y=m.m42||0;}}catch(_){ }
+    }
+    return{x,y,opacity:Number.parseFloat(cs.opacity)||1};
+  };
+  // 進行中アニメーションを見た目の現在値で凍結し、そこから次の指操作を始める。
+  const freezePresentation=el=>{
+    const live=liveOffset(el);if(!el)return live;
+    el.getAnimations().forEach(a=>{
+      const frames=a.effect&&typeof a.effect.getKeyframes==='function'?a.effect.getKeyframes():[];
+      if(frames.some(f=>Object.prototype.hasOwnProperty.call(f,'transform')))a.cancel();
+    });
+    el.style.transform=(live.x||live.y)?`translate(${live.x}px,${live.y}px)`:'';
+    el.style.opacity=String(live.opacity);
+    return live;
+  };
+  const settleDraggedPage=(pg,axis,offset)=>{
+    if(!pg)return;
+    const startOpacity=Number.parseFloat(getComputedStyle(pg).opacity)||1;
+    resetDraggedPage(pg);
+    if(!offset||reduceMotion())return;
+    const from=axis==='x'?`translateX(${offset}px)`:`translateY(${offset}px)`;
+    pg.animate([{transform:from,opacity:startOpacity},{transform:'translate(0,0)',opacity:1}],
+      {duration:220,easing:'cubic-bezier(.2,.9,.3,1)'});
+  };
+  const settleBar=from=>{
+    bar.style.transform='';barX=0;
+    if(!from||reduceMotion())return;
+    bar.animate([{transform:`translateX(${from}px)`},{transform:'translateX(0)'}],
+      {duration:210,easing:'cubic-bezier(.2,.9,.3,1)'});
+  };
+  function slideGo(p,dir,releaseVelocity=0,axis='x'){
+    go(p);
+    const pg=document.querySelector('.page.on');
+    if(!pg||reduceMotion())return;
+    pg.getAnimations().forEach(a=>a.cancel());
+    const speed=Math.abs(releaseVelocity);
+    const amount=axis==='x'?Math.min(54,28+speed*.018):Math.min(44,22+speed*.014);
+    const from=axis==='x'?(dir==='l'?amount:-amount):amount;
+    const transform=axis==='x'?`translateX(${from}px)`:`translateY(${from}px)`;
+    const duration=Math.max(150,Math.min(250,235-speed*.055));
+    pg.animate([{transform,opacity:.72},{transform:'translate(0,0)',opacity:1}],
+      {duration,easing:'cubic-bezier(.16,1,.3,1)'});
+  }
+  const setGestureX=dx=>{
+    if(!g)return;
+    if(reduceMotion()){barX=0;pageX=dx;return;}
+    barX=g.baseBarX+rubber(dx);pageX=g.basePageX+dx;
+    bar.style.transform=`translateX(${barX.toFixed(1)}px)`;
+    if(g.page){
+      g.page.style.willChange='transform,opacity';
+      g.page.style.transform=`translateX(${dx.toFixed(1)}px)`;
+      g.page.style.opacity=String(Math.max(.65,g.baseOpacity-Math.abs(dx)/900));
+    }
+  };
   const gMove=e=>{
     if(!g)return;
     const dx=e.clientX-g.x,dy=e.clientY-g.y;
-    if(!swiped&&Math.abs(dx)>44&&Math.abs(dx)>Math.abs(dy)*1.4){
-      swiped=true;
-      const i=PAGES.indexOf(document.body.dataset.page);
-      const ni=(i+(dx<0?1:-1)+PAGES.length)%PAGES.length;
-      pending={p:PAGES[ni],dir:dx<0?'l':'r'};
-    }
-    // §2 1:1追従(ラバーバンド)。端ページ方向はpendingが立たず抵抗だけ伝わる
-    if(Math.abs(dx)>Math.abs(dy))setBarX(rubber(dx));
+    const now=performance.now();g.samples.push({x:e.clientX,t:now});
+    if(g.samples.length>8)g.samples.shift();
+    if(!g.axis&&Math.hypot(dx,dy)>=10)g.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+    if(g.axis!=='x')return;
+    swiped=true;setGestureX(dx);
   };
   const gEnd=e=>{
-    g=null;setTimeout(()=>{swiped=false;},80);
-    removeEventListener('pointermove',gMove);
-    removeEventListener('pointerup',gEnd);removeEventListener('pointercancel',gEnd);
-    // §3 現在の表示値から復帰(WAAPI)。次のpointerdownで中断可能
-    if(barX&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
-      const from=barX;setBarX(0);
-      bar.animate([{transform:`translateX(${from}px)`},{transform:'translateX(0)'}],
-        {duration:200,easing:'cubic-bezier(.2,.9,.3,1)'});
-    }else setBarX(0);
-    if(pending&&e&&e.type==='pointerup'){const t=pending;pending=null;slideGo(t.p,t.dir);}
-    else pending=null;
+    if(!g)return;
+    const state=g;g=null;
+    const dx=Number.isFinite(e.clientX)?e.clientX-state.x:state.lastX;
+    if(Number.isFinite(e.clientX))state.samples.push({x:e.clientX,t:performance.now()});
+    const vx=velocity(state.samples,'x');
+    const commit=e.type==='pointerup'&&state.axis==='x'&&(Math.abs(dx)>=56||(Math.abs(vx)>=550&&Math.abs(dx)>=18));
+    const direction=(Math.abs(vx)>=550?Math.sign(vx):Math.sign(dx))||1;
+    const oldPage=state.page,oldPageX=pageX,oldBarX=barX;
+    settleBar(oldBarX);
+    pageX=0;
+    if(commit){
+      resetDraggedPage(oldPage);
+      const i=PAGES.indexOf(document.body.dataset.page);
+      const ni=(i+(direction<0?1:-1)+PAGES.length)%PAGES.length;
+      slideGo(PAGES[ni],direction<0?'l':'r',vx,'x');
+    }else settleDraggedPage(oldPage,'x',oldPageX);
+    setTimeout(()=>{swiped=false;},90);
   };
   bar.addEventListener('pointerdown',e=>{
-    bar.getAnimations().forEach(a=>a.cancel()); // §3 中断: 復帰アニメを掴んで止める
-    g={x:e.clientX,y:e.clientY};swiped=false;
-    addEventListener('pointermove',gMove);
-    addEventListener('pointerup',gEnd);addEventListener('pointercancel',gEnd);
-  });
-  bar.addEventListener('click',e=>{if(swiped){e.stopPropagation();e.preventDefault();}},true);
-  function slideGo(p,dir){
-    go(p);
+    if(bar.classList.contains('mini')){setMini(false);return;}
     const pg=document.querySelector('.page.on');
-    if(pg&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
-      pg.classList.remove('slide-l','slide-r');void pg.offsetWidth;
-      pg.classList.add(dir==='l'?'slide-l':'slide-r');
-      setTimeout(()=>pg.classList.remove('slide-l','slide-r'),240);
-    }
-  }
+    const barLive=freezePresentation(bar),pageLive=freezePresentation(pg);
+    if(bar.setPointerCapture)bar.setPointerCapture(e.pointerId);
+    g={x:e.clientX,y:e.clientY,lastX:0,axis:null,page:pg,baseBarX:barLive.x,basePageX:pageLive.x,baseOpacity:pageLive.opacity,samples:[{x:e.clientX,t:performance.now()}]};
+    barX=barLive.x;pageX=pageLive.x;swiped=false;
+  });
+  bar.addEventListener('pointermove',e=>{if(g){g.lastX=e.clientX-g.x;gMove(e);}});
+  bar.addEventListener('pointerup',gEnd);
+  bar.addEventListener('pointercancel',gEnd);
+  bar.addEventListener('click',e=>{if(swiped){e.stopPropagation();e.preventDefault();}},true);
   // 下スクロールでミニピル化、上スクロールで復帰
   let lastY=scrollY,acc=0;
   addEventListener('scroll',()=>{
@@ -209,56 +280,59 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
   };
   if(fab)fab.addEventListener('click',e=>{e.stopPropagation();setMini(false);});
 
-  /* ===== 端から引いて前後ページへ(全教材を循環、モバイル) ===== */
+  /* ===== 最下部から引き上げて次ページへ(全教材を循環、モバイル) ===== */
   const LEARN=['home','basic','cross','f2l','oll','pll'];
   const PLABEL={home:'Home',basic:'Basic',cross:'Cross',f2l:'F2L',oll:'OLL',pll:'PLL'};
   const pull=document.getElementById('pullNav'),pFill=document.getElementById('pullFill'),
         pText=document.getElementById('pullText'),pArrow=document.getElementById('pullArrow');
   if(pull){
-    const THRESH=92; // 引き上げ確定距離
+    const THRESH=72,FLICK_V=-650,MIN_FLICK_DIST=24;
     // 除外領域: これらの中で始まったタッチはページ送りにしない
-    const EXCLUDE='#n3stage,.n3wrap,#netbox,.netwrap,#fpSwipe,.fpstage,input,textarea,select,.cmdk,.tocsheet,.pp,[data-hscroll]';
-    let pg=null,startY=0,dist=0,armed=false,active=false,dir=null,fromTop=false,fromBottom=false;
-    const atTop=()=>window.scrollY<=2;
+    const EXCLUDE='#tabbar,.pullnav,#n3stage,.n3wrap,#netbox,.netwrap,#fpSwipe,.fpstage,input,textarea,select,.cmdk,.tocsheet,.pp,[data-hscroll]';
+    let pg=null,startY=0,dist=0,visual=0,baseY=0,armed=false,active=false,page=null,samples=[];
     const atBottom=()=>window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2;
-    const siblingOf=(p,step)=>{const i=LEARN.indexOf(p);return i<0?null:LEARN[(i+step+LEARN.length)%LEARN.length];};
+    const nextOf=p=>{const i=LEARN.indexOf(p);return i<0?null:LEARN[(i+1)%LEARN.length];};
     const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const resetPullPage=()=>{if(page)resetDraggedPage(page);visual=0;};
     addEventListener('touchstart',e=>{
       if(!mq.matches)return;
       const p=document.body.dataset.page;
       if(LEARN.indexOf(p)<0){active=false;return;}
       if(e.target.closest(EXCLUDE)){active=false;return;}
-      fromTop=atTop();fromBottom=atBottom();
-      if(!fromTop&&!fromBottom){active=false;return;}
+      if(!atBottom()){active=false;return;}
       // タッチ開始点の実要素でも除外判定(重なり対策)
       const t0=e.touches[0];
       const el0=document.elementFromPoint(t0.clientX,t0.clientY);
       if(el0&&el0.closest(EXCLUDE)){active=false;return;}
-      active=true;pg=null;dir=null;startY=t0.clientY;dist=0;armed=false;
+      page=document.querySelector('.page.on');baseY=freezePresentation(page).y;
+      active=true;pg=nextOf(p);startY=t0.clientY;dist=0;visual=0;armed=false;
+      samples=[{y:t0.clientY,t:performance.now()}];
+      pArrow.textContent='↑';
+      pText.textContent=(LANG==='en'?'Next: ':'次へ: ')+PLABEL[pg];
     },{passive:true});
     addEventListener('touchmove',e=>{
       if(!active)return;
-      const dy=startY-e.touches[0].clientY; // 上へ=正(次)、下へ=負(前)
-      const wanted=dy>0?'next':dy<0?'prev':null;
-      const allowed=wanted==='next'?fromBottom:wanted==='prev'?fromTop:false;
-      if(!allowed){
-        dist=0;dir=null;pg=null;
-        pull.classList.remove('show','armed','prev');pull.hidden=true;pull.setAttribute('aria-hidden','true');
+      const y=e.touches[0].clientY,dy=startY-y; // 上へ引く量
+      if(dy<=0){
+        dist=0;armed=false;pull.classList.remove('show','armed');pull.hidden=true;pull.setAttribute('aria-hidden','true');
+        resetPullPage();baseY=0;
         return;
       }
       // standalone PWAではSafariのラバーバンド表示に隠されないよう、
       // 端からのページ送り開始後だけネイティブのオーバースクロールを止める。
       if(e.cancelable)e.preventDefault();
-      dir=wanted;dist=Math.abs(dy);
-      const current=document.body.dataset.page;
-      pg=siblingOf(current,dir==='next'?1:-1);
-      pull.classList.toggle('prev',dir==='prev');
-      pArrow.textContent=dir==='prev'?'↓':'↑';
-      pText.textContent=(LANG==='en'?(dir==='prev'?'Previous: ':'Next: '):(dir==='prev'?'前へ: ':'次へ: '))+PLABEL[pg];
+      dist=dy;samples.push({y,t:performance.now()});if(samples.length>8)samples.shift();
+      visual=Math.abs(rubber(-dist,110,.55));
+      if(page&&!reduce){
+        page.style.willChange='transform,opacity';
+        page.style.transform=`translateY(${(baseY-visual).toFixed(1)}px)`;
+        page.style.opacity=String(Math.max(.86,1-dist/900));
+      }
       if(pull.hidden){pull.hidden=false;pull.setAttribute('aria-hidden','false');requestAnimationFrame(()=>pull.classList.add('show'));}
       const pct=Math.min(1,dist/THRESH);
       pFill.style.width=(pct*100).toFixed(0)+'%';
-      const nowArmed=dist>=THRESH;
+      const vy=velocity(samples,'y');
+      const nowArmed=dist>=THRESH||(vy<=FLICK_V&&dist>=MIN_FLICK_DIST);
       if(nowArmed!==armed){
         armed=nowArmed;pull.classList.toggle('armed',armed);
         if(armed&&navigator.vibrate)navigator.vibrate(8); // 閾値到達の触覚
@@ -267,14 +341,18 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
     const endPull=(commit=true)=>{
       if(!active){return;}
       active=false;
-      const go2=commit&&armed&&pg;
+      const vy=velocity(samples,'y');
+      const go2=commit&&pg&&(dist>=THRESH||(vy<=FLICK_V&&dist>=MIN_FLICK_DIST));
       pull.classList.remove('show','armed');
-      setTimeout(()=>{pull.hidden=true;pull.classList.remove('prev');pull.setAttribute('aria-hidden','true');pFill.style.width='0';},reduce?0:130);
+      setTimeout(()=>{pull.hidden=true;pull.setAttribute('aria-hidden','true');pFill.style.width='0';},reduce?0:130);
       if(go2){
-        if(reduce)go(pg);
-        else slideGo(pg,dir==='prev'?'r':'l');
+        resetPullPage();
+        if(reduce)go(pg);else slideGo(pg,'l',vy,'y');
+      }else{
+        const oldPage=page,oldOffset=baseY-visual;
+        if(!reduce)settleDraggedPage(oldPage,'y',oldOffset);else resetPullPage();
       }
-      pg=null;dir=null;dist=0;armed=false;
+      pg=null;page=null;samples=[];dist=0;visual=0;baseY=0;armed=false;
     };
     addEventListener('touchend',()=>endPull(true));
     addEventListener('touchcancel',()=>endPull(false));

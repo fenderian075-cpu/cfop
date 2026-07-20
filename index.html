@@ -48,7 +48,7 @@
   </div>
   <div class="hicons mOnly">
     <button class="hico modeIco" id="modeIco" aria-label="本格モードへ切替" title="本格モードへ切替">簡易</button>
-    <button class="hico" id="lgIco" aria-label="Switch to English" title="Switch to English">🇯🇵</button>
+    <button class="hico" id="lgIco" aria-label="Switch to English" title="Switch to English">JA</button>
     <button class="hico" id="thIco" aria-label="テーマ切替">☀</button>
   </div>
   <div id="hcount">習得 <b>0</b>/0</div>
@@ -401,7 +401,7 @@
 
 </main>
 
-<div class="tabbar" id="tabbar" role="navigation" aria-label="ページ切替"><button class="pillfab" id="pillFab" aria-label="ナビゲーションを開く" aria-expanded="false" tabindex="-1">☰</button>
+<div class="tabbar" id="tabbar" role="navigation" aria-label="ページ切替。左右スワイプで前後ページ"><button class="pillfab" id="pillFab" aria-label="ナビゲーションを開く" aria-expanded="false" tabindex="-1">☰</button>
   <button data-p="home" class="on"><i></i><b>Home</b></button>
   <button data-p="basic"><i></i><b>Basic</b></button>
   <button data-p="cross"><i></i><b>Cross</b></button>
@@ -409,7 +409,7 @@
   <button data-p="oll"><i></i><b>OLL</b></button>
   <button data-p="pll"><i></i><b>PLL</b></button>
 </div>
-<div class="pullnav" id="pullNav" hidden aria-hidden="true">
+<div class="pullnav" id="pullNav" role="status" aria-live="polite" hidden aria-hidden="true">
   <div class="pullnav-track"><div class="pullnav-fill" id="pullFill"></div></div>
   <div class="pullnav-label"><span class="pullnav-arrow" id="pullArrow">↑</span><span id="pullText">次へ</span></div>
 </div>
@@ -468,7 +468,7 @@
     <div class="navlang">
       <span class="lbl">LANGUAGE</span>
       <div class="seg langseg" id="langSeg" aria-label="Language">
-        <button data-lang="ja" class="on" aria-label="日本語" title="日本語">🇯🇵</button><button data-lang="en" aria-label="English" title="English">🇬🇧</button>
+        <button data-lang="ja" class="on" aria-label="日本語" title="日本語">JA</button><button data-lang="en" aria-label="English" title="English">EN</button>
       </div>
     </div>
   </div>
