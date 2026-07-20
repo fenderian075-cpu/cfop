@@ -1,12 +1,16 @@
 /* ===== 3D player side panel ===== */
 const PP={open:false,min:false,homes:null,lastFocus:null};
-function ppNodes(){return [$('#n3stage').closest('.n3wrap'),$('#algPlayer')];}
+function ppNodes(){return [$('#apPlayerHead'),$('#n3stage').closest('.n3wrap'),$('#algPlayer')];}
 function openPP(){
   const body=$('#ppbody');
-  const [v,a]=ppNodes();
+  const nodes=ppNodes();
   PP.lastFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
-  if(!PP.homes)PP.homes=[[v,v.parentNode,v.nextSibling],[a,a.parentNode,a.nextSibling]];
-  if(v.parentNode!==body){body.appendChild(v);body.appendChild(a);}
+  if(!PP.homes)PP.homes=nodes.map(el=>{
+    const marker=document.createComment('3d-player-home');
+    el.parentNode.insertBefore(marker,el);
+    return [el,marker];
+  });
+  nodes.forEach(el=>{if(el.parentNode!==body)body.appendChild(el);});
   $('#pptitle').textContent=N3.algName||'3D再生';
   $('#pprname').textContent=N3.algName||'3D再生';
   $('#pp').classList.add('open');$('#pp').setAttribute('aria-hidden','false');
@@ -25,7 +29,13 @@ function closePP(){
   n3pause();
   $('#pp').classList.remove('open');$('#pp').setAttribute('aria-hidden','true');
   $('#pprestore').hidden=true;PP.open=false;PP.min=false;
-  if(PP.homes)for(const [el,parent,next] of PP.homes)parent.insertBefore(el,next);
+  if(PP.homes){
+    for(const [el,marker] of PP.homes){
+      if(marker.parentNode)marker.parentNode.insertBefore(el,marker.nextSibling);
+      marker.remove();
+    }
+    PP.homes=null;
+  }
   try{n3view();}catch(e){}
   if(PP.lastFocus&&document.contains(PP.lastFocus))requestAnimationFrame(()=>PP.lastFocus.focus());
 }

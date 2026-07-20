@@ -398,6 +398,10 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
 #n3arrow3d svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 4px rgba(0,0,0,.85))}
 .algplayer{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:12px;margin:12px 0 2px}
 .aphead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.aphead b{font-size:.8rem}.aphead>#apcount{margin-left:auto;color:var(--tx2);font-size:.68rem}
+.playerhead{box-sizing:border-box;background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:8px 10px;margin:12px 0 8px}
+.playerhead b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playerhead>#apcount{flex:0 0 auto;white-space:nowrap}
+.n3wrap+.algplayer{margin-top:8px}
 .apnettoggle span{font:inherit;color:inherit}
 .apnettoggle{min-height:36px;padding:5px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--tx2);
   font:800 .66rem/1 -apple-system,BlinkMacSystemFont,sans-serif;white-space:nowrap;cursor:pointer}
@@ -630,6 +634,7 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 .ppbtn{width:44px;height:44px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);
   color:var(--tx);font-size:.9rem;font-weight:800;cursor:pointer;line-height:1}
 .ppbody{overflow-y:auto;padding:12px;flex:1;-webkit-overflow-scrolling:touch}
+.ppbody .playerhead{margin:0 0 8px;padding:8px 10px}
 .ppbody .n3wrap,.ppbody .algplayer{margin:0 0 10px;padding:10px}
 .ppbody .n3stage{--cs:.82;height:186px}
 .ppbody .n3hint,.ppbody .aphint{display:none}
@@ -999,11 +1004,19 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
 @media(max-width:760px){
   .btn,.playmini,.nchip,.fchip,.apbuttons button,.apnettoggle,.fpbtns2 button,.fpsolve button{min-height:44px}
   .btn,.playmini,.fchip{font-size:.72rem}
+  .playerhead{gap:6px;padding:6px 7px}
+  .playerhead b{font-size:.74rem}
+  .playerhead>#apcount{font-size:.62rem}
+  .playerhead .apnettoggle{padding-inline:7px;font-size:.62rem}
   .apinput,.apselect{min-height:44px;font-size:.78rem}
   .pgsub,.note,.scrhold,.carddesc,.stcard span,.ctrcard span,.pfd,.ruletx p{font-size:.72rem}
   .fcard .carddesc,.trg .carddesc{font-size:.7rem}
   .acard .chk,.task>.chk{isolation:isolate}
   .acard .chk::after,.task>.chk::after{content:"";position:absolute;inset:-11px;border-radius:12px}
+}
+@media(max-width:360px){
+  .playerhead b{font-size:.7rem}
+  .playerhead .apnettoggle span{display:none}
 }
 @media(pointer:coarse){
   .btn,.navmain,.navmode button,.navtheme button,.navlang button,.ppbtn,.hico,.playmini,.nchip,.fchip,.fpcol button,.fpmid button{min-height:44px}
