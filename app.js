@@ -4,23 +4,23 @@ const FLOWD=[
  {k:'inspect',c:'var(--tx3)',t:'インスペクション',look:'開始前の15秒。白エッジ4枚の位置',
   s:'デイジーに集める段取りを決める',
   a:'クロスを最後まで計画し切る。余裕があれば最初のF2Lペアの行き先まで見る',
-  page:null,pre:null,done:'持ち替えずに回し始められる状態'},
+  done:'持ち替えずに回し始められる状態'},
  {k:'cross',c:'var(--sticker-white)',t:'Cross',look:'白エッジと側面の色',
   s:'黄面の周りにデイジー → 花びらの側面色をセンターに合わせて180°ずつ落とす',
   a:'白面を下にしたまま8手以内で直接。エッジ2枚を同時に運ぶ手を優先',
-  page:'cross',pre:'XS|XA',done:'底面に白十字+側面色がセンターと一致'},
+  done:'底面に白十字+側面色がセンターと一致'},
  {k:'f2l',c:'var(--sticker-orange)',t:'F2L ×4',look:'白コーナーと相方エッジの位置関係',
   s:'基本4形に持ち込む。両方U面なら白の向きを見て「分離」か「直結」かを判断',
   a:'ケースを見た瞬間に41分類から即断。スロット内にあるなら引き出しから',
-  page:'f2l',pre:'F',done:'下2段(クロス+4スロット)が完成'},
+  done:'下2段(クロス+4スロット)が完成'},
  {k:'oll',c:'var(--sticker-yellow)',t:'OLL',look:'上面の黄色パターン(側面は見ない)',
   s:'十字ができているか? → なければエッジ手順(点/L字/一文字) → できていればコーナー7種から選ぶ',
   a:'形グループ(点・稲妻・魚・L字・十字…)で分類 → 57ケースを即断',
-  page:'oll',pre:'O',done:'上面が全部黄色(側面はまだズレていてよい)'},
+  done:'上面が全部黄色(側面はまだズレていてよい)'},
  {k:'pll',c:'var(--sticker-blue)',t:'PLL',look:'側面上段の色配置(ヘッドライト)',
   s:'2段階: まずコーナー位置(ヘッドライトあり=T / なし=Y) → 次にエッジ位置(Ua/Ub/H/Z)',
   a:'ヘッドライトの組数で分岐: 4組=エッジのみ / 1組=隣接系 / 0組=対角系 / 角も辺も3点=G系',
-  page:'pll',pre:'P',done:'AUF(上面調整)して全面一致 = 完成'},
+  done:'AUF(上面調整)して全面一致 = 完成'},
 ];
 function buildFlow(){
   const w=$('#flowBox');if(!w)return;
@@ -29,32 +29,16 @@ function buildFlow(){
     const d=document.createElement('div');
     d.className='fnode'+(i===0?'':'');
     d.style.setProperty('--fc',n.c);
-    let prog='';
-    if(n.pre){
-      const ids=idsFor(n.pre);
-      const done=ids.filter(x=>prog2().has(x)).length;
-      prog=`<span class="fprog">習得 ${done}/${ids.length}</span>`;
-    }
     d.innerHTML=`<div class="fdot"></div>
       <button type="button" class="fhead" aria-expanded="false"><b>${n.t}</b><span class="lk">${n.look}</span><span class="arw">▶</span></button>
       <div class="fbody">
         <div class="frow"><span class="tag">見る</span><span>${n.look}</span></div>
         <div class="frow"><span class="tag jd">判断</span><span>${mode==='s'?n.s:n.a}</span></div>
         <div class="frow"><span class="tag">完了</span><span>${n.done}</span></div>
-        <div class="fmeta">${n.page?`<button class="btn" data-go="${n.page}">ページへ</button>`:''}${prog}</div>
       </div>`;
     d.querySelector('.fhead').addEventListener('click',e=>{const open=d.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(open));});
-    const gb=d.querySelector('[data-go]');
-    if(gb)gb.addEventListener('click',e=>{e.stopPropagation();go(gb.dataset.go);});
     w.appendChild(d);
   });
-}
-function prog2(){return prog;}
-
-function idsFor(prefix){
-  if(prefix==='XS|XA')return allIds.filter(i=>i.startsWith(mode==='s'?'XS':'XA'));
-  if(prefix==='O')return allIds.filter(i=>i.startsWith('O'));
-  return allIds.filter(i=>i.startsWith(prefix)&&!(prefix==='F'&&false));
 }
 function refreshCounts(){
   try{buildFlow();}catch(e){}
