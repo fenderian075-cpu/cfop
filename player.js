@@ -214,11 +214,22 @@ function n3showToken(token,detail){
   const b=N3B.find(x=>x.k===token[0]);if(!b)return null;
   N3.cur=b.k;N3.mod=token.slice(1);
   document.querySelectorAll('.nchip').forEach(x=>x.classList.toggle('on',x.dataset.k===b.k));
-  $('#n3label').textContent=token;
+  const label=$('#n3label');
+  if(label.textContent!==token){
+    label.textContent=token;label.classList.remove('step-in');void label.offsetWidth;label.classList.add('step-in');
+  }
   const dir=N3.mod==="'"?'反時計回りに90°':N3.mod==='2'?'180°':'時計回りに90°';
   $('#n3desc').textContent=detail||`${b.jp}を${dir} — ${b.g==='rot'?'持ち替え(手数に数えない)':'その面の外側から見て'}`;
   N3.cubies.forEach(c=>c.el.classList.toggle('lit',b.ly(c)));
   netSync(token);n3arrow(token);return b;
+}
+function n3previewNext(index){
+  const box=$('#n3next'),token=$('#n3nexttoken'),next=N3.seq[index];
+  if(!next){box.hidden=true;token.textContent='';return;}
+  box.hidden=false;
+  if(token.textContent!==next){
+    token.textContent=next;box.classList.remove('step-in');void box.offsetWidth;box.classList.add('step-in');
+  }
 }
 function n3sync(){
   const b=n3base();
@@ -234,6 +245,7 @@ function n3animate(token,done,dir=1){
   const shown=dir>0?token:invTok(token);
   const lbl=dir>0?`${N3.algName} — ${N3.step+1}手目 / ${N3.seq.length}手`:`${N3.algName} — ${N3.step}手目を戻す`;
   const b=n3showToken(shown,lbl);if(!b){done&&done();return;}
+  n3previewNext(dir>0?N3.step+1:N3.step);
   N3.animating=true;
   const mod=shown.slice(1),target=90*b.sg*(mod==="'"?-1:1)*(mod==='2'?2:1);
   const movers=N3.cubies.filter(b.ly);
@@ -250,6 +262,10 @@ function n3animate(token,done,dir=1){
       if(ar&&ar.dataset.base)ar.style.transform=ar.dataset.base;
       N3.state=ap(N3.state,M[shown]);N3.step+=dir;
       N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));n3paint();N3.animating=false;n3updatePlayer();
+      if(!N3.playing&&N3.step<N3.seq.length){
+        n3showToken(N3.seq[N3.step],`${N3.algName} — ${N3.step}手まで / ${N3.seq.length}手`);
+        n3previewNext(N3.step+1);
+      }
       done&&done();
     }
   }
@@ -257,12 +273,14 @@ function n3animate(token,done,dir=1){
 }
 function n3updatePlayer(){
   const s=$('#apslider');s.max=N3.seq.length;s.value=N3.step;
+  s.style.setProperty('--ap-pct',`${N3.seq.length?N3.step/N3.seq.length*100:0}%`);
   const t=(ja,en)=>(typeof LANG!=='undefined'&&LANG==='en')?en:ja;
   const lbl=N3.playing?t('Ⅱ 一時停止','Ⅱ Pause')
     :(N3.seq.length&&N3.step>=N3.seq.length)?t('↻ もう一度再生','↻ Replay')
     :t('▶ 再生','▶ Play');
   $('#applay').textContent=lbl;
   $('#apmoves').innerHTML=chunkMoves(N3.seq,N3.step);
+  if(!N3.animating)n3previewNext(N3.step+1);
   const now=$('#apmoves .now');
   if(now){
     const c=$('#apmoves'),cr=c.getBoundingClientRect(),nr=now.getBoundingClientRect();
@@ -276,6 +294,7 @@ function n3setStep(step){
   for(let i=0;i<N3.step;i++)N3.state=ap(N3.state,M[N3.seq[i]]);
   N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));n3paint();
   const i=Math.min(N3.step,N3.seq.length-1);if(i>=0)n3showToken(N3.seq[i],`${N3.algName} — ${N3.step}手まで / ${N3.seq.length}手`);
+  n3previewNext(i>=0?i+1:-1);
   n3updatePlayer();
 }
 function n3stepForward(){if(N3.step<N3.seq.length)n3animate(N3.seq[N3.step]);}

@@ -205,7 +205,7 @@
         <div id="netbox"></div>
         <div class="netnote">本サイトの基準配色:上=黄・前=青・右=赤。対面は 白⇔黄 / 青⇔緑 / 赤⇔橙</div>
       </div>
-      <div class="n3info"><div class="big mono" id="n3label">R</div><div class="ds" id="n3desc"></div></div>
+      <div class="n3info"><div class="n3turnline"><div class="big mono" id="n3label">R</div><div class="n3next mono" id="n3next" hidden><span>次</span><b id="n3nexttoken"></b></div></div><div class="ds" id="n3desc"></div></div>
     </div>
     <button class="n3dockrestore" id="n3DockRestore" type="button" aria-label="回転図と展開図を表示" hidden>
       <img class="n3restoreDark" src="icon-home-dark-v8.png" alt="" width="30" height="30">
@@ -226,7 +226,7 @@
       </div>
       <input class="apslider" id="apslider" type="range" min="0" max="4" value="0" step="1" aria-label="手順の再生位置。左へ戻すと逆方向に確認できます">
       <div class="apstartrow"><div class="seg" id="apstart">
-        <button data-st="case">ケースから解く</button><button data-st="solved" class="on">完成から適用</button>
+        <button data-st="case"><span class="aplabel-full">ケースから解く</span><span class="aplabel-short">ケースから</span></button><button data-st="solved" class="on"><span class="aplabel-full">完成から適用</span><span class="aplabel-short">完成から</span></button>
       </div><div class="seg" id="apfocus">
         <button data-f="1" class="on">フォーカス</button><button data-f="0">全色</button>
       </div><button class="apnettoggle" id="apNetToggle" type="button" aria-pressed="false" aria-label="展開図を表示">▦ <span>展開図</span></button></div>
