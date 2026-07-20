@@ -197,6 +197,7 @@
 
 
     <h2 class="sec">回転記号</h2>
+    <div class="n3playerlayout">
     <div class="n3wrap">
       <button class="n3dockhandle" id="n3DockHandle" type="button" aria-label="上・左・右へスワイプして図を隠す"><span></span></button>
       <div class="n3stage" id="n3stage"><button class="btn viewreset" id="n3view">↺ 視点</button><div class="n3orbit" id="n3orbit"></div></div>
@@ -224,12 +225,12 @@
         <button class="btn" id="apend" aria-label="最後へ進む">▶|</button>
       </div>
       <input class="apslider" id="apslider" type="range" min="0" max="4" value="0" step="1" aria-label="手順の再生位置。左へ戻すと逆方向に確認できます">
-      <div class="apstartrow"><span class="apstartlbl">開始状態</span><div class="seg" id="apstart">
+      <div class="apstartrow"><div class="seg" id="apstart">
         <button data-st="case">ケースから解く</button><button data-st="solved" class="on">完成から適用</button>
       </div><div class="seg" id="apfocus">
         <button data-f="1" class="on">フォーカス</button><button data-f="0">全色</button>
-      </div></div>
-      <div class="apnetrow"><button class="apnettoggle" id="apNetToggle" type="button" aria-pressed="false" aria-label="展開図を表示">▦ <span>展開図</span></button></div>
+      </div><button class="apnettoggle" id="apNetToggle" type="button" aria-pressed="false" aria-label="展開図を表示">▦ <span>展開図</span></button></div>
+    </div>
     </div>
     <h2 class="sec">基本回転</h2>
     <div class="rulebox">

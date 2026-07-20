@@ -402,7 +402,6 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
 .apnettoggle{min-height:36px;padding:5px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--tx2);
   font:800 .66rem/1 -apple-system,BlinkMacSystemFont,sans-serif;white-space:nowrap;cursor:pointer}
 .apnettoggle.on{border-color:var(--accent);color:var(--tx);background:color-mix(in srgb,var(--accent) 12%,var(--panel2))}
-.apnetrow{display:flex;justify-content:flex-end;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .apselect,.apinput{width:100%;background:#15161b;color:var(--tx);border:1px solid var(--line);border-radius:9px;font:inherit;font-size:.76rem;padding:8px 10px}
 .apinput{margin-top:7px;font-family:ui-monospace,"SF Mono",Menlo,monospace}
 .apbuttons{display:flex;gap:7px;justify-content:center;margin:9px 0 7px;flex-wrap:wrap}
@@ -626,7 +625,7 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
   display:flex;flex-direction:column}
 .pp.open{transform:translateX(0)}
 @media(prefers-reduced-motion:reduce){.pp{transition:none}}
-.pphead{display:flex;align-items:center;gap:8px;padding:calc(11px + env(safe-area-inset-top,0px)) 14px 11px;border-bottom:1px solid var(--line);flex-shrink:0}
+.pphead{display:flex;align-items:center;gap:7px;padding:calc(5px + env(safe-area-inset-top,0px)) 10px 5px;border-bottom:1px solid var(--line);flex-shrink:0}
 .pphead b{font-size:.85rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ppbtn{width:44px;height:44px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);
   color:var(--tx);font-size:.9rem;font-weight:800;cursor:pointer;line-height:1}
@@ -641,7 +640,6 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 @media(max-height:780px){
   .ppbody .n3stage{--cs:.72;height:158px}
   .ppbody .n3info .big{font-size:1.05rem}
-  .ppbody .apstartlbl{display:none}
 }
 @media(max-width:760px){
   .n3stage{--cs:.9;height:214px}
@@ -685,22 +683,26 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 body[data-theme="light"] .pp{box-shadow:-10px 0 34px rgba(15,23,42,.16)}
 body[data-theme="light"] .pprestore{background:#ffc61a;color:#231a00}
 .pprestore[hidden]{display:none!important}
-.apstartrow{display:flex;align-items:center;gap:9px;margin-top:8px}
-.apstartlbl{font-size:.64rem;color:var(--tx3);font-weight:800;letter-spacing:.06em}
-#apstart button{font-size:.68rem;padding:5px 10px}
-#apfocus button{font-size:.68rem;padding:5px 9px}
-.apstartrow{flex-wrap:wrap}
-.apmoves{display:flex;flex-wrap:wrap;gap:8px 5px;overflow-x:hidden;padding:12px 1px 2px;scrollbar-width:thin;align-items:flex-end;align-content:flex-start;min-height:60px;overflow-anchor:none}
-.apmoves span.ckg{display:inline-flex;flex-direction:column;align-items:center;flex:0 1 auto;max-width:100%;min-width:0;
-  border:1px solid currentColor;border-radius:9px;padding:2px 4px 3px;gap:1px}
-.apmoves .cklabel{display:block;font-size:.52rem;font-weight:800;letter-spacing:.05em;line-height:1.1;white-space:nowrap}
-.apmoves .ckwrap{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:100%}
+.apstartrow{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr) auto;align-items:stretch;gap:6px;margin-top:10px}
+.apstartrow>.seg{min-width:0}
+.apstartrow>.seg button{flex:1;min-width:0;white-space:nowrap}
+#apstart button{font-size:.68rem;padding:5px 8px}
+#apfocus button{font-size:.68rem;padding:5px 8px}
+.apstartrow>.apnettoggle{height:100%;min-height:36px;padding-inline:10px}
+.apmoves{display:flex;flex-wrap:wrap;gap:8px 5px;overflow-x:hidden;padding:12px 1px 2px;scrollbar-width:thin;align-items:flex-start;align-content:flex-start;min-height:60px;overflow-anchor:none}
+.apmoves .ckg,.apmoves .cksingle{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;flex:0 1 auto;max-width:100%;min-width:0;
+  min-height:48px;padding:3px 4px 4px;gap:2px}
+.apmoves .ckg{border:1px solid currentColor;border-radius:9px}
+.apmoves .cksingle{border:1px solid transparent;padding-inline:0}
+.apmoves .cklabel{display:block;height:10px;font-size:.52rem;font-weight:800;letter-spacing:.05em;line-height:10px;white-space:nowrap}
+.apmoves .cksingle .cklabel{visibility:hidden}
+.apmoves .ckwrap{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;max-width:100%;min-height:27px}
 .apmoves .apmove{cursor:pointer}
 .apmoves span.ckg .apmove{border-color:transparent;background:transparent;padding:3px 4px}
 .apmoves span.ckg .apmove.done{opacity:.45}
 .apmoves span.ckg .apmove.now{background:var(--yl);color:#191400;opacity:1}
 body[data-theme="light"] .apmoves span.ckg .apmove.now{background:#ffc61a;color:#231a00}
-.apmove{flex:0 0 auto;border:1px solid var(--line);border-radius:6px;padding:3px 6px;color:var(--tx3);font-size:.7rem;font-weight:800}
+.apmove{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:26px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;color:var(--tx3);font-size:.7rem;font-weight:800;line-height:1}
 .apmove.done{background:rgba(255,210,30,.12);color:var(--tx2);border-color:rgba(255,210,30,.25)}
 .apmove.now{background:var(--yl);color:#191400;border-color:var(--yl)}
 .cycle{display:inline-flex;align-items:center;gap:3px;color:var(--tx2);background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:2px 7px;font-size:.62rem;font-weight:700}
@@ -981,16 +983,27 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
 /* 指使いテーブル */
 .fingertbl td:first-child{white-space:nowrap;font-weight:800}
 .fingertbl td:nth-child(2){white-space:nowrap}
-/* デスクトップ: 3Dプレイヤーの横に展開図を並列 */
+/* デスクトップ: プレイヤーを2列化し、展開図ON時は3Dと横並び */
 @media(min-width:761px){
   .n3wrap{display:block}
+  /* 3Dサイドパネル(約430px)内では2列グリッドを解除し、ON時は縦に並べる */
+  .ppbody .n3wrap{display:block}
+  .ppbody .n3wrap>.netwrap{display:none}
+  .ppbody .n3wrap.net-visible>.netwrap{display:block;margin-top:8px}
+}
+@media(min-width:1100px){
+  body[data-page="basic"] main{max-width:1040px}
+  #pg-basic>*{max-width:680px;margin-inline:auto}
+  #pg-basic>.n3playerlayout{max-width:1040px}
+  .n3playerlayout{display:grid;grid-template-columns:minmax(0,1fr) minmax(430px,.96fr);gap:12px;align-items:start;margin-bottom:4px}
+  .n3playerlayout>.n3wrap,.n3playerlayout>.algplayer{margin:0;height:100%}
   .n3wrap.net-visible{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
   .n3wrap.net-visible>.n3stage{grid-column:1}
   .n3wrap.net-visible>.n3info{grid-column:1}
   .n3wrap.net-visible>.netwrap{grid-column:2;grid-row:1/span 2;margin:0}
-  /* 3Dサイドパネル(約430px)内では2列グリッドを解除し、ON時は縦に並べる */
+  .n3playerlayout>.n3wrap.net-visible{grid-column:1/-1}
+  .n3playerlayout>.n3wrap.net-visible~.algplayer{grid-column:1/-1;width:min(100%,680px);height:auto;justify-self:center}
   .ppbody .n3wrap{display:block}
-  .ppbody .n3wrap>.netwrap{display:none}
   .ppbody .n3wrap.net-visible>.netwrap{display:block;margin-top:8px}
 }
 
@@ -1000,12 +1013,19 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
 @media(max-width:760px){
   .btn,.playmini,.nchip,.fchip,.apbuttons button,.apnettoggle,.fpbtns2 button,.fpsolve button{min-height:44px}
   .btn,.playmini,.fchip{font-size:.72rem}
-  .apnetrow .apnettoggle{padding-inline:12px;font-size:.68rem}
+  .apstartrow>.seg{min-height:44px}
+  .apstartrow>.apnettoggle{min-height:44px;padding-inline:10px;font-size:.68rem}
   .apinput,.apselect{min-height:44px;font-size:.78rem}
   .pgsub,.note,.scrhold,.carddesc,.stcard span,.ctrcard span,.pfd,.ruletx p{font-size:.72rem}
   .fcard .carddesc,.trg .carddesc{font-size:.7rem}
   .acard .chk,.task>.chk{isolation:isolate}
   .acard .chk::after,.task>.chk::after{content:"";position:absolute;inset:-11px;border-radius:12px}
+}
+@media(max-width:380px){
+  .apstartrow{grid-template-columns:minmax(0,1.65fr) minmax(0,1fr) 44px;gap:5px}
+  .apstartrow>.apnettoggle{width:44px;padding:0}
+  .apstartrow>.apnettoggle span{display:none}
+  #apstart button,#apfocus button{font-size:.62rem;padding-inline:4px}
 }
 @media(pointer:coarse){
   .btn,.navmain,.navmode button,.navtheme button,.navlang button,.ppbtn,.hico,.playmini,.nchip,.fchip,.fpcol button,.fpmid button{min-height:44px}

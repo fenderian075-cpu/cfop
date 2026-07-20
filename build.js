@@ -170,7 +170,10 @@ function chunkMoves(seq,step){
       const inner=seq.slice(i,i+hit[1]).map((t,k)=>tk(t,i+k)).join('');
       out+=`<span class="ckg ck-${hit[0]}"><span class="cklabel">${hit[2]}</span><span class="ckwrap">${inner}</span></span>`;
       i+=hit[1];
-    }else{out+=tk(seq[i],i);i++;}
+    }else{
+      out+=`<span class="cksingle"><span class="cklabel" aria-hidden="true">・</span><span class="ckwrap">${tk(seq[i],i)}</span></span>`;
+      i++;
+    }
   }
   return out;
 }
