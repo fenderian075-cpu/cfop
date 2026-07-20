@@ -364,6 +364,8 @@ body[data-theme="light"] .n3orbit.xray .cf.outer[data-focus][data-white],body[da
 .n3info .ds{font-size:.76rem;color:var(--tx2);margin-top:2px;min-height:1.2em}
 .viewreset{position:absolute;left:8px;top:8px;z-index:6;padding:5px 10px;font-size:.66rem;opacity:.9}
 .netstage{position:absolute;right:8px;top:8px;z-index:6;opacity:.9}
+.n3stepcount{display:none;position:absolute;right:10px;bottom:8px;z-index:6;color:var(--tx3);font-size:.66rem;font-weight:750;line-height:1;font-variant-numeric:tabular-nums;pointer-events:none}
+.n3stepcount[hidden]{display:none}
 .nchips{display:flex;flex-wrap:wrap;gap:7px}
 .rulebox{display:flex;gap:13px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:13px;max-width:560px}
 .rulesvg{width:84px;flex-shrink:0;height:auto}
@@ -519,7 +521,7 @@ body[data-theme="light"] .tabbar{background:color-mix(in srgb,#ffffff 84%,transp
 @media(prefers-reduced-motion:reduce){.tabbar button{transition:none}}
 
 /* ===== PLL identification guide ===== */
-.ctrwrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ctrwrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
 .ctrcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 11px;text-align:center}
 .ctrcard svg{width:100%;max-width:132px;height:auto;display:block;margin:0 auto 8px}
 .ctrcard b{font-size:.74rem;display:block;margin-bottom:4px;line-height:1.4}
@@ -536,7 +538,7 @@ body[data-theme="light"] .ctrcard{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 .pfd{display:block;font-size:.66rem;color:var(--tx2);margin-top:1px}
 .pfsvg{width:46px;flex-shrink:0}
 .pfsvg svg{width:100%;height:auto;display:block}
-body[data-theme="light"] .ctrwrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+body[data-theme="light"] .ctrwrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
 .ctrcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 11px;text-align:center}
 .ctrcard svg{width:100%;max-width:132px;height:auto;display:block;margin:0 auto 8px}
 .ctrcard b{font-size:.74rem;display:block;margin-bottom:4px;line-height:1.4}
@@ -656,6 +658,8 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 .ppbody .n3hint,.ppbody .aphint{display:none}
 .ppbody .n3info{margin:0 0 6px}
 .ppbody .n3info .big{font-size:1.25rem}
+.ppbody .n3info .ds{display:none}
+.ppbody .n3stepcount:not([hidden]){display:block}
 .ppbody .apselect,.ppbody .apinput{display:none}
 .ppbody .apmoves{max-height:min(28vh,180px);overflow-y:auto}
 @media(max-height:780px){
@@ -667,7 +671,7 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
   /* 基礎編: 回転3Dと展開図だけをコンパクトなスクロール追従パネルにする */
   #pg-basic .n3wrap{
     position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:18;
-    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:4px;
+    display:block;
     padding:6px;margin:4px 0 10px;border-radius:16px;
     background:color-mix(in srgb,var(--bg) 88%,transparent);
     backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
@@ -679,10 +683,10 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
     padding:0;border:0;border-radius:inherit;background:transparent;touch-action:none;cursor:grab}
   #pg-basic .n3dockhandle:active{cursor:grabbing}
   #pg-basic .n3dockhandle span{display:none}
-  #pg-basic .n3wrap>.n3stage{--cs:.44;height:104px;grid-column:1/-1;overflow:hidden;transition:height .18s ease}
-  #pg-basic .n3wrap.net-visible>.n3stage{--cs:.5;height:124px;grid-column:1}
-  #pg-basic .n3wrap>.netwrap{grid-column:2;margin:0;padding:3px;border:0;border-radius:12px;background:transparent;box-shadow:none}
-  #pg-basic .n3wrap>.netwrap svg{width:100%;max-width:150px}
+  #pg-basic .n3wrap>.n3stage{--cs:.5;height:124px;overflow:hidden;transition:height .18s ease}
+  #pg-basic .n3wrap.net-visible>.n3stage{--cs:.5;height:124px}
+  #pg-basic .n3wrap>.netwrap{margin:4px 0 0;padding:3px;border:0;border-radius:12px;background:transparent;box-shadow:none}
+  #pg-basic .n3wrap>.netwrap svg{width:100%;max-width:190px}
   #pg-basic .n3wrap>.n3info,#pg-basic .n3wrap>.n3hint,#pg-basic .n3wrap .netnote,#pg-basic .n3wrap .viewreset{display:none}
   #pg-basic .n3dockrestore{position:fixed;display:flex;align-items:center;justify-content:center;z-index:18;
     top:calc(72px + env(safe-area-inset-top,0px));right:12px;width:44px;height:44px;padding:0;
@@ -1035,6 +1039,11 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
   .n3stage>.viewreset,.n3stage>.netstage{z-index:12;min-height:44px}
   .apinput,.apselect{min-height:44px;font-size:.78rem}
   .aplabel-full{display:none}.aplabel-short{display:inline}
+  main,.page{width:100%;min-width:0}
+  #pg-cross{max-width:100%;overflow-x:clip}
+  #pg-cross>*{min-width:0;max-width:100%}
+  #pg-cross .josekiwrap{grid-template-columns:minmax(0,1fr)}
+  #pg-cross .note,#pg-cross .plist li,#pg-cross .ctrcard{overflow-wrap:anywhere}
   .pgsub,.note,.scrhold,.carddesc,.stcard span,.ctrcard span,.pfd,.ruletx p{font-size:.72rem}
   .fcard .carddesc,.trg .carddesc{font-size:.7rem}
   .acard .chk,.task>.chk{isolation:isolate}

@@ -23,6 +23,7 @@ const N3B=[
  {k:'z',g:'rot',  jp:'全体をFと同方向に',  ax:'Z',sg: 1,ly:c=>true},
 ];
 const N3={cur:'R',mod:'',yaw:-35,pitch:-25,cubies:[],raf:null,state:SOLVED.slice(),seq:[],step:0,playing:false,animating:false,algName:''};
+let n3SetNetVisible=null;
 function n3init(){
   const orbit=$('#n3orbit');
   for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){
@@ -95,6 +96,7 @@ function n3init(){
     }
     requestAnimationFrame(()=>n3view());
   };
+  n3SetNetVisible=setNetVisible;
   netToggle.addEventListener('click',()=>setNetVisible(!n3wrap.classList.contains('net-visible')));
   setNetVisible(false);
   const preset=$('#appreset');
@@ -233,6 +235,11 @@ function n3previewNext(index){
   box.hidden=!next.length;
   if(next.length&&before!==after){box.classList.remove('step-in');void box.offsetWidth;box.classList.add('step-in');}
 }
+function n3showStepCount(step=N3.step){
+  const el=$('#n3stepcount');if(!el)return;
+  el.textContent=N3.seq.length?`${Math.max(0,Math.min(step,N3.seq.length))} / ${N3.seq.length}手`:'';
+  el.hidden=!N3.seq.length;
+}
 function n3sync(){
   const b=n3base();
   n3showToken(b.k+N3.mod);
@@ -248,6 +255,7 @@ function n3animate(token,done,dir=1){
   const lbl=dir>0?`${N3.algName} — ${N3.step+1}手目 / ${N3.seq.length}手`:`${N3.algName} — ${N3.step}手目を戻す`;
   const b=n3showToken(shown,lbl);if(!b){done&&done();return;}
   n3previewNext(dir>0?N3.step+1:N3.step);
+  n3showStepCount(dir>0?N3.step+1:N3.step-1);
   N3.animating=true;
   const mod=shown.slice(1),target=90*b.sg*(mod==="'"?-1:1)*(mod==='2'?2:1);
   const movers=N3.cubies.filter(b.ly);
@@ -276,6 +284,7 @@ function n3animate(token,done,dir=1){
 function n3updatePlayer(){
   const s=$('#apslider');s.max=N3.seq.length;s.value=N3.step;
   s.style.setProperty('--ap-pct',`${N3.seq.length?N3.step/N3.seq.length*100:0}%`);
+  n3showStepCount();
   const t=(ja,en)=>(typeof LANG!=='undefined'&&LANG==='en')?en:ja;
   const lbl=N3.playing?t('Ⅱ 一時停止','Ⅱ Pause')
     :(N3.seq.length&&N3.step>=N3.seq.length)?t('↻ もう一度再生','↻ Replay')
@@ -306,6 +315,17 @@ function n3start(){
   const loop=()=>{if(!N3.playing)return;if(N3.step>=N3.seq.length){N3.playing=false;n3updatePlayer();return;}n3animate(N3.seq[N3.step],loop);};loop();
 }
 function n3pause(){N3.playing=false;n3updatePlayer();}
+function n3resetBasic(){
+  n3pause();N3.yaw=-35;N3.pitch=-25;N3.focus=true;
+  const preset=$('#appreset');if(preset)preset.selectedIndex=0;
+  const wrap=$('#n3stage')?.closest('.n3wrap');
+  if(wrap){wrap.classList.remove('dock-collapsed','dock-dragging');wrap.style.transform='';wrap.style.opacity='';}
+  const restore=$('#n3DockRestore');if(restore)restore.hidden=true;
+  if(n3SetNetVisible)n3SetNetVisible(false);
+  document.querySelectorAll('#apfocus button').forEach(b=>b.classList.toggle('on',b.dataset.f==='1'));
+  n3loadAlg('R','基本回転 R',false,false,'solved','trigger');
+  n3showToken('R');n3view();
+}
 /* そのステージ「完了直後」の現実的な状態を生成する。
    OLL再生後はPLLが残り、F2L再生後はLL全体が残る。完全に揃うのはPLL(最終局面)のみ */
 function randPick(a){return a[Math.floor(Math.random()*a.length)];}

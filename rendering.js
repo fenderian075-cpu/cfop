@@ -36,7 +36,8 @@ function closePP(){
     }
     PP.homes=null;
   }
-  try{n3view();}catch(e){}
+  if(document.body.dataset.page==='basic'&&typeof n3resetBasic==='function')n3resetBasic();
+  else try{n3view();}catch(e){}
   if(PP.lastFocus&&document.contains(PP.lastFocus))requestAnimationFrame(()=>PP.lastFocus.focus());
 }
 document.addEventListener('keydown',e=>{

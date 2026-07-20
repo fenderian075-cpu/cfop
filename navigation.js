@@ -13,8 +13,11 @@ function goCore(p,historyMode='push'){
   if(!PAGE_IDS.has(p))p='home';
   if(typeof PP!=='undefined'&&PP.open&&p==='basic')closePP();
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));
-  $('#pg-'+p).classList.add('on');
+  const nextPage=$('#pg-'+p);
+  nextPage.style.transform='';nextPage.style.opacity='';nextPage.style.willChange='';
+  nextPage.classList.add('on');
   document.body.dataset.page=p;
+  if(p==='basic'&&typeof n3resetBasic==='function')n3resetBasic();
   document.querySelectorAll('.navmain').forEach(b=>{const on=b.dataset.p===p;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current');});
   document.querySelectorAll('#tabbar button').forEach(b=>{const on=b.dataset.p===p;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current');});
   document.querySelectorAll('.navitem').forEach(n=>n.classList.toggle('current',n.dataset.nav===p));
