@@ -153,21 +153,23 @@
 
     <h2 class="sec">キューブの構造 <span class="hint">「色」ではなく「ピース」を運ぶゲーム</span></h2>
     <div class="structrow" id="structRow"></div>
-    <div class="note">ステッカーは貼り替わらない——動くのは26個のピース。エッジはエッジの場所へ、コーナーはコーナーの場所へしか移動できない。センターは互いの位置関係が固定なので、白の対面は必ず黄、青の右隣は必ず赤(持ち方基準)。だから「面の色を揃える」のではなく「各ピースをセンターに合う場所へ運ぶ」と考える。</div>
+    <div class="note">ステッカーは貼り替わらない——動くのは26個のピース。
+エッジはエッジの場所へ、コーナーはコーナーの場所へしか移動できない。センターは互いの位置関係が固定なので、白の対面は必ず黄、青の右隣は必ず赤(持ち方基準)。
+だから「面の色を揃える」のではなく「各ピースをセンターに合う場所へ運ぶ」と考える。</div>
 
     <h2 class="sec">センターの位置関係 <span class="hint">色の並びは絶対に変わらない</span></h2>
     <div class="ctrwrap">
       <div class="ctrcard">
-        <svg viewBox="0 0 96 118" aria-hidden="true">
-        <rect x="6" y="8" width="28" height="28" rx="6" fill="#FFFFFF" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="8" width="28" height="28" rx="6" fill="#FFFF55" stroke="#14151a" stroke-width="2"/>
-        <rect x="6" y="46" width="28" height="28" rx="6" fill="#1B45A6" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="46" width="28" height="28" rx="6" fill="#449751" stroke="#14151a" stroke-width="2"/>
-        <rect x="6" y="84" width="28" height="28" rx="6" fill="#D92E20" stroke="#14151a" stroke-width="2"/>
-        <rect x="62" y="84" width="28" height="28" rx="6" fill="#EB632B" stroke="#14151a" stroke-width="2"/>
-        <text x="48" y="27" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-        <text x="48" y="65" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
-        <text x="48" y="103" text-anchor="middle" font-size="13" fill="currentColor" opacity=".8">⇄</text>
+        <svg viewBox="0 0 150 150" aria-hidden="true">
+        <rect x="15" y="15" width="36" height="36" rx="6" fill="#FFFFFF" stroke="#14151a" stroke-width="2"/>
+        <rect x="99" y="15" width="36" height="36" rx="6" fill="#FFFF55" stroke="#14151a" stroke-width="2"/>
+        <rect x="15" y="57" width="36" height="36" rx="6" fill="#1B45A6" stroke="#14151a" stroke-width="2"/>
+        <rect x="99" y="57" width="36" height="36" rx="6" fill="#449751" stroke="#14151a" stroke-width="2"/>
+        <rect x="15" y="99" width="36" height="36" rx="6" fill="#D92E20" stroke="#14151a" stroke-width="2"/>
+        <rect x="99" y="99" width="36" height="36" rx="6" fill="#EB632B" stroke="#14151a" stroke-width="2"/>
+        <text x="75" y="38" text-anchor="middle" font-size="15" fill="currentColor" opacity=".8">⇄</text>
+        <text x="75" y="80" text-anchor="middle" font-size="15" fill="currentColor" opacity=".8">⇄</text>
+        <text x="75" y="122" text-anchor="middle" font-size="15" fill="currentColor" opacity=".8">⇄</text>
       </svg>
         <b>対面ペア</b>
         <span>白⇄黄・青⇄緑・赤⇄橙。対面のペアは固定で、片方が見えればもう片方が確定する</span>
@@ -195,7 +197,7 @@
     <div class="note">クロスを速くする鍵はこの暗記。白エッジの側面色を見た瞬間「その色のセンターはどっち周りにあるか」が分かれば、D面を回すだけで正しい位置に合わせられる。</div>
 
     <div class="basic-notation-zone">
-    <h2 class="sec">回転記号</h2>
+    <h2 class="sec">キューブと展開図</h2>
     <div class="n3playerlayout">
     <div class="n3wrap">
       <button class="n3dockhandle" id="n3DockHandle" type="button" aria-label="上・左・右へスワイプして図を隠す"><span></span></button>
@@ -258,9 +260,17 @@
     <h2 class="sec">持ち替え <span class="hint">全体回転。手数に数えない</span></h2>
     <div class="nchips" data-n3g="rot"></div>
 
-    
+    <h2 class="sec">持ち方</h2>
+    <div class="chips holdchips">
+      <div class="chip"><b>U面 → 人差し指</b><div class="d">U / U' は右手・左手の人差し指ではじく</div></div>
+      <div class="chip"><b>R面 → 右手首</b><div class="d">R / R' は手首の返しで。握り直さない</div></div>
+      <div class="chip"><b>視線は次のケース</b><div class="d">回している面ではなく次に見る場所を見る</div></div>
+    </div>
+
     <h2 class="sec">指使いの基本 <span class="hint">大きく持ち替えず、指と手首は最小限に</span></h2>
-    <div class="note">スピードキューブの持ち方の基本は「ホームグリップ」——両親指を前面(F)に、中指・薬指を背面(B)に添える構えから始まる。ここから指1本の最小の動きで各面を回すのが指使い(フィンガートリック)。悪い癖は後から直すのが大変なので、最初に正しい型を覚えるのが最短ルート。</div>
+    <div class="note">スピードキューブの持ち方の基本は「ホームグリップ」——両親指を前面(F)に、中指・薬指を背面(B)に添える構えから始まる。
+ここから指1本の最小の動きで各面を回すのが指使い(フィンガートリック)。
+悪い癖は後から直すのが大変なので、最初に正しい型を覚えるのが最短ルート。</div>
     <table class="cmp fingertbl">
       <tr><th>回転</th><th>指</th><th>コツ</th></tr>
       <tr><td class="mono">U</td><td>右人差し指</td><td>引き金を引くように手前へ弾く(トリガー)。他の指はU面に触れない</td></tr>
@@ -273,7 +283,8 @@
       <tr><td class="mono">D / D'</td><td>薬指</td><td>裏から薬指で弾く。クロスで多用するので早めに慣れる</td></tr>
       <tr><td class="mono">M系</td><td>薬指</td><td>左右をしっかり両手で押さえ、薬指で中層を弾く</td></tr>
     </table>
-    <div class="note">避けたい癖: <b>U系を親指で挟んで回す</b>・<b>回す際に手がキューブから離れる</b>・<b>親指プッシュの多用</b>。共通する問題は「手の動きが大きい/ホールドが浮く」ことで、上達するほど壁になりやすい。正しい指使いの感覚は、何もない所で指を自然に曲げる動き——その動きだけで回すこと。指に無理な力がかかる回し方は見直しのサイン。</div>
+    <div class="note">避けたい癖: <b>U系を親指で挟んで回す</b>・<b>回す際に手がキューブから離れる</b>・<b>親指プッシュの多用</b>。共通する問題は「手の動きが大きい/ホールドが浮く」ことで、上達するほど壁になりやすい。
+正しい指使いの感覚は、何もない所で指を自然に曲げる動き——その動きだけで回すこと。指に無理な力がかかる回し方は見直しのサイン。</div>
 
     </div>
 
@@ -285,16 +296,10 @@
     <div id="namedAlgs"></div>
     <div class="note">OLL・PLLの手順は暗記ではなく「トリガーの連結」として読む。例: T字OLL = セクシー1回 + スレッジ1回。</div>
 
-    <h2 class="sec">持ち方</h2>
-    <div class="chips">
-      <div class="chip"><b>U面 → 人差し指</b><div class="d">U / U' は右手・左手の人差し指ではじく</div></div>
-      <div class="chip"><b>R面 → 右手首</b><div class="d">R / R' は手首の返しで。握り直さない</div></div>
-      <div class="chip"><b>視線は次のケース</b><div class="d">回している面ではなく次に見る場所を見る</div></div>
-    </div>
-
     <h2 class="sec">上達のコツ <span class="hint">速さは「回転の速さ」より「止まらないこと」</span></h2>
-    <div class="note"><b>最重要:「ゆっくり回して速くなる」。</b>1回転に1〜2秒かけるほど遅く、止まらずにF2Lを通す練習をする。速く回すと今の手だけを見てしまうが、ゆっくりなら次のペアを探す余裕が生まれる。この「先読み(ルックアヘッド)」が20秒の壁を破る鍵で、初中級者のタイムの大半はF2Lの<b>停止時間</b>——手順の知識不足ではない。</div>
-    <div class="chips">
+    <div class="note"><b>最重要:「ゆっくり回して速くなる」。</b>1回転に1〜2秒かけるほど遅く、止まらずにF2Lを通す練習をする。
+速く回すと今の手だけを見てしまうが、ゆっくりなら次のペアを探す余裕が生まれる。この「先読み(ルックアヘッド)」が20秒の壁を破る鍵で、初中級者のタイムの大半はF2Lの<b>停止時間</b>——手順の知識不足ではない。</div>
+    <div class="chips tipschips">
       <div class="chip"><b>クロスは必ず底面(D)で</b><div class="d">上で作って持ち替えると1〜2秒の損。最初から底で作れば、F2Lのペアが上に見えている</div></div>
       <div class="chip"><b>クロスは8手以内</b><div class="d">どんな配置でも必ず8手以内で解ける。まず8手、慣れたら6〜7手を狙う</div></div>
       <div class="chip"><b>15秒の観察を使い切る</b><div class="d">大会では15秒の観察時間がある。4つのエッジを探す→手順を組む→頭で予行。慣れると目を閉じてもクロスが回せる</div></div>
@@ -328,14 +333,16 @@
 
     <div class="note">センターの色の並び(対面ペア/側面は時計回りに 青→赤→緑→橙)は基礎編「センターの位置関係」を参照。ここでの前提知識になる。</div>
     <h2 class="sec">クロスの定石 <span class="hint">短く、かつ回しやすく</span></h2>
-    <div class="note">クロスのパターン数はOLL/PLLと比べ物にならないほど多く、全暗記は不可能。代わりに「定石」を頭に入れる。鍵は<b>手順が短く、かつ回しやすいこと</b>——効率の良い手順ならほとんどの場合<b>7手以内</b>(センター合わせのD/D'込みで8手以内)で揃う。少し手数が増えても、引っかからず回せる手順の方が結果的に速い。</div>
+    <div class="note">クロスのパターン数はOLL/PLLと比べ物にならないほど多く、全暗記は不可能。
+代わりに「定石」を頭に入れる。鍵は<b>手順が短く、かつ回しやすいこと</b>——効率の良い手順ならほとんどの場合<b>7手以内</b>(センター合わせのD/D'込みで8手以内)で揃う。少し手数が増えても、引っかからず回せる手順の方が結果的に速い。</div>
     <div class="ctrwrap josekiwrap">
       <div class="ctrcard"><b>① エッジ優先、センターは最後</b><span>最初からセンターに合わせようとすると手数が伸びる。エッジ4枚の相対位置を先に作り、最後にD/D'でセンターへ一致させる方が短くスムーズ</span></div>
       <div class="ctrcard"><b>② 側面色を見た瞬間に行き先を決める</b><span>基礎編の「センターの色の並び」が入っていれば、白エッジの側面色から目的地は即決できる。迷い時間ゼロがクロスの速さ</span></div>
       <div class="ctrcard"><b>③ 1枚2手以内を目安に</b><span>単独の白エッジなら2手以内で定位置に運べるのが目安。3手以上かかっていたら、より短い経路を探す癖をつける</span></div>
       <div class="ctrcard"><b>④ インスペクションで完成形まで読む</b><span>実際に回す前に頭の中でクロス完成まで手順を決める。15秒に収まらなくても、練習では時間無制限でじっくり考えてよい——脳内で回す負荷こそが練習</span></div>
     </div>
-    <div class="note">仕上げの練習法: 手順を決めたら<b>キューブを見ずに(または目隠しで)クロスだけ揃える</b>。見ないで揃えられる=完全に読めている証拠。フリープレイのWCAスクランブルを使えば何度でも試せる。</div>
+    <div class="note">仕上げの練習法: 手順を決めたら<b>キューブを見ずに(または目隠しで)クロスだけ揃える</b>。
+見ないで揃えられる=完全に読めている証拠。フリープレイのWCAスクランブルを使えば何度でも試せる。</div>
 
 
     <div id="crossSimple">
@@ -455,19 +462,19 @@
   </div>
   <div class="navsettings">
     <div class="navlearning">
-      <span class="lbl">学習モード</span>
-      <div class="seg navmode" id="modeSeg" aria-label="学習モード">
+      <span class="lbl">モード</span>
+      <div class="seg navmode" id="modeSeg" aria-label="モード">
         <button data-m="s" class="on">簡易</button><button data-m="a">本格</button>
       </div>
     </div>
     <div class="navtheme">
-      <span class="lbl">THEME</span>
+      <span class="lbl">テーマ</span>
       <div class="seg" id="themeSeg" aria-label="表示テーマ">
-        <button data-theme="light" aria-label="ライトモード" title="ライトモード">☀️</button><button data-theme="dark" class="on" aria-label="ダークモード" title="ダークモード">🌙</button>
+        <button data-theme="light" aria-label="ライトモード" title="ライトモード">☀</button><button data-theme="dark" class="on" aria-label="ダークモード" title="ダークモード">☾</button>
       </div>
     </div>
     <div class="navlang">
-      <span class="lbl">LANGUAGE</span>
+      <span class="lbl">言語</span>
       <div class="seg langseg" id="langSeg" aria-label="Language">
         <button data-lang="ja" class="on" aria-label="日本語" title="日本語">JA</button><button data-lang="en" aria-label="English" title="English">EN</button>
       </div>

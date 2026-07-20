@@ -252,15 +252,15 @@ function buildNet(){
   netCells=[...document.querySelectorAll('#netbox .net-cell')];
   netFaceplates=[...document.querySelectorAll('#netbox .net-faceplate')];
 }
-function netPaint(state){
+function netPaint(state,colorizer){
   if(!state||!netCells)return;
   netCells.forEach(r=>{
     const p=+r.dataset.p,content=state[p];
-    r.setAttribute('fill',FC[Math.floor(content/9)]);
+    r.setAttribute('fill',colorizer?colorizer(content):FC[Math.floor(content/9)]);
   });
   netFaceplates?.forEach(r=>{
     const f=+r.dataset.f,content=state[f*9+4];
-    r.setAttribute('fill',FC[Math.floor(content/9)]);
+    r.setAttribute('fill',colorizer?colorizer(content):FC[Math.floor(content/9)]);
   });
 }
 function netSync(moveKey){

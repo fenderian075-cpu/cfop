@@ -131,7 +131,7 @@ function n3view(){
   const st=$('#n3stage');
   const base=parseFloat(getComputedStyle(st).getPropertyValue('--cs'))||1;
   /* 回転時の最大投影(約240px)がステージに必ず収まるよう自動フィット */
-  const fit=Math.min(1, st.clientHeight/242, st.clientWidth/242);
+  const fit=Math.min(1.4, st.clientHeight/242, st.clientWidth/242);
   const cs=Math.min(base, fit>0?fit:base);
   $('#n3orbit').style.transform=`scale(${cs}) rotateX(${N3.pitch}deg) rotateY(${N3.yaw}deg)`;
 }
@@ -163,7 +163,7 @@ function n3paint(){
   N3.cubies.forEach(c=>Object.entries(c.faces).forEach(([f,el])=>{
     const i=n3facelet(c,f);if(i!==null)el.style.background=n3color(N3.state[i]);
   }));
-  netPaint(N3.state);
+  netPaint(N3.state,n3color);
 }
 /* ===== 3D方向矢印(層の上に配置・回転と一緒に動く) ===== */
 const ARROWS={

@@ -9,6 +9,7 @@ try{
   if(savedTheme==='light'||savedTheme==='dark'){THEME=savedTheme;THEME_FOLLOWS_SYSTEM=false;}
 }catch(e){}
 const EN={
+  'モード':'Mode',
   'CFOP トレーナー':'CFOP Trainer','習得マップ':'Learning Map','簡易':'Simple','本格':'Advanced','習得':'Learned',
   'Cross → F2L → OLL → PLL の順に完成させる。まず簡易で1周、その後本格へ。':'Complete Cross → F2L → OLL → PLL in order. Finish one pass in Simple mode, then move to Advanced.',
   '覚える手順(アルゴリズム)の数':'Algorithms to Learn','デイジー法':'Daisy method','直接・8手以内':'Direct · within 8 moves','基本形+応用':'Basics + applications','全ケース':'All cases','合計':'Total',
@@ -16,7 +17,7 @@ const EN={
   '進捗の保存・復元(コード方式)':'Save / Restore Progress (code)','ここに進捗コードが表示されます':'Your progress code appears here','コード発行':'Generate Code','コピー':'Copy','復元':'Restore',
   '進捗はこの端末に自動保存されます。別端末への移行・バックアップにはコードを使用してください。':'Progress is saved automatically on this device. Use a code to back it up or transfer it to another device.',
   '基礎':'Basics','回転記号とトリガー。すべての手順はこの部品でできている。':'Turn notation and triggers. Every algorithm is built from these pieces.',
-  '回転記号':'Turn Notation','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
+  '回転記号':'Turn Notation','キューブと展開図':'Cube and Net','図をタップ=3Dでその回転が動く。濃い部分が動く層':'Tap a symbol to animate it. Only the moving layer is highlighted.','外側から見た向き':'Direction viewed from outside',
   'もう一度再生':'Replay','視点リセット':'Reset View','↺ 視点':'↺ View','↻ 視点':'↻ View',
   '左面':'Left','上面':'Top','右面':'Right','前面':'Front',
   '展開図を表示':'Show net','展開図を隠す':'Hide net','ケースから':'Case','完成から':'Solved',
@@ -132,7 +133,8 @@ const EN={
   'デイジー法 / 直接クロス':'Daisy / Direct Cross','ペア作成→挿入':'Pair → insert','上面を黄色一色に':'Make the top all yellow','側面を揃えて完成':'Permute the sides to finish',
   'PLLパターン認識ガイド':'PLL Recognition Guide','黄色上面は完成済みなので見なくてOK。図ではグレーにし、側面12マスだけを認識対象にしています。':'The yellow top is already solved, so ignore it. It is gray in the diagrams; recognize only the 12 side stickers.',
   'バーを探す':'Find a bar','— 側面3枚が同色なら、その面を基準に持つ。':'— If all three stickers on a side match, hold that side as your reference.','ヘッドライトを探す':'Find headlights','— 同じ面の左右コーナーが同色。1組か、なし／複数かを見る。':'— The two corner stickers on one side match. Check whether there is one pair, none, or multiple.','2枚ブロックを見る':'Find a 2-sticker block','— 隣り合う同色2枚の位置と、反対側の色の流れでケースを絞る。':'— Use the position of an adjacent matching pair and the color flow on the opposite side.','バー':'Bar','バー（3枚同色）':'Bar (3 matching)','ヘッドライト':'Headlights','ヘッドライト（両端）':'Headlights (outer pair)','2枚ブロック':'2-sticker block','2枚ブロック（隣接2枚）':'2-sticker block (adjacent pair)','認識ポイント':'Recognition cues','特徴的な一致なし：4側面の色順を見る':'No obvious match: read the color order around all four sides.',
-  'デイジー完成 30秒以内':'Finish the daisy within 30 sec','クロス完成 1分以内':'Finish the Cross within 1 min','ノーミス5連続':'5 clean solves in a row','白面を見ずに8手以内で完成':'Finish within 8 moves without looking at white','クロス10秒以内':'Cross within 10 sec','インスペクション内で完全計画→目をつぶって完成':'Plan fully in inspection → solve with eyes closed'
+  'デイジー完成 30秒以内':'Finish the daisy within 30 sec','クロス完成 1分以内':'Finish the Cross within 1 min','ノーミス5連続':'5 clean solves in a row','白面を見ずに8手以内で完成':'Finish within 8 moves without looking at white','クロス10秒以内':'Cross within 10 sec','インスペクション内で完全計画→目をつぶって完成':'Plan fully in inspection → solve with eyes closed',
+  '・':' / '
 };
 const EN_PARTS=Object.entries(EN).filter(([ja,en])=>ja!==en&&/[ぁ-んァ-ヶ一-龠]/.test(ja)).sort((a,b)=>b[0].length-a[0].length);
 const EN_REPL=[
@@ -148,8 +150,9 @@ const EN_REPL=[
 ];
 function toEnglish(raw){
   const m=raw.match(/^(\s*)([\s\S]*?)(\s*)$/),lead=m[1],core=m[2],tail=m[3];if(!core)return raw;
-  let out=EN[core]||core;
-  if(out===core){for(const [ja,en] of EN_REPL)out=out.split(ja).join(en);for(const [ja,en] of EN_PARTS)out=out.split(ja).join(en);}
+  const flat=core.replace(/\n/g,'');
+  let out=EN[core]||EN[flat]||core;
+  if(out===core||out===flat){out=flat;for(const [ja,en] of EN_REPL)out=out.split(ja).join(en);for(const [ja,en] of EN_PARTS)out=out.split(ja).join(en);}
   out=out.replace(/(\d+) moves順/g,'$1 algorithms').replace(/(\d+) moves/g,'$1 moves');
   return lead+out+tail;
 }
