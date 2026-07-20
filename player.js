@@ -257,7 +257,6 @@ function n3animate(token,done,dir=1){
 }
 function n3updatePlayer(){
   const s=$('#apslider');s.max=N3.seq.length;s.value=N3.step;
-  $('#apcount').textContent=`${N3.step} / ${N3.seq.length}手`;
   const t=(ja,en)=>(typeof LANG!=='undefined'&&LANG==='en')?en:ja;
   const lbl=N3.playing?t('Ⅱ 一時停止','Ⅱ Pause')
     :(N3.seq.length&&N3.step>=N3.seq.length)?t('↻ もう一度再生','↻ Replay')

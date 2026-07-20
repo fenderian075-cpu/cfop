@@ -1,6 +1,6 @@
 /* ===== 3D player side panel ===== */
 const PP={open:false,min:false,homes:null,lastFocus:null};
-function ppNodes(){return [$('#apPlayerHead'),$('#n3stage').closest('.n3wrap'),$('#algPlayer')];}
+function ppNodes(){return [$('#n3stage').closest('.n3wrap'),$('#algPlayer')];}
 function openPP(){
   const body=$('#ppbody');
   const nodes=ppNodes();
