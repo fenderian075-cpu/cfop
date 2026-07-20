@@ -397,14 +397,22 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   body{padding-left:0!important;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
   /* フローティングピル: ホームインジケータの上に浮かぶカプセル型ナビ */
   .tabbar{
-    display:flex;position:fixed;left:10px;right:10px;z-index:90;
-    bottom:calc(8px + env(safe-area-inset-bottom,8px));
+    display:flex;position:fixed;left:10px;width:calc(100% - 20px);right:auto;z-index:90;
+    bottom:calc(8px + env(safe-area-inset-bottom,8px));height:54px;box-sizing:border-box;
     background:color-mix(in srgb,var(--bg) 80%,transparent);
     backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
-    border:1px solid var(--line);border-radius:26px;
-    padding:5px 6px;touch-action:none;
+    border:1px solid var(--line);border-radius:27px;
+    padding:5px 6px;touch-action:none;overflow:hidden;
     box-shadow:0 8px 28px rgba(0,0,0,.28),0 1px 0 rgba(255,255,255,.04) inset;
+    transition:left .24s cubic-bezier(.2,.9,.3,1),width .24s cubic-bezier(.2,.9,.3,1),height .24s cubic-bezier(.2,.9,.3,1),padding .24s ease;
   }
+  /* 非アクティブ時: 右下の丸いFABに最小化 */
+  .tabbar .pillfab{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:1.05rem;color:var(--tx2);opacity:0;pointer-events:none;transition:opacity .18s ease}
+  .tabbar.mini{left:calc(100% - 62px);width:52px;height:52px;padding:0}
+  .tabbar.mini button{opacity:0;pointer-events:none}
+  .tabbar.mini .pillfab{opacity:1}
+  .tabbar button{transition:color .18s ease,opacity .15s ease}
   .tabbar button{
     flex:1;border:0;background:transparent;color:var(--tx3);font:inherit;
     font-size:.6rem;font-weight:800;letter-spacing:.02em;padding:5px 0 3px;cursor:pointer;
@@ -430,10 +438,7 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   .tabbar [data-p="pll"]{--tc:#1B45A6}
   .tabbar [data-p="quiz"]{--tc:#D92E20}
   /* Liquid Glass風: 下スクロールでラベルが畳まれミニピル化 */
-  .tabbar button b{display:block;font-weight:inherit;height:12px;line-height:12px;overflow:hidden;
-    transition:height .18s ease,opacity .18s ease}
-  .tabbar.mini button b{height:0;opacity:0}
-  .tabbar.mini button{min-height:0}
+  .tabbar button b{display:block;font-weight:inherit;height:12px;line-height:12px}
   /* ページ遷移マイクロスライド(160ms) */
   .page.slide-l{animation:pgSlideL .16s ease-out}
   .page.slide-r{animation:pgSlideR .16s ease-out}
@@ -908,3 +913,49 @@ button,.trg,.acard,.navmain{touch-action:manipulation}
   .tabbar button:active i,.btn:active,.hico:active,.cmdkItem:active,.tocsheet button:active{transform:none;transition:none}
   .tabbar{transition:none}
 }
+
+/* 展開図: 折り目ヒンジと残像ハイライト */
+.cube-net .net-fold{stroke:var(--net-line);stroke-width:1.15;stroke-linecap:round}
+.net-cell.net-ghost{animation:netGhost .9s ease-out}
+@keyframes netGhost{0%{stroke:var(--accent);stroke-width:1.4;filter:brightness(1.22) saturate(1.25) drop-shadow(0 0 2px var(--accent))}100%{}}
+@media(prefers-reduced-motion:reduce){.net-cell.net-ghost{animation:none}}
+
+/* ソルブ見積り(ステージ余白) */
+.fpplanstat{position:absolute;right:8px;top:8px;z-index:5;display:flex;flex-direction:column;gap:3px;align-items:flex-end;pointer-events:none}
+.fpplanstat span{font-size:.62rem;font-weight:800;color:var(--tx3);background:color-mix(in srgb,var(--bg) 72%,transparent);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.fpplanstat span.now{color:var(--tx);border-color:var(--yl);background:color-mix(in srgb,var(--yl) 14%,var(--bg))}
+.fpplanstat[hidden]{display:none}
+/* スワイプパッドのフラッシュ(ボタン操作と同じ言語) */
+.fpsBtn.flash{background:#FFD21E;border-color:#FFD21E;color:#191400;transform:scale(1.03);transition:transform .09s ease,background .09s ease}
+.fpsBtn.flash i{color:#191400}
+body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;box-shadow:0 2px 8px rgba(224,168,0,.45)}
+@media(prefers-reduced-motion:reduce){.fpsBtn.flash{transform:none;transition:none}}
+/* 2層回しのw表記 */
+.ncard b .walias{font-style:normal;font-size:.68em;color:var(--tx3);font-weight:800}
+/* 指使いテーブル */
+.fingertbl td:first-child{white-space:nowrap;font-weight:800}
+.fingertbl td:nth-child(2){white-space:nowrap}
+/* デスクトップ: 3Dプレイヤーの横に展開図を並列 */
+@media(min-width:761px){
+  .n3wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+  .n3wrap>.n3stage{grid-column:1}
+  .n3wrap>.n3info{grid-column:1}
+  .n3wrap>.netwrap{grid-column:2;grid-row:1/span 2;margin:0}
+}
+
+@media(prefers-reduced-motion:reduce){.tabbar{transition:none}.tabbar .pillfab,.tabbar button{transition:none}}
+
+/* ===== --yl直接参照の棚卸し: ライトで沈む背景/発光系を明アンバーへ統一 =====
+   (テキスト用途の--yl=暗金はライトの正しい挙動なので対象外) */
+body[data-theme="light"] .fpcol button:active,
+body[data-theme="light"] .fpmid button:active{background:#ffc61a;border-color:#e3ae00;color:#231a00}
+body[data-theme="light"] .fpsBtn.swiping{background:color-mix(in srgb,#ffc61a 22%,var(--panel2));border-color:#e3ae00}
+body[data-theme="light"] .fpsBtn.swiping i{color:#a87b00}
+body[data-theme="light"] .fpsRow.swiping{background:color-mix(in srgb,#ffc61a 20%,var(--panel2));border-color:#e3ae00}
+body[data-theme="light"] .fpsRow.swiping .ar{color:#a87b00}
+body[data-theme="light"] .cmdkItem.sel{background:color-mix(in srgb,#ffc61a 24%,transparent)}
+body[data-theme="light"] .fpplanstat span.now{border-color:#e3ae00;background:color-mix(in srgb,#ffc61a 22%,var(--bg))}
+body[data-theme="light"] .navtheme button.on{background:color-mix(in srgb,#ffc61a 26%,var(--panel2));box-shadow:inset 0 0 0 1px #e3ae00}
+body[data-theme="light"] .apslider{accent-color:#e3ae00}
+body[data-theme="light"] .playmini:hover{background:color-mix(in srgb,#ffc61a 20%,transparent);border-color:#e3ae00}
