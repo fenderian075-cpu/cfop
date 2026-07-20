@@ -4,6 +4,8 @@ html[data-theme="light"]{background:#f2f4f9}
   --bg:#101014; --panel:#1a1b21; --panel2:#22232b; --line:#2c2d36;
   --tx:#e9e9ee; --tx2:#9a9ba6; --tx3:#63646f;
   --yl:#FFD21E; --rd:#E5342B; --bl:#2f6fe4; --gn:#1ca34a; --or:#E85D04; --wh:#f4f4f6;
+  --sticker-yellow:#FFFF55;--sticker-green:#449751;--sticker-white:#FFFFFF;
+  --sticker-orange:#EB632B;--sticker-blue:#1B45A6;
   --ok:#1ca34a;
 }
 body{--dline:#14151a;--hl:#ffffff;--dOff:#4a4b52;--dMask:#35363c;--g3d:#444449;--ollOff:#4a4b52;
@@ -144,9 +146,9 @@ body[data-theme="light"] .navmode,body[data-theme="light"] .navtheme .seg,body[d
   box-shadow:0 0 0 3px color-mix(in srgb,var(--navs,var(--navc)) 18%,transparent)}
 .navitem.current{background:color-mix(in srgb,var(--navc) 8%,transparent)}
 .navitem.current>.navmain{color:var(--navc);box-shadow:inset 3px 0 0 var(--navc)}
-.navitem[data-nav="home"],.navitem[data-nav="oll"]{--navs:#FFFF55}
-.navitem[data-nav="basic"]{--navs:#449751}.navitem[data-nav="cross"]{--navs:#FFFFFF}
-.navitem[data-nav="f2l"]{--navs:#EB632B}.navitem[data-nav="pll"]{--navs:#1B45A6}
+.navitem[data-nav="home"],.navitem[data-nav="oll"]{--navs:var(--sticker-yellow)}
+.navitem[data-nav="basic"]{--navs:var(--sticker-green)}.navitem[data-nav="cross"]{--navs:var(--sticker-white)}
+.navitem[data-nav="f2l"]{--navs:var(--sticker-orange)}.navitem[data-nav="pll"]{--navs:var(--sticker-blue)}
 .navitem[data-nav="home"]{--navc:#FFD21E}.navitem[data-nav="basic"]{--navc:#1ca34a}.navitem[data-nav="cross"]{--navc:#f4f4f6}.navitem[data-nav="f2l"]{--navc:#E85D04}.navitem[data-nav="oll"]{--navc:#FFD21E}.navitem[data-nav="pll"]{--navc:#2f6fe4}
 .subnav{display:none;padding:0 7px 9px 27px}.navitem.current .subnav{display:grid;gap:2px}
 .toclink{position:relative;border:0;background:transparent;color:var(--tx3);font:inherit;text-align:left;font-size:.66rem;line-height:1.35;padding:5px 7px 5px 12px;cursor:pointer;border-radius:6px}
@@ -430,8 +432,8 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   .tabbar button{transition:color .18s ease,opacity .15s ease}
   .tabbar button{
     flex:1;border:0;background:transparent;color:var(--tx3);font:inherit;
-    font-size:.68rem;font-weight:800;letter-spacing:.01em;padding:4px 0 2px;cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;min-height:44px;
+    font-size:.68rem;font-weight:800;letter-spacing:.01em;padding:0;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:44px;
     border-radius:12px;margin:0;transition:color .18s ease;
   }
   /* ドット=キューブのステッカー。現在ページだけ面の色に点灯、他はグレーのマスク */
@@ -446,11 +448,11 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
     box-shadow:0 1px 7px color-mix(in srgb,var(--tc,var(--yl)) 60%,transparent);
   }
   /* ステッカーは実キューブ配色(テーマ非依存) */
-  .tabbar [data-p="home"],.tabbar [data-p="oll"]{--tc:#FFFF55}
-  .tabbar [data-p="basic"]{--tc:#449751}
-  .tabbar [data-p="cross"]{--tc:#FFFFFF}
-  .tabbar [data-p="f2l"]{--tc:#EB632B}
-  .tabbar [data-p="pll"]{--tc:#1B45A6}
+  .tabbar [data-p="home"],.tabbar [data-p="oll"]{--tc:var(--sticker-yellow)}
+  .tabbar [data-p="basic"]{--tc:var(--sticker-green)}
+  .tabbar [data-p="cross"]{--tc:var(--sticker-white)}
+  .tabbar [data-p="f2l"]{--tc:var(--sticker-orange)}
+  .tabbar [data-p="pll"]{--tc:var(--sticker-blue)}
   /* Liquid Glass風: 下スクロールでラベルが畳まれミニピル化 */
   .tabbar button b{display:block;position:relative;top:2px;font-weight:inherit;height:12px;line-height:12px}
   /* 目次シェルフ(ピル直上のアクセサリ) */
@@ -518,18 +520,19 @@ body[data-theme="light"] .ctrcard{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 
 /* ===== solve flow (decision timeline) ===== */
 .flow{position:relative;margin-bottom:4px}
-.fnode{position:relative;padding:0 0 10px 27px}
+.fnode{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:7px;padding:0 0 10px}
 .fnode::before{content:'';position:absolute;left:7px;top:24px;bottom:-4px;width:2px;background:var(--line)}
 .fnode:last-child::before{display:none}
-.fdot{position:absolute;left:0;top:10px;width:16px;height:16px;border-radius:5px;background:var(--fc,var(--tx3));box-shadow:0 0 0 3px var(--bg)}
+.fdot{position:relative;z-index:1;grid-column:1;grid-row:1;align-self:center;justify-self:start;width:16px;height:16px;
+  box-sizing:border-box;border:1.5px solid #14151a;border-radius:5px;background:var(--fc,var(--tx3));box-shadow:0 0 0 3px var(--bg)}
 .fhead{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 13px;cursor:pointer;
-  display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;user-select:none;-webkit-user-select:none}
+  grid-column:2;grid-row:1;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;user-select:none;-webkit-user-select:none}
 .fhead b{font-size:.9rem}
 .fhead .lk{font-size:.69rem;color:var(--tx2)}
 .fhead .arw{margin-left:auto;color:var(--tx3);font-size:.75rem;transition:transform .18s}
 .fnode.open .arw{transform:rotate(90deg)}
 .fnode .fbody{display:none;background:var(--panel);border:1px solid var(--line);border-top:0;
-  border-radius:0 0 12px 12px;margin:-7px 1px 0;padding:13px 13px 12px;font-size:.78rem}
+  grid-column:2;grid-row:2;border-radius:0 0 12px 12px;margin:-7px 1px 0;padding:13px 13px 12px;font-size:.78rem}
 .fnode.open .fbody{display:block}
 .fnode.open .fhead{border-radius:12px 12px 0 0}
 .frow{display:flex;gap:9px;margin-bottom:7px;align-items:baseline}
