@@ -519,7 +519,7 @@ body[data-theme="light"] .ctrcard{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
 .pllflowbox{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.05)}
 
 /* ===== solve flow (decision timeline) ===== */
-.flow{position:relative;margin-bottom:4px}
+.flow{position:relative;margin-bottom:12px}
 .fnode{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:7px;padding:0 0 10px}
 .fnode::before{content:'';position:absolute;left:7px;top:24px;bottom:-4px;width:2px;background:var(--line)}
 .fnode:last-child::before{display:none}
