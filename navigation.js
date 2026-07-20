@@ -93,6 +93,53 @@ function rebuild(){
     });
   },{passive:true});
 })();
+/* ===== 基礎編: 3D/展開図ドックを上スワイプで隠す ===== */
+(()=>{
+  const dock=$('.n3wrap'),handle=$('#n3DockHandle'),restore=$('#n3DockRestore');
+  if(!dock||!handle||!restore)return;
+  const mq=matchMedia('(max-width:760px)');
+  let active=false,pid=null,startY=0,dy=0;
+  const clearDrag=()=>{
+    active=false;pid=null;dy=0;dock.classList.remove('dock-dragging');
+    dock.style.transform='';dock.style.opacity='';
+  };
+  const hideDock=()=>{
+    if(!mq.matches||dock.classList.contains('dock-collapsed'))return;
+    active=false;dock.classList.remove('dock-dragging');
+    dock.style.transform='translateY(-28px) scale(.985)';dock.style.opacity='0';
+    setTimeout(()=>{
+      dock.classList.add('dock-collapsed');dock.style.transform='';dock.style.opacity='';
+      restore.hidden=false;
+    },180);
+  };
+  const showDock=(animate=true)=>{
+    dock.classList.remove('dock-collapsed');restore.hidden=true;
+    if(!animate){clearDrag();return;}
+    dock.style.transition='none';dock.style.transform='translateY(-22px) scale(.985)';dock.style.opacity='0';
+    void dock.offsetWidth;
+    dock.style.transition='';requestAnimationFrame(()=>{dock.style.transform='';dock.style.opacity='';});
+  };
+  handle.addEventListener('pointerdown',e=>{
+    if(!mq.matches)return;
+    active=true;pid=e.pointerId;startY=e.clientY;dy=0;dock.classList.add('dock-dragging');
+    try{handle.setPointerCapture(pid);}catch(_){}
+  });
+  handle.addEventListener('pointermove',e=>{
+    if(!active||e.pointerId!==pid)return;
+    dy=e.clientY-startY;
+    const y=Math.max(-72,Math.min(0,dy));
+    dock.style.transform=`translateY(${y}px)`;dock.style.opacity=String(1-Math.min(1,Math.abs(y)/110));
+  });
+  const end=e=>{
+    if(!active||(e&&e.pointerId!==pid))return;
+    const commit=dy<-36;clearDrag();if(commit)hideDock();
+  };
+  handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',end);
+  handle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();hideDock();}});
+  restore.addEventListener('click',()=>showDock(true));
+  const resetWide=e=>{if(!e.matches)showDock(false);};
+  if(mq.addEventListener)mq.addEventListener('change',resetWide);else mq.addListener(resetWide);
+})();
 $('#ppmin').addEventListener('click',minPP);
 $('#ppclose').addEventListener('click',closePP);
 $('#pprestore').addEventListener('click',restorePP);

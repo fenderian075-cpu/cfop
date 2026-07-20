@@ -57,9 +57,7 @@
 <main>
   <!-- ============ HOME ============ -->
   <section class="page on" id="pg-home">
-    <div class="pgttl">ソルブフロー</div>
     <div class="flow" id="flowBox"></div>
-    <div class="flowgap" aria-hidden="true">&nbsp;</div>
 
 
     <h2 class="sec">スクランブル</h2>
@@ -89,7 +87,7 @@
       </div>
       <div class="fpplay">
         <div class="fpcol" id="fpBtns"></div>
-        <div class="fpstage" id="fpStage"><button class="btn viewreset" id="fpViewReset">↻ 視点</button><div class="fpplanstat" id="fpPlanStat" hidden></div><div class="fporbit" id="fpOrbit"></div><div class="fsstagedone" id="fsStageDone" hidden></div></div>
+        <div class="fpstage" id="fpStage"><button class="btn viewreset" id="fpViewReset">↻ 視点</button><div class="fporbit" id="fpOrbit"></div><div class="fsstagedone" id="fsStageDone" hidden></div></div>
         <div class="fpcol" id="fpBtnsPrime"></div>
       </div>
       <div class="fpinfo"><span id="fpCount">0手</span><b id="fpSolved" hidden>✨ 完成!</b></div>
@@ -200,6 +198,7 @@
 
     <h2 class="sec">回転記号</h2>
     <div class="n3wrap">
+      <button class="n3dockhandle" id="n3DockHandle" type="button" aria-label="上へスワイプして図を隠す"><span></span></button>
       <div class="n3stage" id="n3stage"><button class="btn viewreset" id="n3view">↺ 視点</button><div class="n3orbit" id="n3orbit"></div></div>
       <div class="netwrap">
         <div id="netbox"></div>
@@ -209,6 +208,7 @@
 
       <div class="n3hint">ドラッグで視点を回せる(D・B・Lの確認用)</div>
     </div>
+    <button class="n3dockrestore" id="n3DockRestore" type="button" aria-label="回転図と展開図を表示" hidden>図</button>
     <div class="algplayer" id="algPlayer">
       <div class="aphead"><b>3D 手順プレイヤー</b><span id="apcount">0 / 0手</span></div>
       <select class="apselect" id="appreset" aria-label="再生する手順を選択">

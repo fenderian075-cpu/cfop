@@ -444,8 +444,6 @@ function fpInit(){
   // ソルブ(段階実行)
   const box=$('#fpSolveBox');
   function fsExit(msg){
-    const ps=$('#fpPlanStat');if(ps)ps.hidden=true;
-
     if(FP._dwell){clearTimeout(FP._dwell);FP._dwell=null;}
     FP.solving=false;FP.hi=null;FP.xray=false;FP.plan=null;fpPaint();
     $('#fpOrbit')?.classList.remove('recog');
@@ -590,21 +588,6 @@ function fpInit(){
     if(FP.state.every((v,i)=>v===i)){fsExit(tj('もう完成しています。スクランブルしてから試してください','Already solved — scramble first'));return;}
     const plan=fpSolvePlan();
     if(!plan){fsExit(tj('プランを作れませんでした','Could not build a plan'));return;}
-    // 簡易/本格それぞれの見積り(段数・手数)をステージ余白に表示
-    {
-      const other=fpSolvePlan((typeof mode!=='undefined'&&mode==='s')?'f':'s');
-      const stat=p=>p?[p.length,p.reduce((a,st)=>a+st.mv.length,0)]:null;
-      const cur=stat(plan),oth=stat(other);
-      const curIsS=(typeof mode!=='undefined'&&mode==='s');
-      const [sS,sF]=curIsS?[cur,oth]:[oth,cur];
-      const el=$('#fpPlanStat');
-      if(el){
-        el.innerHTML=
-          `<span class="${curIsS?'now':''}">${tj('簡易','Simple')} ${sS?sS[0]+tj('段','st ')+' / '+sS[1]+tj('手','mv'):'—'}</span>`+
-          `<span class="${curIsS?'':'now'}">${tj('本格','Adv.')} ${sF?sF[0]+tj('段','st ')+' / '+sF[1]+tj('手','mv'):'—'}</span>`;
-        el.hidden=false;
-      }
-    }
     FP.solving=true;FP.plan=plan;FP.planI=0;
     document.querySelector('.fpwrap')?.classList.add('solving');
     fsShow();
@@ -662,4 +645,3 @@ function fpInit(){
   st.addEventListener('pointerup',()=>drag=null);
   window.addEventListener('resize',()=>{try{fpView();}catch(e){}});
 }
-
