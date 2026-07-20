@@ -186,7 +186,11 @@ function setLanguage(lang){LANG=lang;try{localStorage.setItem('cfop-lang',lang);
 function applyTheme(){
   document.body.dataset.theme=THEME;document.documentElement.dataset.theme=THEME;
   const chromeColor=THEME==='light'?'#f2f4f9':'#101014';
-  document.querySelectorAll('meta[name="theme-color"]').forEach(meta=>meta.content=chromeColor);
+  document.documentElement.style.backgroundColor=chromeColor;
+  document.documentElement.style.colorScheme=THEME;
+  document.body.style.backgroundColor=chromeColor;
+  const themeMeta=document.getElementById('themeColor');
+  if(themeMeta)themeMeta.setAttribute('content',chromeColor);
   document.querySelectorAll('#themeSeg button').forEach(b=>{const on=b.dataset.theme===THEME;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
   const thi=document.getElementById('thIco');if(thi)thi.textContent=THEME==='dark'?'☀':'☾';
 }

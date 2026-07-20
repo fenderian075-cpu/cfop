@@ -15,6 +15,7 @@ function openPP(){
   $('#pprname').textContent=N3.algName||'3D再生';
   $('#pp').classList.add('open');$('#pp').setAttribute('aria-hidden','false');
   $('#pprestore').hidden=true;PP.open=true;PP.min=false;
+  if(n3SetNetVisible)n3SetNetVisible(false);
   try{n3view();}catch(e){}
   requestAnimationFrame(()=>$('#ppclose')?.focus());
 }

@@ -15,5 +15,9 @@
   document.documentElement.classList.toggle('standalone',standalone);
   document.body.classList.toggle('standalone',standalone);
   const chromeColor=theme==='light'?'#f2f4f9':'#101014';
-  document.querySelectorAll('meta[name="theme-color"]').forEach(meta=>meta.content=chromeColor);
+  document.documentElement.style.backgroundColor=chromeColor;
+  document.documentElement.style.colorScheme=theme;
+  document.body.style.backgroundColor=chromeColor;
+  const themeMeta=document.getElementById('themeColor');
+  if(themeMeta)themeMeta.setAttribute('content',chromeColor);
 })();

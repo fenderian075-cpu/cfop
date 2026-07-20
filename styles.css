@@ -1099,3 +1099,47 @@ body[data-theme="light"] .pullnav.armed{border-color:#e3ae00;background:color-mi
 }
 @media(prefers-contrast:more){.pullnav{border-color:var(--tx3)}}
 @media(min-width:761px){.pullnav{display:none}}
+
+/* ===== 基礎編の回転リファレンス: 3D + 展開図だけを常時並列表示 ===== */
+#pg-basic .n3playerlayout{display:block;max-width:100%}
+#pg-basic .n3wrap{
+  position:relative;top:auto;display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch
+}
+#pg-basic .n3wrap>.n3stage{grid-column:1;min-width:0}
+#pg-basic .n3wrap>.netwrap{
+  grid-column:2;display:flex!important;align-items:center;justify-content:center;
+  min-width:0;margin:0;padding:8px;overflow:hidden
+}
+#pg-basic .n3wrap>.netwrap #netbox{width:100%;min-width:0}
+#pg-basic .n3wrap>.netwrap svg{width:100%;max-width:220px}
+#pg-basic .n3wrap>.n3info,#pg-basic .n3wrap .netnote,
+#pg-basic .n3wrap .viewreset,#pg-basic .n3wrap .netstage{display:none!important}
+#pg-basic .algplayer{display:none}
+
+@media(max-width:760px){
+  /* stickyの境界はトリガー直前までを包む.basic-notation-zone */
+  #pg-basic .n3playerlayout{
+    position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:18;
+    margin:4px 0 10px
+  }
+  #pg-basic .n3wrap{
+    position:relative;top:auto;padding:6px;gap:4px;margin:0;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)
+  }
+  #pg-basic .n3wrap>.n3stage,
+  #pg-basic .n3wrap.net-visible>.n3stage{--cs:.48;height:126px;min-height:126px}
+  #pg-basic .n3wrap>.netwrap{height:126px;margin:0;padding:4px;border:0;border-radius:12px}
+  #pg-basic .n3wrap>.netwrap svg{max-width:168px;max-height:118px}
+
+  /* Crossだけレイアウト幅が広がりSafariが縮小する経路を遮断 */
+  html,body,main{width:100%;max-width:100%;overflow-x:hidden}
+  #pg-cross{width:100%;max-width:100%;min-width:0;overflow-x:hidden;contain:inline-size}
+  #pg-cross *,#pg-cross *::before,#pg-cross *::after{min-width:0;max-width:100%}
+  #pg-cross .crossfig{flex-wrap:wrap}
+  #pg-cross .josekiwrap,#pg-cross .fgrid{grid-template-columns:minmax(0,1fr)}
+  #pg-cross .fcard{grid-template-columns:minmax(0,74px) minmax(0,1fr)}
+  #pg-cross .alg,#pg-cross .carddesc,#pg-cross .note,#pg-cross .plist li{
+    white-space:normal;overflow-wrap:anywhere;word-break:normal
+  }
+}

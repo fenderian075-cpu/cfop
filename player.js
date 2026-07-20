@@ -321,7 +321,7 @@ function n3resetBasic(){
   const wrap=$('#n3stage')?.closest('.n3wrap');
   if(wrap){wrap.classList.remove('dock-collapsed','dock-dragging');wrap.style.transform='';wrap.style.opacity='';}
   const restore=$('#n3DockRestore');if(restore)restore.hidden=true;
-  if(n3SetNetVisible)n3SetNetVisible(false);
+  if(n3SetNetVisible)n3SetNetVisible(true);
   document.querySelectorAll('#apfocus button').forEach(b=>b.classList.toggle('on',b.dataset.f==='1'));
   n3loadAlg('R','基本回転 R',false,false,'solved','trigger');
   n3showToken('R');n3view();
