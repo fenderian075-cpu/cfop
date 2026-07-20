@@ -1133,7 +1133,7 @@ body[data-theme="light"] .pullnav.armed{border-color:#e3ae00;background:color-mi
   #pg-basic .n3wrap>.netwrap svg{max-width:168px;max-height:118px}
 
   /* Crossだけレイアウト幅が広がりSafariが縮小する経路を遮断 */
-  html,body,main{width:100%;max-width:100%;overflow-x:hidden}
+  html,body,main{width:100%;max-width:100%}
   #pg-cross{width:100%;max-width:100%;min-width:0;overflow-x:hidden;contain:inline-size}
   #pg-cross *,#pg-cross *::before,#pg-cross *::after{min-width:0;max-width:100%}
   #pg-cross .crossfig{flex-wrap:wrap}
