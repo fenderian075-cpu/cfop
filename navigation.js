@@ -362,18 +362,6 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
   const _go=go;
   window.go=(p,h)=>{const keep=!sheet.hidden;_go(p,h);if(keep)openToc();};
 })();
-/* ===== デスクトップ: 展開図を3Dプレイヤーの横に並列配置 ===== */
-(function(){
-  const nw=document.querySelector('.netwrap'),n3w=document.querySelector('.n3wrap'),h2=document.querySelector('h2[data-netsec]');
-  if(!nw||!n3w||!h2)return;
-  const mq=matchMedia('(min-width:761px)');
-  function place(){
-    if(mq.matches){n3w.appendChild(nw);h2.hidden=true;}
-    else{h2.hidden=false;h2.after(nw);}
-  }
-  place();
-  if(mq.addEventListener)mq.addEventListener('change',place);else mq.addListener(place);
-})();
 /* ===== デスクトップ: ⌘K コマンドパレット & キーボードショートカット ===== */
 (function(){
   const PAGE_ORDER=['home','basic','cross','f2l','oll','pll'];
