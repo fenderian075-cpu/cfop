@@ -37,4 +37,4 @@ function algOrder(alg){
   }
   ORDER_CACHE.set(alg,order);return order;
 }
-function cycleText(alg){const n=algOrder(alg);return n?`↻ 同じ手順×${n}で元通り`:'↻ 元に戻る回数は長周期';}
+function cycleText(alg){const n=algOrder(alg);return n?`↻ ×${n}で元通り`:'↻ 元に戻る回数は長周期';}

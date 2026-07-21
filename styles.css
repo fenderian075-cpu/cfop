@@ -1162,3 +1162,22 @@ body[data-theme="light"] .pullnav.armed{border-color:#e3ae00;background:color-mi
   .holdchips .chip .d{font-size:.78rem;line-height:1.5}
   .tipschips{grid-template-columns:repeat(5,1fr)}
 }
+
+/* カードタイトル長押し=作り方(セットアップ手順)表示 */
+.acard .nm[data-setup]{cursor:default;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.acard .setuprow{display:flex;align-items:baseline;gap:6px;margin:2px 0 5px;
+  padding:5px 8px;border-radius:8px;background:color-mix(in srgb,var(--yl) 9%,var(--panel2));
+  border:1px solid color-mix(in srgb,var(--yl) 30%,transparent)}
+.acard .setuprow[hidden]{display:none}
+.acard .setuplbl{font-size:.56rem;font-weight:800;color:var(--tx3);letter-spacing:.08em;flex:none}
+.acard .setupseq{font-size:.68rem;color:var(--tx);line-height:1.4}
+body[data-theme="light"] .acard .setuprow{background:color-mix(in srgb,#ffcf1a 14%,var(--panel2));border-color:#e0a800}
+
+/* 手数をタイトル右端に配置(記憶用チェックの丸を避けて余白確保) */
+.acard .nm,.trg .nm{display:flex;align-items:baseline;gap:8px;justify-content:space-between}
+.acard .nm{padding-right:28px}
+.acard .nm .mv,.trg .nm .mv{flex:0 0 auto;font-size:.6rem;font-weight:700;color:var(--tx3);
+  font-variant-numeric:tabular-nums;white-space:nowrap;margin:0}
+/* setup可能タイトルの点線はテキスト部分のみ(flex化で全幅化しないよう) */
+.acard .nm[data-setup]{border-bottom:none}
+.acard .nm[data-setup]::first-line{}

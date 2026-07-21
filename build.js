@@ -7,10 +7,32 @@ const $=q=>document.querySelector(q);
 function algCard(id,name,alg,svg,extraCls,kind){
   const d=document.createElement('div');
   d.className='acard'+(extraCls?' '+extraCls:'');
-  d.innerHTML=`<div class="chk">✓</div>${svg}<div class="algbody"><div class="nm">${name}</div><div class="alg mono">${chunk(alg)}</div><div class="algmeta"><span class="mv">${hm(alg)}手</span><span class="cycle">${cycleText(alg)}</span><button class="playmini">3Dで再生</button></div></div>`;
+  const setup=inv(alg);
+  d.innerHTML=`<div class="chk">✓</div>${svg}<div class="algbody"><div class="nm" data-setup="${setup}" title="長押しで作り方を表示">${name}<span class="mv">${hm(alg)}手</span></div><div class="setuprow" hidden><span class="setuplbl">作り方</span><span class="setupseq mono">${chunk(setup)}</span></div><div class="alg mono">${chunk(alg)}</div><div class="algmeta"><span class="cycle">${cycleText(alg)}</span><button class="playmini">3Dで再生</button></div></div>`;
   attach3DButton(d,alg,name,kind);
+  bindSetupToggle(d);
   bindCard(d,id);
   return d;
+}
+
+/* タイトル長押しで「作り方(完成状態から現在パターンを作る手順=解法の逆)」をトグル表示 */
+function bindSetupToggle(card){
+  const nm=card.querySelector('.nm[data-setup]');
+  const row=card.querySelector('.setuprow');
+  if(!nm||!row)return;
+  let timer=null,fired=false;
+  const show=()=>{fired=true;row.hidden=!row.hidden;if(navigator.vibrate)navigator.vibrate(8);};
+  nm.addEventListener('pointerdown',e=>{
+    fired=false;timer=setTimeout(show,450);
+  });
+  const cancel=()=>{if(timer){clearTimeout(timer);timer=null;}};
+  nm.addEventListener('pointerup',cancel);
+  nm.addEventListener('pointerleave',cancel);
+  nm.addEventListener('pointercancel',cancel);
+  // 長押しで開いた直後のクリックを無効化(誤操作防止)
+  nm.addEventListener('click',e=>{if(fired){e.preventDefault();e.stopPropagation();fired=false;}});
+  // 右クリック長押しメニュー抑止
+  nm.addEventListener('contextmenu',e=>e.preventDefault());
 }
 function pllCard(id,name,alg){
   const st=caseState(alg);
@@ -118,7 +140,7 @@ function buildF2L(){
       const d=document.createElement('div');d.className='acard fcard';
       const useAlg=f2lMirror?mirAlg(c.a):c.a;
       const svg=f2lMirror?isoSVG(mirState(caseState(useAlg)),true):isoSVG(caseState(c.a));
-      d.innerHTML=`<div class="chk">✓</div>${svg}<div class="bd algbody"><div class="nm">F2L #${gi+1}${f2lMirror?' <span style="color:var(--tx3)">FL</span>':''}</div><div class="alg mono">${chunk(useAlg)}</div><div class="algmeta"><span class="mv">${hm(useAlg)}手</span><span class="cycle">${cycleText(useAlg)}</span><button class="playmini">3Dで再生</button></div></div>`;
+      d.innerHTML=`<div class="chk">✓</div>${svg}<div class="bd algbody"><div class="nm">F2L #${gi+1}${f2lMirror?' <span style="color:var(--tx3)">FL</span>':''}<span class="mv">${hm(useAlg)}手</span></div><div class="alg mono">${chunk(useAlg)}</div><div class="algmeta"><span class="cycle">${cycleText(useAlg)}</span><button class="playmini">3Dで再生</button></div></div>`;
       attach3DButton(d,useAlg,`F2L #${gi+1}${f2lMirror?'(FL)':''}`,'f2l');
       bindCard(d,'F'+gi);
       g.appendChild(d);
@@ -289,7 +311,7 @@ const NAMED=[
 function buildNamed(){
   $('#ckLegend').innerHTML=CHUNKS.map(([nm,cls])=>`<span class="cklegend-item ck-${cls}"><span class="ckmark mono" aria-hidden="true">( )</span><b>${nm}</b></span>`).join('');
   $('#namedAlgs').innerHTML=NAMED.map(([n,a,d])=>
-    `<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}</b><span class="alg mono">${chunk(a)}</span><span class="carddesc">${d}</span><div class="algmeta"><span class="mv">${hm(a)}手</span><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
+    `<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}<span class="mv">${hm(a)}手</span></b><span class="alg mono">${chunk(a)}</span><span class="carddesc">${d}</span><div class="algmeta"><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#namedAlgs [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,d.dataset.name.includes('パーム')?'pll':'oll'));
 }
 /* ================= cross insertion patterns ================= */
@@ -324,13 +346,13 @@ function isoCrossSVG(st){
 }
 function buildCrossPatterns(){
   $('#crossPatterns').innerHTML=CROSSP.map(([t,a,d])=>
-    `<div class="acard fcard" style="cursor:default" data-alg="${a}" data-name="${t}">${isoCrossSVG(caseState(a))}<div class="bd algbody"><div class="nm">${t}</div><div class="alg mono">${chunk(a)}</div><div class="carddesc">${d}</div><div class="algmeta"><span class="mv">${hm(a)}手</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
+    `<div class="acard fcard" style="cursor:default" data-alg="${a}" data-name="${t}">${isoCrossSVG(caseState(a))}<div class="bd algbody"><div class="nm">${t}<span class="mv">${hm(a)}手</span></div><div class="alg mono">${chunk(a)}</div><div class="carddesc">${d}</div><div class="algmeta"><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#crossPatterns [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,'cross'));
 }
 
 /* basics */
 function buildBasics(){
   const T=[["セクシームーブ","R U R' U'"],["逆セクシー","U R U' R'"],["スレッジハンマー","R' F R F'"],["ヘッジスラマー","F R' F' R"]];
-  $('#triggers').innerHTML=T.map(([n,a])=>`<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}</b><span class="alg mono">${chunk(a)}</span><div class="algmeta"><span class="mv">${hm(a)}手</span><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
+  $('#triggers').innerHTML=T.map(([n,a])=>`<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}<span class="mv">${hm(a)}手</span></b><span class="alg mono">${chunk(a)}</span><div class="algmeta"><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#triggers [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,'trigger'));
 }
