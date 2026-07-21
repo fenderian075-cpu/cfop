@@ -81,8 +81,8 @@ header{
   position:sticky; top:0; z-index:20; background:rgba(16,16,20,.92);
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid transparent;
-  padding:10px 14px calc(10px); display:flex; align-items:center; gap:10px;
-  padding-top:calc(10px + env(safe-area-inset-top,0px));
+  padding:4px 14px calc(4px); display:flex; align-items:center; gap:10px;
+  padding-top:calc(4px + env(safe-area-inset-top,0px));
 }
 html.standalone header{background:rgba(16,16,20,.98)}
 html.standalone body[data-theme="light"] header{background:rgba(242,244,249,.98)}
@@ -519,10 +519,10 @@ body[data-theme="light"] .ncard:focus-visible{outline-color:color-mix(in srgb,va
   #where>b{min-width:0;overflow:hidden;text-overflow:ellipsis;padding-left:6px;border-left:1px solid var(--line);color:var(--pagec,var(--tx2));font-size:.72rem}
   .hicons{justify-self:end;gap:5px}
   #hcount{display:none}
-  .hico{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);
+  .hico{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);
     color:var(--tx);font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;
     display:flex;align-items:center;justify-content:center;padding:0}
-  .hico.modeIco{width:auto;min-width:72px;padding:0 10px;border-radius:22px;font-size:.68rem}
+  .hico.modeIco{width:auto;min-width:66px;padding:0 10px;border-radius:18px;font-size:.68rem}
   #lgIco{font-size:.7rem;letter-spacing:.04em}
   header{padding-right:10px}
 }
@@ -650,9 +650,9 @@ body[data-theme="light"] .scrwrap{box-shadow:0 1px 2px rgba(15,23,42,.06),0 4px 
   display:flex;flex-direction:column}
 .pp.open{transform:translateX(0)}
 @media(prefers-reduced-motion:reduce){.pp{transition:none}}
-.pphead{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:7px;padding:calc(5px + env(safe-area-inset-top,0px)) 10px 5px;border-bottom:1px solid var(--line);background:var(--panel2);flex-shrink:0}
+.pphead{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:7px;padding:calc(4px + env(safe-area-inset-top,0px)) 10px 4px;border-bottom:1px solid var(--line);background:var(--panel2);flex-shrink:0}
 .pphead b{position:absolute;left:50%;max-width:calc(100% - 210px);box-sizing:border-box;transform:translateX(-50%);font-size:.85rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ppbtn{width:44px;height:44px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);
+.ppbtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);
   color:var(--tx);font-size:.9rem;font-weight:800;cursor:pointer;line-height:1}
 .ppbody{min-height:0;overflow-y:auto;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px));scroll-padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .ppbody .n3wrap,.ppbody .algplayer{margin:0 0 10px;padding:10px}
@@ -756,8 +756,8 @@ button.chk{cursor:pointer;background:transparent}.acard>.chk:focus-visible,.task
   #where .whereBrandText{font-size:.62rem}
   #where>b{font-size:.62rem;padding-left:4px}
   #where>b{display:none}
-  .hicons{gap:4px}.hico{width:44px;height:44px}
-  .hico.modeIco{min-width:64px;padding:0 7px;font-size:.66rem}
+  .hicons{gap:4px}.hico{width:36px;height:36px}
+  .hico.modeIco{min-width:60px;padding:0 7px;font-size:.66rem}
 }
 
 /* ===== compact algorithm cards (mobile) ===== */
@@ -1056,7 +1056,9 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
   #apstart button,#apfocus button{font-size:.62rem;padding-inline:4px}
 }
 @media(pointer:coarse){
-  .btn,.navmain,.navmode button,.navtheme button,.navlang button,.ppbtn,.hico,.playmini,.nchip,.fchip,.fpcol button,.fpmid button{min-height:44px}
+  .btn,.navmain,.navmode button,.navtheme button,.navlang button,.playmini,.nchip,.fchip,.fpcol button,.fpmid button{min-height:44px}
+  header .hico{min-height:36px}
+  .pphead .ppbtn{min-height:36px}
 }
 
 /* ===== --yl直接参照の棚卸し: ライトで沈む背景/発光系を明アンバーへ統一 =====
