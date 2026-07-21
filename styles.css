@@ -798,7 +798,8 @@ button.chk{cursor:pointer;background:transparent}.acard>.chk:focus-visible,.task
   .fcard .carddesc{font-size:.64rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
   .fcard .algmeta{margin-top:6px}
 
-  .trg{border-radius:14px;padding:10px 11px;margin-bottom:7px}
+  #triggers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .trg{border-radius:14px;padding:10px 11px;margin-bottom:0;height:100%}
   .trg .algbody{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;align-items:start}
   .trg .alghead,.trg>.algbody>.nm,.trg>.algbody>.alg,.trg>.algbody>.carddesc{grid-column:1 / -1}
   .trg .alghead{justify-content:space-between;gap:8px}
