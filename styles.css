@@ -1034,10 +1034,10 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
 
 /* Apple-style mobile ergonomics: visual densityを保ちながら操作面は44pt以上にする */
 @media(max-width:760px){
-  .btn,.playmini,.nchip,.fchip,.apbuttons button,.apnettoggle,.fpbtns2 button,.fpsolve button{min-height:44px}
+  .btn,.playmini,.nchip,.fchip,.apbuttons button,.apnettoggle,.fpbtns2 button,.fpsolve button{min-height:36px}
   .btn,.playmini,.fchip{font-size:.72rem}
-  .apstartrow>.seg{min-height:44px}
-  .n3stage>.viewreset,.n3stage>.netstage{z-index:12;min-height:44px}
+  .apstartrow>.seg{min-height:36px}
+  .n3stage>.viewreset,.n3stage>.netstage{z-index:12;min-height:36px}
   .apinput,.apselect{min-height:44px;font-size:.78rem}
   .aplabel-full{display:none}.aplabel-short{display:inline}
   main,.page{width:100%;min-width:0}
@@ -1056,7 +1056,8 @@ body[data-theme="light"] .fpsBtn.flash{background:#ffcf1a;border-color:#e0a800;b
   #apstart button,#apfocus button{font-size:.62rem;padding-inline:4px}
 }
 @media(pointer:coarse){
-  .btn,.navmain,.navmode button,.navtheme button,.navlang button,.playmini,.nchip,.fchip,.fpcol button,.fpmid button{min-height:44px}
+  .btn,.navmain,.navmode button,.navtheme button,.navlang button,.playmini,.nchip,.fchip{min-height:36px}
+  .fpcol button,.fpmid button{min-height:44px}
   header .hico{min-height:36px}
   .pphead .ppbtn{min-height:36px}
 }
