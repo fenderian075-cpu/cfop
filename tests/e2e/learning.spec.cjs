@@ -33,7 +33,6 @@ test('legacy checks survive reload, mode/language changes and all six mobile rou
 });
 
 test('learn → compare → mixed; actual answers, physical timer and backup round-trip',async({page})=>{
-  await page.addInitScript(()=>{Math.random=()=>.75;});
   await open(page);await page.locator('#startPractice').tap();
   await expect(page.locator('#practiceLesson')).toContainText('Tパーム');
   await page.locator('#practiceChoices button').click();await expect(page.locator('#practiceLesson article')).toHaveCount(2);await page.locator('#practiceChoices button').click();await expect(page.locator('#practiceCase')).toBeHidden();await page.locator('#practiceChoices').getByRole('button',{name:'Tパーム',exact:true}).click();
