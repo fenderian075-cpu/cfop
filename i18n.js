@@ -9,6 +9,9 @@ try{
   if(savedTheme==='light'||savedTheme==='dark'){THEME=savedTheme;THEME_FOLLOWS_SYSTEM=false;}
 }catch(e){}
 const EN={
+  'コーナー2個とエッジ2個を交換':'Swap two corners and two edges',
+  '上段の右側コーナー2個と、左右のエッジ2個を交換。最初の4手はセクシームーブ。':'Swap the two right-hand corners and the left/right edges in the top layer. The first four moves are a Sexy Move.',
+  'ヘッドライト（側面の同色コーナー2個）を左にして回す。完成状態から同じ手順を2回繰り返すと元に戻る。':'Hold the headlights (two matching corner stickers on one side) on the left. Repeat the algorithm twice from solved to return to the start.',
   'モード':'Mode',
   'CFOP トレーナー':'CFOP Trainer','習得マップ':'Learning Map','簡易':'Simple','本格':'Advanced','習得':'Learned',
   'Cross → F2L → OLL → PLL の順に完成させる。まず簡易で1周、その後本格へ。':'Complete Cross → F2L → OLL → PLL in order. Finish one pass in Simple mode, then move to Advanced.',
@@ -209,3 +212,4 @@ if(SYSTEM_THEME_QUERY){
   if(typeof SYSTEM_THEME_QUERY.addEventListener==='function')SYSTEM_THEME_QUERY.addEventListener('change',syncSystemTheme);
   else if(typeof SYSTEM_THEME_QUERY.addListener==='function')SYSTEM_THEME_QUERY.addListener(syncSystemTheme);
 }
+

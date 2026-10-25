@@ -1,5 +1,5 @@
 /* CFOP Trainer Service Worker — online-first with offline fallback */
-const CACHE = 'cfop-runtime-v91';
+const CACHE = 'cfop-runtime-v92';
 const CORE = [
   './',
   './index.html',
@@ -64,3 +64,4 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(networkFirst(event.request, event.preloadResponse));
 });
+
