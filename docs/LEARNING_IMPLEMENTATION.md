@@ -23,7 +23,7 @@ scores. Existing timestamps and attempt IDs survive merge imports. Case IDs
 continue to use the original F-index / O-number / P-name / OE-number scheme.
 
 The initial schedule uses failures at 10 minutes, hinted success at 1 hour, and
-unhinted successes across distinct UTC dates at 1/3/7/14 days. This is a practical
+unhinted successes at least 24 hours apart at 1/3/7/14 days. This is a practical
 starting policy. Recognition and motor/execution schedules are separate. The
 24h+ metric counts successful unhinted answers at least 24 hours after the previous
 attempt in the same task; it is not a scientific certification of mastery.

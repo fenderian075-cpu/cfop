@@ -57,6 +57,10 @@ var CFOPLearning = (() => {
       const r = value.resume;
       if (!r || !["home", "basic", "cross", "f2l", "oll", "pll", "practice"].includes(r.page) || !Number.isFinite(r.at) || r.at < 0 || r.caseId && !knownIds.has(r.caseId) || r.task && !TASKS.includes(r.task) || r.mode && !["learn", "compare", "mixed"].includes(r.mode)) throw new Error("Invalid resume");
     }
+    const d = value.resume?.draft;
+    if (d !== void 0) {
+      if (!d || typeof d !== "object" || value.resume.page !== "practice" || !TASKS.includes(value.resume.task) || !["learn", "compare", "mixed"].includes(value.resume.mode) || !value.resume.caseId || value.resume.caseId === "SOLVE" || !Number.isInteger(d.orientation) || d.orientation < 0 || d.orientation > 3 || typeof d.input !== "string" || d.input.length > 1e4 || ["hinted", "revealed", "comparing", "answered", "setupOpen"].some((key) => typeof d[key] !== "boolean") || ![null, "correct", "incorrect"].includes(d.result) || d.answered !== (d.result !== null) || !Number.isFinite(d.responseMs) || d.responseMs < 0 || d.responseMs > 864e5 || d.elapsedMs !== null && (!Number.isFinite(d.elapsedMs) || d.elapsedMs < 0 || d.elapsedMs > 864e5)) throw new Error("Invalid resume draft");
+    }
     return structuredClone(value);
   }
   function addAttempt(state, attempt) {
@@ -67,7 +71,7 @@ var CFOPLearning = (() => {
     const attempts = new Map(a.attempts.map((x) => [x.id, x]));
     for (const item of b.attempts) {
       const current = attempts.get(item.id);
-      if (current && JSON.stringify(current) !== JSON.stringify(item)) throw new Error("Conflicting attempt ID");
+      if (current && ["id", "caseId", "task", "result", "source", "hintUsed", "responseMs", "at", "orientation"].some((key) => current[key] !== item[key])) throw new Error("Conflicting attempt ID");
       attempts.set(item.id, item);
     }
     const seen = { ...a.seen };
@@ -91,13 +95,16 @@ var CFOPLearning = (() => {
     if (!last) return 0;
     if (last.result !== "correct") return last.at + 6e5;
     if (last.hintUsed) return last.at + 36e5;
-    const days = /* @__PURE__ */ new Set();
+    let sessions = 0, anchor = Infinity;
     for (let i = list.length - 1; i >= 0; i--) {
       const a = list[i];
       if (a.result !== "correct" || a.hintUsed) break;
-      days.add(Math.floor(a.at / DAY));
+      if (anchor - a.at >= DAY) {
+        sessions++;
+        anchor = a.at;
+      }
     }
-    return last.at + [1, 3, 7, 14][Math.min(3, days.size - 1)] * DAY;
+    return last.at + [1, 3, 7, 14][Math.min(3, sessions - 1)] * DAY;
   }
   function reviewQueue(state, cases, learnedIds, now, task = "recognition") {
     const learned = new Set(learnedIds);
@@ -182,8 +189,8 @@ var CFOPLearning = (() => {
     execution: ["実物で回す", "Physical execution"],
     solve: ["全体ソルブを計る", "Time a full solve"],
     next: ["次のケース", "Next case"],
-    try: ["見分けてみる", "Try recognizing"],
-    advance: ["このケースを練習する", "Practice this case"],
+    try: ["自分で答えてみる", "Try answering"],
+    advance: ["似たケースと比べる", "Compare similar cases"],
     hint: ["ヒントを見る", "Show hint"],
     answer: ["手順を表示", "Show algorithm"],
     submit: ["回答する", "Check answer"],
@@ -194,6 +201,9 @@ var CFOPLearning = (() => {
     incorrect: ["もう一度確認しましょう", "Review this case again"],
     recorded: ["今回の結果を保存しました", "Result saved"],
     self: ["実物の結果は自己申告です", "Physical results are self-reported"],
+    recognitionHelp: ["図の上面と側面を見て、ケース名を選びましょう。", "Look at the top and side colors, then choose the case name."],
+    recallHelp: ["図を完成させる手順を入力しましょう。U調整も使えます。", "Enter moves that complete this case. U adjustments are allowed."],
+    restartTimer: ["もう一度計測する", "Restart timer"],
     startTimer: ["計測を始める", "Start timer"],
     stopTimer: ["計測を止める", "Stop timer"],
     success: ["正確にできた", "Completed correctly"],

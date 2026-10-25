@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-app-version="103">
+<html lang="ja" data-app-version="104">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -31,10 +31,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="64x64" href="icon-64.png">
-<link rel="stylesheet" href="styles.css?v=103">
+<link rel="stylesheet" href="styles.css?v=104">
 </head>
 <body data-page="home">
-<script src="theme-init.js?v=103"></script>
+<script src="theme-init.js?v=104"></script>
 
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -88,7 +88,7 @@
       <p id="practiceOrientationNote" class="learning-muted" data-l10n="aufHelp" hidden>向きはランダムです。必要ならU調整をしてから実行してください。</p>
       <div id="practicePrompt"></div>
       <div id="practiceChoices" class="learning-actions"></div>
-      <div id="practiceRecall" hidden><label for="practiceInput" data-l10n="moves">回転記号を入力</label><input id="practiceInput" class="apinput" spellcheck="false" autocapitalize="off" autocomplete="off"><button class="btn pri" id="practiceSubmit" data-l10n="submit">回答する</button></div>
+      <div id="practiceRecall" hidden><label for="practiceInput" data-l10n="moves">回転記号を入力</label><input id="practiceInput" maxlength="10000" class="apinput" spellcheck="false" autocapitalize="off" autocomplete="off"><button class="btn pri" id="practiceSubmit" data-l10n="submit">回答する</button></div>
       <div id="practicePhysical" hidden>
         <p data-l10n="timerHint">実物のキューブで回し、計測後に結果を記録してください。</p>
         <details id="practiceSetup"><summary data-l10n="setup">実物の準備（作り方・ヒント扱い）</summary><p class="mono" id="practiceSetupMoves"></p></details>
@@ -103,6 +103,7 @@
 
     <section id="learningRecords" class="learning-panel" data-learning-root hidden aria-labelledby="recordsTitle">
       <div class="learning-panel-head"><h2 id="recordsTitle" tabindex="-1" data-l10n="historyTitle">練習の記録</h2><button class="btn" id="closeRecords" data-l10n="close">閉じる</button></div>
+      <button class="btn" id="recordsBackup" data-l10n="saveBackup">バックアップへ</button>
       <p id="learningHistoryEmpty" data-l10n="emptyHistory">まだ練習記録はありません。従来の習得チェックは引き継がれています。</p>
       <div class="learning-fields"><label><span data-l10n="caseRecords">ケース別の記録</span><select id="recordCase"></select></label></div>
       <div id="learningMetrics" class="learning-metrics"></div>
@@ -553,20 +554,20 @@
   </div>
 </nav>
 
-<script src="i18n.js?v=103" defer></script>
-<script src="cube-engine.js?v=103" defer></script>
-<script src="rendering.js?v=103" defer></script>
-<script src="algorithms.js?v=103" defer></script>
-<script src="learning-core.js?v=103" defer></script>
-<script src="progress.js?v=103" defer></script>
-<script src="build.js?v=103" defer></script>
-<script src="player.js?v=103" defer></script>
-<script src="freeplay.js?v=103" defer></script>
-<script src="solver.js?v=103" defer></script>
-<script src="scramble.js?v=103" defer></script>
-<script src="app.js?v=103" defer></script>
-<script src="learning-ui.js?v=103" defer></script>
-<script src="navigation.js?v=103" defer></script>
+<script src="i18n.js?v=104" defer></script>
+<script src="cube-engine.js?v=104" defer></script>
+<script src="rendering.js?v=104" defer></script>
+<script src="algorithms.js?v=104" defer></script>
+<script src="learning-core.js?v=104" defer></script>
+<script src="progress.js?v=104" defer></script>
+<script src="build.js?v=104" defer></script>
+<script src="player.js?v=104" defer></script>
+<script src="freeplay.js?v=104" defer></script>
+<script src="solver.js?v=104" defer></script>
+<script src="scramble.js?v=104" defer></script>
+<script src="app.js?v=104" defer></script>
+<script src="learning-ui.js?v=104" defer></script>
+<script src="navigation.js?v=104" defer></script>
 
 </body>
 </html>

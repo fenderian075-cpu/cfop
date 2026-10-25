@@ -11,6 +11,7 @@ function go(p,historyMode='push'){
 }
 function goCore(p,historyMode='push'){
   if(!PAGE_IDS.has(p))p='home';
+  if(p!=='home'&&typeof practiceSuspend==='function')practiceSuspend();
   if(typeof PP!=='undefined'&&PP.open&&p==='basic')closePP();
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));
   const nextPage=$('#pg-'+p);
