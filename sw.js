@@ -1,14 +1,14 @@
 /* CFOP Trainer Service Worker — online-first with offline fallback */
-const CACHE = 'cfop-runtime-v92';
+const CACHE = 'cfop-runtime-v93';
 const CORE = [
   './',
   './index.html',
   './styles.css',
   './theme-init.js',
-  './i18n.js',
+  './i18n.js?v=93',
   './cube-engine.js',
   './progress.js',
-  './build.js',
+  './build.js?v=93',
   './player.js',
   './freeplay.js',
   './solver.js',
