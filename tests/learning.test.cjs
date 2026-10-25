@@ -111,11 +111,14 @@ test('recall checks the resulting cube and accepts a final AUF, while invalid to
 
 test('prediction pauses after the first T-perm trigger; reset cancels repeating animation',()=>{
   const a=app();try{
-    a.value('n3loadAlg(PLL.T,"T",false,false,"case","pll");N3.practiceMode="predict";n3start()');
+    a.value('n3loadAlg(PLL.T,"T",false,false,"case","pll")');
+    a.doc.querySelector('#apPracticeMode').value='predict';a.doc.querySelector('#apPracticeMode').dispatchEvent(new a.w.Event('change'));
+    assert.equal(a.value('N3.practiceMode'),'predict');a.value('n3start()');
     for(let i=0;i<6;i++)a.tick();assert.equal(a.value('N3.step'),4);assert.equal(a.value('N3.playing'),false);assert.equal(a.doc.querySelector('#apPrediction').hidden,false);
     a.value('n3PlaySegment(true)');a.tick();a.doc.querySelector('#apreset').click();a.tick();
     assert.equal(a.value('N3.step'),0);assert.equal(a.value('N3.repeat'),false);assert.equal(a.value('N3.playing'),false);
     const yaw=a.value('N3.yaw');a.doc.querySelector('#n3stage + .view-controls [data-l10n-aria="right"]').click();assert.equal(a.value('N3.yaw'),yaw+30);
+    a.doc.querySelector('#apSegment').value='2';a.doc.querySelector('#apSegment').dispatchEvent(new a.w.Event('change'));assert.equal(a.value('N3.step'),7);
   }finally{a.close();}
 });
 
@@ -128,5 +131,16 @@ test('Home defers hidden lesson grids; first navigation materializes the current
     a.doc.querySelector('#modeIco').click();assert.equal(a.doc.querySelectorAll('#ollList .acard').length,57);
     assert.equal(a.doc.querySelectorAll('#f2lList .acard').length,0);
     assert.ok(a.doc.querySelector('#hcount').textContent.includes('/119'));
+  }finally{a.close();}
+});
+
+test('mixed practice stays within known cases and an unsupported concurrent writer is protected',()=>{
+  const a=app();try{
+    a.doc.querySelector('#startPractice').click();a.value('practiceMode="mixed";practiceNew(learningCases.find(c=>c.id==="PT"));practiceNext()');
+    assert.equal(a.value('practiceCurrent.id'),'PT');
+    const raw=JSON.stringify({schemaVersion:70,retained:true});a.w.localStorage.setItem('cfop-learning-v1',raw);
+    a.value('practiceAnswer(practiceCurrent.id)');assert.equal(a.value('learningProtected'),true);
+    assert.equal(a.w.localStorage.getItem('cfop-learning-v1'),raw);
+    assert.equal(a.doc.querySelector('#saveLearningBackup').hidden,false);
   }finally{a.close();}
 });

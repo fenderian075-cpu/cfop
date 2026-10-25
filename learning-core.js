@@ -188,6 +188,8 @@ var CFOPLearning = (() => {
     answer: ["手順を表示", "Show algorithm"],
     submit: ["回答する", "Check answer"],
     moves: ["回転記号を入力", "Enter move notation"],
+    aufHelp: ["向きはランダムです。必要ならU調整をしてから実行してください。", "The orientation varies. Include a U adjustment before executing when needed."],
+    setup: ["実物の準備（作り方・ヒント扱い）", "Physical setup (counts as a hint)"],
     correct: ["正解です", "Correct"],
     incorrect: ["もう一度確認しましょう", "Review this case again"],
     recorded: ["今回の結果を保存しました", "Result saved"],

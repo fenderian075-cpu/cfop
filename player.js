@@ -101,8 +101,8 @@ function n3init(){
   $('#apnext').addEventListener('click',()=>{n3pause();n3stepForward();});
   $('#apslider').addEventListener('input',e=>{n3pause();n3setStep(+e.target.value);});
   $('#apSpeed').addEventListener('change',e=>{N3.rate=Number(e.target.value);});
-  $('#apPracticeMode').addEventListener('change',e=>{n3pause();N3.practiceMode=e.target.value;n3PracticeRefresh();});
-  $('#apSegment').addEventListener('change',e=>{n3pause();N3.segmentIndex=Number(e.target.value);n3setStep(N3.segments[N3.segmentIndex]?.start||0);});
+  $('#apPracticeMode').addEventListener('change',e=>{const selected=e.target.value;n3pause();N3.practiceMode=selected;n3PracticeRefresh();});
+  $('#apSegment').addEventListener('change',e=>{const selected=Number(e.target.value);n3pause();N3.segmentIndex=selected;n3setStep(N3.segments[N3.segmentIndex]?.start||0);});
   $('#apSegmentPlay').addEventListener('click',()=>n3PlaySegment(false));
   $('#apRepeat').addEventListener('click',()=>{if(N3.repeat)n3pause();else n3PlaySegment(true);});
   n3paint();n3sync();n3loadAlg($('#apinput').value,'セクシームーブ',false,false);

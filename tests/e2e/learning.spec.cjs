@@ -57,6 +57,7 @@ test('learn → compare → mixed; actual answers, physical timer and backup rou
 
 test('T-perm continuous playback, prediction, repetition, reset, and tap-only orbit',async({page})=>{
   await open(page);await startMixed(page);await page.locator('#practice3D').click();await expect(page.locator('#pp')).toHaveClass(/open/);
+  await page.locator('#apPracticeSettings summary').click();
   await page.locator('#apSpeed').selectOption('2');await page.locator('#applay').click();
   await expect(page.locator('#n3stepcount')).toContainText('14 / 14');
   await page.locator('#apreset').click();await expect(page.locator('#apslider')).toHaveValue('0');
@@ -109,6 +110,6 @@ test('action-to-paint measurements on throttled Chromium are stored locally',asy
   await open(page);
   if(browserName==='chromium'){const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});}
   await page.locator('#modeIco').tap();await page.locator('#lgIco').tap();await tab(page,'f2l');await tab(page,'home');await page.locator('#showRecords').click();
-  await page.locator('#learningRecords details summary').click();await expect(page.locator('#performanceSamples')).toContainText('mode-change');
+  await page.locator('#learningRecords summary[data-l10n="performance"]').click();await expect(page.locator('#performanceSamples')).toContainText('mode-change');
   await info.attach('action-to-paint.json',{body:Buffer.from(await page.locator('#performanceSamples').textContent()),contentType:'application/json'});
 });

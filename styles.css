@@ -1257,3 +1257,5 @@ body[data-theme="light"] .acard .setuprow{background:color-mix(in srgb,#ffcf1a 1
 }
 @media(prefers-reduced-motion:reduce){.learning-home,.learning-panel{scroll-behavior:auto}}
 #learningCaseRows{list-style:none;padding:0}#learningCaseRows li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;font-size:.76rem;color:var(--tx2)}
+.ap-practice summary{min-height:44px;display:list-item;cursor:pointer;font-size:.8rem;padding:12px 4px;box-sizing:border-box;color:var(--tx2)}
+#apPrediction{font-size:.8rem;line-height:1.6;border-left:3px solid var(--yl);padding-left:10px}

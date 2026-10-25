@@ -72,6 +72,7 @@
         <button class="btn" id="showRecords" data-l10n="records">記録を見る</button>
       </div>
       <p id="learningStorageStatus" role="status" hidden></p>
+      <button class="btn" id="saveLearningBackup" data-l10n="saveBackup" hidden>バックアップへ</button>
       <p id="learningUpdate" role="status" hidden></p>
     </section>
 
@@ -84,11 +85,13 @@
       </div>
       <div id="practiceLesson" class="practice-lesson"></div>
       <div id="practiceDiagram" class="practice-diagram"></div>
+      <p id="practiceOrientationNote" class="learning-muted" data-l10n="aufHelp" hidden>向きはランダムです。必要ならU調整をしてから実行してください。</p>
       <div id="practicePrompt"></div>
       <div id="practiceChoices" class="learning-actions"></div>
       <div id="practiceRecall" hidden><label for="practiceInput" data-l10n="moves">回転記号を入力</label><input id="practiceInput" class="apinput" spellcheck="false" autocapitalize="off" autocomplete="off"><button class="btn pri" id="practiceSubmit" data-l10n="submit">回答する</button></div>
       <div id="practicePhysical" hidden>
         <p data-l10n="timerHint">実物のキューブで回し、計測後に結果を記録してください。</p>
+        <details id="practiceSetup"><summary data-l10n="setup">実物の準備（作り方・ヒント扱い）</summary><p class="mono" id="practiceSetupMoves"></p></details>
         <output id="practiceClock" class="practice-clock" aria-label="Timer">0.0 s</output>
         <div class="learning-actions"><button class="btn pri" id="practiceTimer" data-l10n="startTimer">計測を始める</button><button class="btn" id="practiceSuccess" data-l10n="success" disabled>正確にできた</button><button class="btn" id="practiceFailure" data-l10n="failure" disabled>間違えた・未完了</button></div>
         <p class="learning-muted" data-l10n="self">実物の結果は自己申告です</p>
@@ -280,15 +283,16 @@
         <button class="btn" id="apend" aria-label="最後へ進む">▶|</button>
       </div>
       <input class="apslider" id="apslider" type="range" min="0" max="4" value="0" step="1" aria-label="手順の再生位置。左へ戻すと逆方向に確認できます">
-      <div class="ap-practice" data-learning-root>
+      <details class="ap-practice" id="apPracticeSettings" data-learning-root>
+        <summary data-l10n="sections">区間練習</summary>
         <div class="learning-fields">
           <label><span data-l10n="speed">再生速度</span><select id="apSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
           <label><span data-l10n="sections">区間練習</span><select id="apPracticeMode"><option value="continuous" data-l10n="continuous">連続再生</option><option value="predict" data-l10n="predictMode">区切りで予測</option></select></label>
           <label><span data-l10n="sections">区間練習</span><select id="apSegment"></select></label>
         </div>
         <div class="learning-actions"><button class="btn" id="apSegmentPlay" data-l10n="nextSegment">次の区間へ</button><button class="btn" id="apRepeat" data-l10n="repeat" aria-pressed="false">この区間を反復</button></div>
-        <p id="apPrediction" role="status" hidden data-l10n="predict">次の区間で動かすピースと、戻すペアを予測してから続けましょう。</p>
-      </div>
+      </details>
+      <p id="apPrediction" role="status" hidden data-learning-text data-l10n="predict">次の区間で動かすピースと、戻すペアを予測してから続けましょう。</p>
       <div class="apstartrow"><div class="seg" id="apstart">
         <button data-st="case"><span class="aplabel-full">ケースから解く</span><span class="aplabel-short">ケースから</span></button><button data-st="solved" class="on"><span class="aplabel-full">完成から適用</span><span class="aplabel-short">完成から</span></button>
       </div><div class="seg" id="apfocus">
