@@ -59,3 +59,15 @@ interactions at 320/375/390px and landscape.
 
 These are local results. The public site, hosted response headers and hosted CI
 were not changed or verified as a deployed fix.
+
+## Publication follow-up: browser HTTP cache
+
+After publishing the initial remediation, all primary flows passed on the v100
+page, but reopening the ordinary URL in the browser reused a cached v94 shell.
+Direct HTTP retrieval already matched the published commit and still declared
+`max-age=600`, locating the remaining problem in browser HTTP caching.
+
+The follow-up release bypasses that cache when precaching, explicitly
+revalidates network responses, and disables navigation preload so it cannot
+supply an old HTTP-cached shell ahead of revalidation. Two additional regression
+tests cover installation and online navigation, including a stale preload.

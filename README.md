@@ -74,5 +74,10 @@ caches may be removed. Query versions are release identifiers, not immutable
 content hashes: update HTML, Worker URL and SW together, deploy the package
 atomically where possible, and test upgrades with old tabs present.
 
+Precache installation bypasses the browser HTTP cache, and online navigation
+explicitly revalidates it. Navigation preload is disabled to prevent its own
+HTTP-cached response from bypassing revalidation. This matters on Pages, whose
+ten-minute HTTP caching cannot be changed by `_headers`.
+
 See [docs/AUDIT_FIXES.md](docs/AUDIT_FIXES.md) for all 18 changes, regression
 coverage and remaining physical-device/deployment checks.
