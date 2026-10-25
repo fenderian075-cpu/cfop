@@ -19,6 +19,7 @@ function app({ language = 'ja', mode = 's', width = 1280, Worker, workerDeadline
   w.HTMLElement.prototype.scrollIntoView = function () { w.lastScrollTarget = this; };
   w.HTMLElement.prototype.scrollTo = () => {};
   w.HTMLElement.prototype.animate = () => ({ finished: Promise.resolve(), cancel() {} });
+  w.HTMLElement.prototype.getAnimations = () => [];
   let now = 0, id = 0;
   const frames = new Map();
   w.performance.now = () => now;

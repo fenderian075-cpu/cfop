@@ -285,7 +285,12 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
     const dx=e.clientX-g.x,dy=e.clientY-g.y;
     const now=performance.now();g.samples.push({x:e.clientX,t:now});
     if(g.samples.length>8)g.samples.shift();
-    if(!g.axis&&Math.hypot(dx,dy)>=10)g.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+    if(!g.axis&&Math.hypot(dx,dy)>=10){
+      g.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+      // Capturing on pointerdown retargets ordinary button clicks to the bar.
+      // Capture only after a horizontal drag has actually started.
+      if(g.axis==='x'&&bar.setPointerCapture)bar.setPointerCapture(e.pointerId);
+    }
     if(g.axis!=='x')return;
     swiped=true;setGestureX(dx);
   };
@@ -312,7 +317,6 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
     if(bar.classList.contains('mini')){setMini(false);return;}
     const pg=document.querySelector('.page.on');
     const barLive=freezePresentation(bar),pageLive=freezePresentation(pg);
-    if(bar.setPointerCapture)bar.setPointerCapture(e.pointerId);
     g={x:e.clientX,y:e.clientY,lastX:0,axis:null,page:pg,baseBarX:barLive.x,basePageX:pageLive.x,baseOpacity:pageLive.opacity,samples:[{x:e.clientX,t:performance.now()}]};
     barX=barLive.x;pageX=pageLive.x;swiped=false;
   });

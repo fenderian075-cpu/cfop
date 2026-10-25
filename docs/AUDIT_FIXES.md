@@ -71,3 +71,26 @@ The follow-up release bypasses that cache when precaching, explicitly
 revalidates network responses, and disables navigation preload so it cannot
 supply an old HTTP-cached shell ahead of revalidation. Two additional regression
 tests cover installation and online navigation, including a stale preload.
+
+
+## Mobile interaction follow-up (2026-10-25, v102)
+
+- Reproduced in a real browser at a 390px iframe viewport: pointer clicks on
+  mobile tabs left the active page unchanged, while Enter activated the same tab.
+  Capturing the pointer on the parent bar during pointerdown retargeted clicks
+  away from child buttons. Capture now starts only after a horizontal drag crosses
+  the existing 10px direction threshold; swipe navigation and post-swipe click
+  suppression remain intact.
+- Freeplay's orbit surface now excludes child buttons from pointer capture, so
+  its view-reset button receives ordinary clicks. Dragging the cube still captures.
+- Added two regression tests with browser pointer-capture click retargeting modeled
+  at the DOM event boundary. These supplement, rather than replace, browser checks.
+- Responsive checks use the unmodified runtime in the local same-origin preview:
+  320x568, 375x667, 390x640, 740x390 and 844x390. Six-page navigation has no document
+  horizontal overflow at 320, 375 and 844px; mobile tabs were directly clicked at
+  320, 375 and 390px. T-perm playback reaches 14/14 at 320, 390 and 740px.
+  Also checked mobile contents navigation, language/mode switches, player reset,
+  minimize/restore, Freeplay solve completion and quiz-to-player entry.
+- These are responsive desktop-browser checks, not physical iOS/Android or touch
+  hardware certification. Browser UI and safe-area behavior on real devices remain
+  outside this environment's verified evidence.

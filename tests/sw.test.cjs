@@ -9,7 +9,7 @@ function worker({ fetch = async () => ({ status: 503, ok: false }), cacheMatch =
   const context = vm.createContext({
     URL, Request, AbortController, setTimeout, clearTimeout, ...timers,
     self: { location: { origin: 'https://example.test' }, registration: { scope: 'https://example.test/cfop/' }, addEventListener: (type, fn) => { handlers[type] = fn; } },
-    caches: { keys: async () => ['other-app', 'cfop-runtime-v94', 'cfop-runtime-v101'], delete: async key => { deleted.push(key); }, open: async () => ({ match: cacheMatch, put: cachePut, addAll: cacheAddAll }) },
+    caches: { keys: async () => ['other-app', 'cfop-runtime-v94', 'cfop-runtime-v102'], delete: async key => { deleted.push(key); }, open: async () => ({ match: cacheMatch, put: cachePut, addAll: cacheAddAll }) },
     fetch, request: { url: 'https://example.test/cfop/', mode: 'navigate' },
   });
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8'), context);
@@ -40,7 +40,7 @@ test('cache quota failure does not replace a successful network response', async
 test('versioned assets use the installed cache without going online', async () => {
   let fetched = false;
   const w = worker({ fetch: async () => { fetched = true; throw new Error('unexpected network'); } });
-  assert.equal((await w.run('respond({url:"https://example.test/cfop/player.js?v=101",mode:"cors"})')).status, 200);
+  assert.equal((await w.run('respond({url:"https://example.test/cfop/player.js?v=102",mode:"cors"})')).status, 200);
   assert.equal(fetched, false);
 });
 

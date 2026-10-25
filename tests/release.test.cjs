@@ -15,8 +15,8 @@ test('F14: all runtime scripts parse and every HTML dependency is precached at o
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const scripts = [...html.matchAll(/<script src="([^"]+)"/g)].map(match => match[1]);
   const stylesheet = html.match(/rel="stylesheet" href="([^"]+)"/)[1];
-  for (const file of [...scripts, stylesheet, 'cube-worker.js?v=101']) {
-    assert.ok(core.includes('./' + file), file);assert.equal(new URL(file, 'https://test/').searchParams.get('v'), '101');
+  for (const file of [...scripts, stylesheet, 'cube-worker.js?v=102']) {
+    assert.ok(core.includes('./' + file), file);assert.equal(new URL(file, 'https://test/').searchParams.get('v'), '102');
   }
   for (const file of core) assert.ok(fs.existsSync(path.join(root, file.split('?')[0])), file);
 });

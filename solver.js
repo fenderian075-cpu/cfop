@@ -643,7 +643,10 @@ function fpInit(){
   // ドラッグで視点
   let drag=null;
   const st=$('#fpStage');
-  st.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,p:FP.pitch,w:FP.yaw};st.setPointerCapture(e.pointerId);});
+  st.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button'))return;
+    drag={x:e.clientX,y:e.clientY,p:FP.pitch,w:FP.yaw};st.setPointerCapture(e.pointerId);
+  });
   st.addEventListener('pointermove',e=>{
     if(!drag)return;
     FP.yaw=drag.w+(e.clientX-drag.x)*.45;
