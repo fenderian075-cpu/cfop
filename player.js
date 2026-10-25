@@ -160,6 +160,7 @@ function n3color(content){
   return full;
 }
 function n3paint(){
+  const stage=$('#n3stage');stage.setAttribute('role','group');stage.dataset.cubestate=N3.state.join(',');stage.setAttribute('aria-label',cubeStateDescription(N3.state));
   N3.cubies.forEach(c=>Object.entries(c.faces).forEach(([f,el])=>{
     const i=n3facelet(c,f);if(i!==null)el.style.background=n3color(N3.state[i]);
   }));
@@ -237,7 +238,8 @@ function n3previewNext(index){
 }
 function n3showStepCount(step=N3.step){
   const el=$('#n3stepcount');if(!el)return;
-  el.textContent=N3.seq.length?`${Math.max(0,Math.min(step,N3.seq.length))} / ${N3.seq.length}手`:'';
+  if(N3.seq.length)setMessage(el,'playerPosition',{step:Math.max(0,Math.min(step,N3.seq.length)),count:N3.seq.length});
+  else{delete el.dataset.message;el.textContent='';}
   el.hidden=!N3.seq.length;
 }
 function n3sync(){
@@ -257,6 +259,7 @@ function n3animate(token,done,dir=1){
   n3previewNext(dir>0?N3.step+1:N3.step);
   n3showStepCount(dir>0?N3.step+1:N3.step-1);
   N3.animating=true;
+  const session=N3.session||(N3.session=1);
   const mod=shown.slice(1),target=90*b.sg*(mod==="'"?-1:1)*(mod==='2'?2:1);
   const movers=N3.cubies.filter(b.ly);
   N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));
@@ -264,6 +267,7 @@ function n3animate(token,done,dir=1){
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const ar=document.getElementById('n3arrow3d');
   function frame(now){
+    if(N3.session!==session)return;
     const t=Math.min(1,(now-t0)/D), deg=target*ease(t);
     movers.forEach(c=>c.el.style.transform=`rotate${b.ax}(${deg}deg) ${n3pos(c)}`);
     if(ar&&ar.dataset.base)ar.style.transform=`rotate${b.ax}(${deg}deg) ${ar.dataset.base}`;
@@ -301,6 +305,7 @@ function n3updatePlayer(){
   }
 }
 function n3setStep(step){
+  n3cancelAnimation();
   N3.step=Math.max(0,Math.min(N3.seq.length,step));N3.state=(N3.start||SOLVED).slice();
   for(let i=0;i<N3.step;i++)N3.state=ap(N3.state,M[N3.seq[i]]);
   N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));n3paint();
@@ -314,7 +319,14 @@ function n3start(){
   if(!N3.seq.length)return;if(N3.step>=N3.seq.length)n3setStep(0);N3.playing=true;n3updatePlayer();
   const loop=()=>{if(!N3.playing)return;if(N3.step>=N3.seq.length){N3.playing=false;n3updatePlayer();return;}n3animate(N3.seq[N3.step],loop);};loop();
 }
-function n3pause(){N3.playing=false;n3updatePlayer();}
+function n3cancelAnimation(){
+  N3.session=(N3.session||0)+1;
+  if(N3.raf!==null)cancelAnimationFrame(N3.raf);
+  N3.raf=null;N3.animating=false;
+  N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));
+  const arrow=document.getElementById('n3arrow3d');if(arrow?.dataset.base)arrow.style.transform=arrow.dataset.base;
+}
+function n3pause(){N3.playing=false;n3cancelAnimation();n3paint();n3updatePlayer();}
 function n3resetBasic(){
   n3pause();N3.yaw=-35;N3.pitch=-25;N3.focus=true;
   const preset=$('#appreset');if(preset)preset.selectedIndex=0;
@@ -351,7 +363,9 @@ function realisticEnd(kind){
   return SOLVED.slice();
 }
 function n3loadAlg(alg,name,autoplay,navigate=true,startMode='solved',kind){
-  const seq=toks(alg).filter(t=>M[t]);N3.playing=false;N3.seq=seq;N3.algName=name||'手順';
+  const parsed=parseAlg(alg);if(parsed.invalid.length){showToast(tj('認識できない記号: ','Unrecognized tokens: ')+parsed.invalid.join(' '),true);return false;}
+  n3cancelAnimation();
+  const seq=parsed.valid;N3.playing=false;N3.seq=seq;N3.algName=name||'手順';
   N3.startMode=startMode;
   if(kind!==undefined)N3.caseKind=kind;
   if(startMode==='case'&&seq.length){
@@ -472,7 +486,7 @@ function triboxSVG(token,prog){
     for(const L of movingLv)out+=line3(tfA([-1.15*dir,-1.72,L],L),tfA([1.15*dir,-1.72,L],L));
   }
   if(mod.includes('2'))out+=`<text x="26" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="var(--tx)" stroke="var(--bg)" stroke-width="2" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">180°</text>`;
-  return `<svg class="turnnotation" viewBox="-6 -8 112 120" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
+  return `<svg aria-hidden="true" class="turnnotation" viewBox="-6 -8 112 120" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
 }
 
 function axisRotationSVG(token,prog){
@@ -554,7 +568,7 @@ function axisRotationSVG(token,prog){
     return `<g class="axis-face"><polygon points="${pts}" fill="${face.color}" fill-opacity="${alpha}" stroke="var(--tx)" stroke-opacity=".68" stroke-width="1.1"/>${grid}</g>`;
   }).join('');
   const pulse=prog===undefined?1:.8+.2*Math.sin(Math.min(prog,90)*Math.PI/180);
-  return `<svg class="axisrotation axis-${active}${prog===undefined?'':' axis-playing'}" viewBox="0 0 124 110" xmlns="http://www.w3.org/2000/svg">
+  return `<svg aria-hidden="true" class="axisrotation axis-${active}${prog===undefined?'':' axis-playing'}" viewBox="0 0 124 110" xmlns="http://www.w3.org/2000/svg">
     <defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="${colors[active]}"/></marker></defs>
     ${bgAxes}<g class="axis-cube-shape">${cubeFaces}</g>
     ${fgAxis}<g opacity="${pulse.toFixed(2)}">${ring}</g>

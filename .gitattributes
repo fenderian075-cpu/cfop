@@ -1,0 +1,2 @@
+# Preserve upstream bytes and hashes, including its original blank-line spaces.
+vendor/cubejs-1.3.2/** -whitespace

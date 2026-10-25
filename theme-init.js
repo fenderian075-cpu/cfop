@@ -1,5 +1,9 @@
 /* Apply the saved or system theme before the page paints. */
 (()=>{
+  // Pages cannot send frame-ancestors. Keep the app hidden when publicly framed.
+  const local=['localhost','127.0.0.1','[::1]'].includes(location.hostname);
+  if(window.top!==window.self&&!local)return;
+  document.documentElement.dataset.appVisible='true';
   let theme='dark';
   try{
     const savedTheme=localStorage.getItem('cfop-theme');

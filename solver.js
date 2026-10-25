@@ -1,7 +1,9 @@
 /* CFOP Trainer — 分割モジュール(クラシックスクリプト・ロード順依存)。元app.jsの行順を保持 */
 /* ================= CFOP solver (フリープレイ用・段階実行) ================= */
 const SV={conj:null,slotPos:null,f2lSig:null,ollSig:null,oll2eSig:null,ocllSig:null};
-const tj=(ja,en)=>(typeof LANG!=='undefined'&&LANG==='en')?en:ja;
+const SV_TEXT=new Map();
+const tj=(ja,en)=>{const pair={ja,en};SV_TEXT.set(ja,pair);SV_TEXT.set(en,pair);return (typeof LANG!=='undefined'&&LANG==='en')?en:ja;};
+function svText(text){const pair=SV_TEXT.get(text);return pair?pair[LANG==='en'?'en':'ja']:text;}
 function svAuf(k){return ['','U','U2',"U'"][k];}
 function svJoin(...parts){return parts.filter(Boolean).join(' ').trim();}
 function svInit(){
@@ -71,11 +73,11 @@ function svSolvedUpToAuf(st){
   return -1;
 }
 const FACE_JA=['黄','赤','青','白','橙','緑'],FACE_EN=['yellow','red','blue','white','orange','green'];
-function svWhere(p){
+function svWhere(p,language=LANG){
   const f=Math.floor(p/9),r=Math.floor((p%9)/3);
   const fj=['上面','右面','正面','底面','左面','背面'][f],fe=['top','right','front','bottom','left','back'][f];
   const rj=f===0||f===3?'':['上段','中段','下段'][r],re=f===0||f===3?'':[' top',' middle',' bottom'][r];
-  return tj(fj+rj,fe+re);
+  return language==='en'?fe+re:fj+rj;
 }
 /* --- クロス: 1エッジずつIDDFS --- */
 const CROSSE=[[28,25],[32,16],[34,52],[30,43]];
@@ -104,12 +106,12 @@ function svCross(st){
       dfs(cur,depth,'');
     }
     if(!found)return null;
-    const colB=tj(FACE_JA[Math.floor(b/9)],FACE_EN[Math.floor(b/9)]);
+    const side=Math.floor(b/9);
     steps.push({
       stage:'CROSS',
-      t:tj(`クロス: 白×${colB}エッジ`,`Cross: white-${colB} edge`),
-      j:tj(`このエッジは今 ${svWhere(posA)} にある → ${found.length}手で底面の定位置へ`,
-           `This edge sits at the ${svWhere(posA)} → ${found.length} move(s) to place it`),
+      t:tj(`クロス: 白×${FACE_JA[side]}エッジ`,`Cross: white-${FACE_EN[side]} edge`),
+      j:tj(`このエッジは今 ${svWhere(posA,'ja')} にある → ${found.length}手で底面の定位置へ`,
+           `This edge sits at the ${svWhere(posA,'en')} → ${found.length} move(s) to place it`),
       // 底面の白センターは向きの基準として自明なので、クロスの強調対象から外す
       alg:found.join(' '),mv:found.slice(),hi:new Set([a,b,Math.floor(b/9)*9+4]),
       view:[[-65,-35],[-18,-120],[-18,-30],[62,-35],[-18,60],[-18,150]][Math.floor(posA/9)]
@@ -198,7 +200,7 @@ function svOLL(st,simple){
       const [nm,alg]=OLL2E[hit.idx];
       const mv=toks(svJoin(hit.k?svAuf(hit.k):'',alg));
       steps.push({stage:'OLL',t:tj(`OLL①: エッジの向き`,`OLL 1: edge orientation`),
-        j:tj(`黄エッジの形=「${nm.split('→')[0]}」→ ${nm}の手順`,`Yellow-edge shape matches "${nm}" case`),
+        j:tj(`黄エッジの形=「${nm.split('→')[0]}」→ ${nm}の手順`,`Yellow-edge shape matches "${['Dot → Cross','L → Cross','Line → Cross'][hit.idx]}" case`),
         alg:mv.join(' '),mv,hi:new Set([1,3,5,7,4]),view:[-58,-35]});
       for(const m2 of mv)cur=ap(cur,M[m2]);
     }
@@ -407,22 +409,26 @@ function fpInit(){
       if(i<seq.length){fpFlashCmd(seq[i]);fpAnimate(seq[i++],true,next);}
       else{ // スクランブルは崩す操作なので手数・履歴に含めない
         FP.moves=0;FP.hist=[];
-        $('#fpCount').textContent=(typeof LANG!=='undefined'&&LANG==='en')?'0 moves':'0手';
+        setMessage($('#fpCount'),'moves',{count:0});
       }
     };
     next();
   }
   // スクランブルは「完成状態から」が定義。直前の自由回しはリセットしてから適用する
   const fpSoftReset=()=>{
-    FP.state=SOLVED.slice();FP.hist=[];FP.moves=0;fpPaint();
-    $('#fpCount').textContent=(typeof LANG!=='undefined'&&LANG==='en')?'0 moves':'0手';
+    FP.epoch=(FP.epoch||0)+1;FP.state=SOLVED.slice();FP.hist=[];FP.moves=0;fpPaint();
+    setMessage($('#fpCount'),'moves',{count:0});
     const sb=$('#fpSolved');if(sb)sb.hidden=true;
   };
   $('#fpScramble').addEventListener('click',()=>{
     if(FP.anim||FP.solving)return;
-    if(WCA.ready&&!WCA.failed){WCA.cb=s2=>{fpSoftReset();fpApplySeq(toks(s2));};WCA.cbSent=true;WCA.worker.postMessage('scramble');}
-    else if(!WCA.failed&&typeof Worker!=='undefined'){WCA.cb=s2=>{fpSoftReset();fpApplySeq(toks(s2));};WCA.cbSent=false;wcaInit();}
-    else{fpSoftReset();fpApplySeq(toks(scrRandom(18)));}
+    const button=$('#fpScramble'),epoch=FP.epoch||0;button.disabled=true;
+    requestScramble((alg,fallback)=>{
+      button.disabled=false;
+      if((FP.epoch||0)!==epoch||FP.anim||FP.solving)return;
+      fpSoftReset();fpApplySeq(toks(alg));
+      if(fallback)showToast(tj('代替のランダムムーブを生成しました','Generated a fallback random-move scramble'));
+    });
   });
   $('#fpPerfect').addEventListener('click',()=>{
     if(FP.anim||FP.solving)return;
@@ -434,7 +440,7 @@ function fpInit(){
     FP.solving=false;FP.hi=null;FP.xray=false;FP.plan=null;$('#fpSolveBox').hidden=true;
     document.querySelector('.fpwrap')?.classList.remove('solving');
     const hdr=$('#fsHdr');if(hdr)hdr.hidden=true;
-    FP.state=SOLVED.slice();FP.hist=[];FP.moves=0;fpPaint();
+    FP.epoch=(FP.epoch||0)+1;FP.state=SOLVED.slice();FP.hist=[];FP.moves=0;fpPaint();
   });
   $('#fpNet').addEventListener('click',()=>{
     const n=$('#fpNet2');n.hidden=!n.hidden;
@@ -454,19 +460,21 @@ function fpInit(){
   }
   function fpRefreshSolve(){
     if(!FP.solving||!FP.plan)return;
-    // 言語切替時: 現在の盤面(認識停止=このステップ実行前)からプランを再生成して言語を反映
-    if(!FP.anim){
-      const fresh=fpSolvePlan();
-      if(fresh&&fresh.length){FP.plan=fresh;FP.planI=0;}
-    }
+    // Translate existing plan labels; language changes must not restart a solve.
     const st=FP.plan[FP.planI];if(!st)return;
     const sb=$('#fsStageBadge'),mbg=$('#fsModeBadge'),ttl=$('#fsTitle');
-    if(sb)sb.textContent=st.stage;
+    if(sb)sb.textContent=svText(st.stage);
     if(mbg)mbg.textContent=(typeof mode!=='undefined'&&mode==='s')?tj('簡易','Simple'):tj('本格','Advanced');
-    if(ttl)ttl.textContent=st.t;
+    if(ttl)ttl.textContent=svText(st.t);
     const prg=$('#fsHdrProg');if(prg)prg.textContent=`${FP.planI+1} / ${FP.plan.length}`;
-    const jEl=$('#fpSolveBox .fsj');if(jEl)jEl.textContent=st.j;
+    const jEl=$('#fpSolveBox .fsj');if(jEl)jEl.textContent=svText(st.j);
     const aEl=$('#fpSolveBox .fsa');if(aEl)aEl.innerHTML=chunkLive(st.alg);
+    for(const [id,ja,en] of [['fsBack','◀ 戻る','◀ Back'],['fsGo','▶ 実行','▶ Run'],['fsAll','⏩ 最後まで','⏩ Run all'],['fsQuit','✕ 中断','✕ Stop'],['fsPause','⏸ 手動へ','⏸ Manual']]){
+      const el=document.getElementById(id);if(el)el.textContent=tj(ja,en);
+    }
+    const view=$('#fsView'),focus=$('#fsFocus');
+    if(view)view.textContent=`👁 ${tj('視点','View')}: ${FP.autoView!==false?'ON':'OFF'}`;
+    if(focus)focus.textContent=`◧ ${tj('フォーカス','Focus')}: ${FP.autoFocus!==false?'ON':'OFF'}`;
   }
   window.fpRefreshSolve=fpRefreshSolve;
   function fsStageDone(stage){
@@ -494,9 +502,9 @@ function fpInit(){
     if(FP.autoView!==false&&st.view)fpViewTween(st.view[0],st.view[1]);
     box.hidden=false;
     const sb=$('#fsStageBadge'),mbg=$('#fsModeBadge'),hdr=$('#fsHdr');
-    if(sb)sb.textContent=st.stage;
+    if(sb)sb.textContent=svText(st.stage);
     if(mbg)mbg.textContent=(typeof mode!=='undefined'&&mode==='s')?tj('簡易','Simple'):tj('本格','Advanced');
-    const ttl=$('#fsTitle');if(ttl)ttl.textContent=st.t;
+    const ttl=$('#fsTitle');if(ttl)ttl.textContent=svText(st.t);
     const prg=$('#fsHdrProg');if(prg)prg.textContent=`${i+1} / ${FP.plan.length}`;
     if(hdr)hdr.hidden=false;
     const tgl=`<button class="btn" id="fsView">👁 ${tj('視点','View')}: ${FP.autoView!==false?'ON':'OFF'}</button>
@@ -504,7 +512,7 @@ function fpInit(){
     box.innerHTML=`
       <div class="fsrow">
         <div class="fsmain">
-          <div class="fsj">${st.j}</div>
+          <div class="fsj">${svText(st.j)}</div>
           <div class="fsa mono">${chunkLive(st.alg)}</div>
         </div>
         ${(st.stage==='OLL'||st.stage==='PLL')?`<div class="fs2d">${llSVG(FP.state,st.stage==='OLL'?'oll':'pll',false)}<span>${tj('上から見た図','top view')}</span></div>`:''}
@@ -602,7 +610,7 @@ function fpInit(){
     swipeBox.hidden=!sw;
     document.querySelector('.fpplay').classList.toggle('swipemode',sw);
     $('#fpSubRow').style.display=sw?'none':'';
-    $('#fpCtlMode').textContent=sw?tj('ボタン操作へ','Button controls'):tj('スワイプ操作へ','Swipe controls');
+    setMessage($('#fpCtlMode'),sw?'buttonControls':'swipeControls');
     fpView(); // レイアウト変更後にスケール再計算
   }
   $('#fpCtlMode').addEventListener('click',()=>setCtl(FP.ctl==='swipe'?'btn':'swipe'));

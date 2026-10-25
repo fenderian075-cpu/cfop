@@ -23,6 +23,7 @@ function fpView(){
   $('#fpOrbit').style.transform=`scale(${fit}) rotateX(${FP.pitch}deg) rotateY(${FP.yaw}deg)`;
 }
 function fpPaint(){
+  const stage=$('#fpStage');stage.setAttribute('role','group');stage.dataset.cubestate=FP.state.join(',');stage.setAttribute('aria-label',cubeStateDescription(FP.state));
   const orbit=$('#fpOrbit');
   if(orbit)orbit.classList.toggle('xray',!!FP.xray);
   FP.cubies.forEach(c=>{
@@ -43,7 +44,7 @@ function fpPaint(){
     });
   });
   const net=$('#fpNet2');if(net&&!net.hidden)net.innerHTML=netStateSVG(FP.state);
-  $('#fpCount').textContent=FP.moves+((typeof LANG!=='undefined'&&LANG==='en')?' moves':'手');
+  setMessage($('#fpCount'),'moves',{count:FP.moves});
   const solved=FP.state.every((v,i)=>v===i);
   $('#fpSolved').hidden=!(solved&&FP.moves>0);
 }
@@ -69,7 +70,7 @@ function fpAnimate(token,fast,done){
         FP._resetT=setTimeout(()=>{
           if(FP.state.every((v,i)=>v===i)){
             FP.moves=0;FP.hist=[];
-            $('#fpCount').textContent=(typeof LANG!=='undefined'&&LANG==='en')?'0 moves':'0手';
+            setMessage($('#fpCount'),'moves',{count:0});
             const sb=$('#fpSolved');if(sb)sb.hidden=true;
           }
         },1500);
@@ -81,7 +82,7 @@ function fpAnimate(token,fast,done){
 function fpDo(token,fast){
   if(FP.solving)return;
   if(FP.anim){FP.queue.push(token);return;}
-  FP.hist.push(token);FP.moves++;
+  FP.epoch=(FP.epoch||0)+1;FP.hist.push(token);FP.moves++;
   fpAnimate(token,fast,()=>{const q=FP.queue.shift();if(q)fpDo(q,true);});
 }
 

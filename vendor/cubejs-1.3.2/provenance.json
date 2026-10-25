@@ -1,0 +1,12 @@
+{
+  "package": "cubejs",
+  "version": "1.3.2",
+  "source": "https://registry.npmjs.org/cubejs/-/cubejs-1.3.2.tgz",
+  "npmIntegrity": "sha512-NuHpWIR/mpjrP3YpU6OaXAbo34idWlzo86GnAqGDG96OHDKyavTAelMyruZ77SgPhQ8l9IcP6/rzXoNcAy9OaQ==",
+  "files": {
+    "LICENSE": "c067e8c9a595d13f5644f94388f2ad32c725bcb4a5b1851fe769b9bccd46a1fd",
+    "index.js": "fdc16361b11721a77167f34f845d9f7b36f21f29520228f1f67cdd237acaa222",
+    "lib/solve.js": "faa0ccffca78f80a5fe7a197a9676af02d79d8ddece9cf3506154fea616fc445",
+    "lib/cube.js": "450a53a9acf5033fde7ca23be8fd08ac37d30f04c58aac63f053a1c05a7f5802"
+  }
+}

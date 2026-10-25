@@ -41,20 +41,31 @@ function buildFlow(){
   });
 }
 function refreshCounts(){
-  try{buildFlow();}catch(e){}
-  const done=allIds.filter(i=>prog.has(i)).length;
-  $('#hcount').innerHTML=`習得 <b>${done}</b>/${allIds.length}`;
+  const ids=allIds.filter(id=>!/^X/.test(id)),tasks=allIds.filter(id=>/^X/.test(id));
+  const done=ids.filter(i=>prog.has(i)).length;
+  $('#hcount').innerHTML=`${LANG==='en'?'Learned':'習得'} <b>${done}</b>/${ids.length} <span class="taskcount">${LANG==='en'?'Tasks':'課題'} ${tasks.filter(id=>prog.has(id)).length}/${tasks.length}</span>`;
 }
 
 /* ================= quiz ================= */
 let qCur=null;
 let qLastAUF=0;
+let qDiagramState=null;
+function qUpdateDescription(){
+  const el=$('#qStateText');if(!el)return;
+  const value=qCur&&qDiagramState?cubeStateDescription(qDiagramState):'';
+  if(el.textContent!==value)el.textContent=value;
+  const textMode=$('#qTextMode').checked;
+  el.classList.toggle('sr-only',!textMode);el.hidden=!textMode;
+  $('#qFig').hidden=textMode;
+}
 function qrot(st){
   const on=document.querySelector('#qFilters .fchip[data-qopt="auf"]');
-  if(!on||!on.classList.contains('on'))return st;
-  const k=1+Math.floor(Math.random()*3);
-  for(let i=0;i<k;i++)st=ap(st,M.U);
-  qLastAUF=k;return st;
+  if(on?.classList.contains('on')){
+    const k=1+Math.floor(Math.random()*3);
+    for(let i=0;i<k;i++)st=ap(st,M.U);
+    qLastAUF=k;
+  }
+  qDiagramState=st;return st;
 }
 function qPool(){
   const on=[...document.querySelectorAll('#qFilters .fchip.on')].map(b=>b.dataset.q);
@@ -76,14 +87,17 @@ function qPool(){
 }
 function qNext(){
   const pool=qPool();
-  if(!pool.length){$('#qMeta').textContent='出題範囲を選択';$('#qFig').innerHTML='';$('#qAns').innerHTML='';return;}
+  $('#qReveal').disabled=!pool.length;
+  if(!pool.length){qCur=null;qDiagramState=null;qLastAUF=0;$('#qMeta').textContent='出題範囲を選択';$('#qFig').innerHTML='';$('#qAns').innerHTML='';qUpdateDescription();return;}
   qLastAUF=0;
   qCur=pool[Math.floor(Math.random()*pool.length)];
   $('#qMeta').textContent=qCur.t;
   $('#qFig').innerHTML=qCur.svg();
+  qUpdateDescription();
   $('#qAns').innerHTML='<div style="color:var(--tx3);font-size:.75rem">この手順は?</div>';
 }
 $('#qNext').addEventListener('click',qNext);
+$('#qTextMode').addEventListener('change',qUpdateDescription);
 $('#qReveal').addEventListener('click',()=>{
   if(!qCur)return;
   const aufNote=qLastAUF?`<div style="font-size:.66rem;color:var(--tx3);margin-top:3px">※向きランダム中:U調整(AUF)してから実行</div>`:'';

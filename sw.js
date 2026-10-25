@@ -1,22 +1,25 @@
 /* CFOP Trainer Service Worker — online-first with offline fallback */
-const CACHE = 'cfop-runtime-v94';
+const CACHE_PREFIX = 'cfop-runtime-';
+const CACHE = CACHE_PREFIX + 'v100';
+const NETWORK_TIMEOUT_MS = 4000;
 const CORE = [
   './',
   './index.html',
-  './styles.css',
-  './theme-init.js',
-  './i18n.js?v=94',
-  './cube-engine.js',
-  './progress.js',
-  './build.js?v=94',
-  './player.js',
-  './freeplay.js',
-  './solver.js',
-  './scramble.js',
-  './navigation.js',
-  './rendering.js',
-  './algorithms.js',
-  './app.js',
+  './styles.css?v=100',
+  './theme-init.js?v=100',
+  './i18n.js?v=100',
+  './cube-engine.js?v=100',
+  './progress.js?v=100',
+  './build.js?v=100',
+  './player.js?v=100',
+  './freeplay.js?v=100',
+  './solver.js?v=100',
+  './scramble.js?v=100',
+  './cube-worker.js?v=100',
+  './navigation.js?v=100',
+  './rendering.js?v=100',
+  './algorithms.js?v=100',
+  './app.js?v=100',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -30,24 +33,31 @@ const CORE = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+  // A new version waits until existing pages close, so it cannot delete their assets.
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)));
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)));
+    await Promise.all(keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key)));
     if (self.registration.navigationPreload) await self.registration.navigationPreload.enable();
-    await self.clients.claim();
   })());
 });
 
 async function networkFirst(request, preloadResponse) {
   const cache = await caches.open(CACHE);
+  const controller = new AbortController();
+  let timer, failedResponse;
   try {
-    let response = preloadResponse ? await preloadResponse : null;
-    if (!response) response = await fetch(request);
-    if (response && response.ok && response.type === 'basic') await cache.put(request, response.clone());
+    const network = (async () => (preloadResponse ? await preloadResponse : null) || await fetch(request, { signal: controller.signal }))();
+    const deadline = new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new Error('network-timeout')); }, NETWORK_TIMEOUT_MS); });
+    const response = await Promise.race([network, deadline]);
+    if (!response?.ok) { failedResponse = response; throw new Error('http-failure'); }
+    if (response.type === 'basic') {
+      // Cache quota failures must not discard a successful network response.
+      try { await cache.put(request, response.clone()); } catch (_) {}
+    }
     return response;
   } catch (error) {
     const cached = await cache.match(request, {ignoreSearch: request.mode === 'navigate'});
@@ -56,12 +66,26 @@ async function networkFirst(request, preloadResponse) {
       const shell = await cache.match('./index.html');
       if (shell) return shell;
     }
+    if (failedResponse) return failedResponse;
     throw error;
+  } finally {
+    clearTimeout(timer);
   }
+}
+
+async function respond(request, preloadResponse) {
+  // Versioned assets belong to the installed shell. Keep them coherent offline and online.
+  if (new URL(request.url).searchParams.get('v') === '100') {
+    const cached = await (await caches.open(CACHE)).match(request);
+    if (cached) return cached;
+  }
+  return networkFirst(request, preloadResponse);
 }
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(networkFirst(event.request, event.preloadResponse));
+  const scope = new URL(self.registration.scope).pathname;
+  if (!new URL(event.request.url).pathname.startsWith(scope)) return;
+  event.respondWith(respond(event.request, event.preloadResponse));
 });
 

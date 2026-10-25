@@ -13,7 +13,7 @@ function openPP(){
   nodes.forEach(el=>{if(el.parentNode!==body)body.appendChild(el);});
   $('#pptitle').textContent=N3.algName||'3D再生';
   $('#pprname').textContent=N3.algName||'3D再生';
-  $('#pp').classList.add('open');$('#pp').setAttribute('aria-hidden','false');
+  $('#pp').classList.add('open');$('#pp').setAttribute('aria-hidden','false');$('#pp').inert=false;
   $('#pprestore').hidden=true;PP.open=true;PP.min=false;
   if(n3SetNetVisible)n3SetNetVisible(false);
   try{n3view();}catch(e){}
@@ -21,14 +21,15 @@ function openPP(){
 }
 function minPP(){
   $('#pp').classList.remove('open');
+  $('#pp').setAttribute('aria-hidden','true');$('#pp').inert=true;
   $('#pprname').textContent=N3.algName||'3D再生';
   $('#pprestore').hidden=false;PP.min=true;requestAnimationFrame(()=>$('#pprestore')?.focus());
 }
-function restorePP(){$('#pp').classList.add('open');$('#pprestore').hidden=true;PP.min=false;requestAnimationFrame(()=>$('#ppclose')?.focus());}
+function restorePP(){$('#pp').classList.add('open');$('#pp').setAttribute('aria-hidden','false');$('#pp').inert=false;$('#pprestore').hidden=true;PP.min=false;requestAnimationFrame(()=>$('#ppclose')?.focus());}
 function closePP(){
   if(!PP.open)return;
   n3pause();
-  $('#pp').classList.remove('open');$('#pp').setAttribute('aria-hidden','true');
+  $('#pp').classList.remove('open');$('#pp').setAttribute('aria-hidden','true');$('#pp').inert=true;
   $('#pprestore').hidden=true;PP.open=false;PP.min=false;
   if(PP.homes){
     for(const [el,marker] of PP.homes){
@@ -42,9 +43,10 @@ function closePP(){
   if(PP.lastFocus&&document.contains(PP.lastFocus))requestAnimationFrame(()=>PP.lastFocus.focus());
 }
 document.addEventListener('keydown',e=>{
+  if(!$('#cmdk').hidden)return;
   if(e.key==='Escape'&&PP.open){closePP();return;}
   const tag=(e.target&&e.target.tagName)||'';
-  if(/INPUT|TEXTAREA|SELECT/.test(tag)||e.isComposing)return;
+  if(/INPUT|TEXTAREA|SELECT|BUTTON|A/.test(tag)||e.target?.isContentEditable||e.isComposing||e.shiftKey||e.altKey||e.ctrlKey||e.metaKey)return;
   const active=PP.open||document.body.dataset.page==='basic';
   if(!active)return;
   if(e.key===' '){e.preventDefault();n3play();}
@@ -63,6 +65,22 @@ const FC=['#FFFF55','#D92E20','#1B45A6','#FFFFFF','#EB632B','#449751']; // U R F
 const GRAY='var(--dOff)', DARK='var(--dMask)';
 const LLORIG=new Set([0,1,2,3,4,5,6,7,8,18,19,20,9,10,11,36,37,38,45,46,47]);
 const PAIR=new Set([29,26,15,23,12]);
+function cubeStateDescription(state){
+  const en=typeof LANG!=='undefined'&&LANG==='en';
+  const faces=en?['Top','Right','Front','Bottom','Left','Back']:['上面','右面','正面','下面','左面','背面'];
+  const colors=en?['yellow','red','blue','white','orange','green']:['黄','赤','青','白','橙','緑'];
+  return (en?'Cube state. Read each face left to right, top to bottom. ':'盤面。各面を左上から右へ、上段・中段・下段の順に読みます。 ')+faces.map((name,f)=>name+': '+[0,1,2].map(r=>[0,1,2].map(c=>colors[Math.floor(state[f*9+r*3+c]/9)]||'?').join(en?', ':'・')).join(' / ')).join('; ');
+}
+function stateSVG(svg,state){
+  return svg.replace('<svg ',`<svg role="img" data-cubestate="${state.join(',')}" aria-label="${cubeStateDescription(state)}" `);
+}
+function refreshCubeDescriptions(){
+  document.querySelectorAll('[data-cubestate]').forEach(el=>{
+    const label=cubeStateDescription(el.dataset.cubestate.split(',').map(Number));
+    if(el.getAttribute('aria-label')!==label)el.setAttribute('aria-label',label);
+  });
+  if(typeof qUpdateDescription==='function')qUpdateDescription();
+}
 function rect(x,y,w,h,f,st){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.6" fill="${f}" stroke="${st||'var(--dline)'}" stroke-width="${st?1.3:1}"/>`;}
 /* Last-layer top view. mode:'oll'|'pll'  maskC: corners ignored */
 function llSVG(st,mode,maskC,arrows){
@@ -111,10 +129,10 @@ function llSVG(st,mode,maskC,arrows){
       if(reciprocal)arr+=`<polygon points="0,-3.6 6.2,0 0,3.6" transform="translate(${sx.toFixed(1)},${sy.toFixed(1)}) rotate(${(ang+180).toFixed(1)})" fill="var(--hl)" opacity="${op}"/>`;
     }
   }
-  return `<svg viewBox="0 0 ${W} ${W}" xmlns="http://www.w3.org/2000/svg">${s}${arr}</svg>`;
+  return stateSVG(`<svg viewBox="0 0 ${W} ${W}" xmlns="http://www.w3.org/2000/svg">${s}${arr}</svg>`,st);
 }
 /* Isometric view for F2L (U,F,R faces). pair highlighted, LL grayed */
-function isoSVG(st,flip,keep){
+function isoSVG(st,flip,keep,describedState=st){
   const s=15.5,TX=49,TY=6;
   const d1=[Math.sqrt(3)/2*s,.5*s],d2=[-Math.sqrt(3)/2*s,.5*s],v=[0,s];
   const P=(a)=>a[0].toFixed(2)+','+a[1].toFixed(2);
@@ -152,5 +170,5 @@ function isoSVG(st,flip,keep){
     (!keep&&PAIR.has(st[9+k]))?hls+=q:base+=q;
   }
   const inner=flip?`<g transform="translate(98,0) scale(-1,1)">${base}${hls}</g>`:`${base}${hls}`;
-  return `<svg viewBox="0 0 98 102" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+  return stateSVG(`<svg viewBox="0 0 98 102" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`,describedState);
 }

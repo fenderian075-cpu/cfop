@@ -8,7 +8,7 @@
 <meta name="robots" content="index,follow">
 <meta name="color-scheme" content="dark light">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; worker-src 'self' blob:; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; worker-src 'self'; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="canonical" href="https://fenderian075-cpu.github.io/cfop/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
@@ -31,10 +31,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="64x64" href="icon-64.png">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=100">
 </head>
 <body data-page="home">
-<script src="theme-init.js"></script>
+<script src="theme-init.js?v=100"></script>
 
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -63,7 +63,7 @@
     <h2 class="sec">スクランブル</h2>
     <div class="scrwrap">
       <div class="scrhold">持ち方: <b>黄を上・青を正面</b>にして回し始める(下の展開図・3Dと同じ向き)</div>
-      <input class="apinput" id="scrinput" placeholder="スクランブルを入力(例: R U F2 D' ...)" spellcheck="false" autocapitalize="off">
+      <input aria-label="スクランブルの回転記号" aria-describedby="scrmeta" class="apinput" id="scrinput" placeholder="スクランブルを入力(例: R U F2 D' ...)" spellcheck="false" autocapitalize="off">
       <div class="scrbtns">
         <button class="btn" id="scrrand">ランダム生成</button>
         <button class="btn" id="scrperfect">パーフェクト</button>
@@ -72,7 +72,7 @@
       </div>
       <div class="scrhold">持ち方: <i style="background:#FFFF55"></i>黄センターを上・<i style="background:#1B45A6"></i>青センターを正面にして回し始める(3D再現・展開図と同じ基準)。大会(WCA)では白上・緑前が公式。</div>
       <div class="scrmeta" id="scrmeta">0手</div>
-      <div style="font-size:.64rem;color:var(--tx3);margin-top:5px">スクランブルはWCA準拠のrandom-state方式(cubejsによる二相法ソルバ)。環境が対応しない場合はランダムムーブ式に自動フォールバック。</div>
+      <div style="font-size:.64rem;color:var(--tx3);margin-top:5px">練習用のrandom-state方式(cubejs)。公式大会用の生成器ではありません。非対応・故障時はランダムムーブ式に切り替わります。</div>
       <div class="scrnet" id="scrnet"></div>
     </div>
 
@@ -108,7 +108,7 @@
       <div class="fpbtns2">
         <button class="btn fpcollapse" id="fpCtlMode">ボタン操作へ</button>
         <button class="btn fpcollapse" id="fpUndo">↩ 戻す</button>
-        <button class="btn fpcollapse" id="fpScramble">WCAスクランブル</button>
+        <button class="btn fpcollapse" id="fpScramble">スクランブル生成</button>
         <button class="btn fpcollapse" id="fpPerfect">パーフェクト</button>
         <button class="btn" id="fpReset">リセット</button>
         <button class="btn" id="fpNet">展開図</button>
@@ -120,7 +120,7 @@
 
     <details class="code">
       <summary>進捗の保存・復元(コード方式)</summary>
-      <textarea id="codeBox" placeholder="ここに進捗コードが表示されます"></textarea>
+      <textarea aria-label="進捗コード" id="codeBox" placeholder="ここに進捗コードが表示されます"></textarea>
       <div class="btnrow">
         <button class="btn pri" id="btnGen">コード発行</button>
         <button class="btn" id="btnCopy">コピー</button>
@@ -130,6 +130,7 @@
     </details>
 
     <h2 class="sec">クイズ <span class="hint">ケースを見て手順を即答</span></h2>
+    <label class="quiz-access"><input type="checkbox" id="qTextMode"> 文字で出題（非視覚モード）</label>
     <div class="qfilters" id="qFilters">
       <button class="fchip" data-qopt="auf">向きランダム</button>
       <button class="fchip on" data-q="F2L">F2L</button>
@@ -138,7 +139,7 @@
     </div>
     <div class="qwrap">
       <div class="qmeta" id="qMeta">—</div>
-      <div id="qFig"></div>
+      <div id="qFig"></div><p id="qStateText" class="sr-only" aria-live="polite"></p>
       <div class="qans" id="qAns"></div>
       <div class="btnrow" style="justify-content:center">
         <button class="btn" id="qReveal">手順を表示</button>
@@ -346,7 +347,7 @@
       <div class="ctrcard"><b>④ インスペクションで完成形まで読む</b><span>実際に回す前に頭の中でクロス完成まで手順を決める。15秒に収まらなくても、練習では時間無制限でじっくり考えてよい——脳内で回す負荷こそが練習</span></div>
     </div>
     <div class="note">仕上げの練習法: 手順を決めたら<b>キューブを見ずに(または目隠しで)クロスだけ揃える</b>。
-見ないで揃えられる=完全に読めている証拠。フリープレイのWCAスクランブルを使えば何度でも試せる。</div>
+見ないで揃えられる=完全に読めている証拠。フリープレイのスクランブル生成を使えば何度でも試せる。</div>
 
 
     <div id="crossSimple">
@@ -431,13 +432,13 @@
 </div>
 <div class="cmdk" id="cmdk" hidden>
   <div class="cmdkPanel" role="dialog" aria-modal="true" aria-label="コマンドパレット">
-    <input id="cmdkInput" placeholder="ページ・セクション・手順を検索…  (⌘K / Ctrl+K)" autocomplete="off" spellcheck="false">
+    <input id="cmdkInput" role="combobox" aria-label="ページ・セクション・手順を検索" aria-controls="cmdkList" aria-autocomplete="list" aria-expanded="false" placeholder="ページ・セクション・手順を検索…  (⌘K / Ctrl+K)" autocomplete="off" spellcheck="false">
     <div id="cmdkList" role="listbox"></div>
     <div class="cmdkHint"><span>↑↓ 選択</span><span>Enter 移動</span><span>Esc 閉じる</span><span>Shift+←→ ページ</span></div>
   </div>
 </div>
 
-<aside class="pp" id="pp" aria-hidden="true" role="dialog" aria-label="3Dプレイヤー">
+<aside class="pp" id="pp" aria-hidden="true" inert role="dialog" aria-label="3Dプレイヤー">
   <div class="pphead">
     <b id="pptitle">3D再生</b>
     <button class="ppbtn" id="ppmin" title="最小化" aria-label="最小化">−</button>
@@ -486,18 +487,18 @@
   </div>
 </nav>
 
-<script src="i18n.js?v=94" defer></script>
-<script src="cube-engine.js" defer></script>
-<script src="rendering.js" defer></script>
-<script src="algorithms.js" defer></script>
-<script src="progress.js" defer></script>
-<script src="build.js?v=94" defer></script>
-<script src="player.js" defer></script>
-<script src="freeplay.js" defer></script>
-<script src="solver.js" defer></script>
-<script src="scramble.js" defer></script>
-<script src="app.js" defer></script>
-<script src="navigation.js" defer></script>
+<script src="i18n.js?v=100" defer></script>
+<script src="cube-engine.js?v=100" defer></script>
+<script src="rendering.js?v=100" defer></script>
+<script src="algorithms.js?v=100" defer></script>
+<script src="progress.js?v=100" defer></script>
+<script src="build.js?v=100" defer></script>
+<script src="player.js?v=100" defer></script>
+<script src="freeplay.js?v=100" defer></script>
+<script src="solver.js?v=100" defer></script>
+<script src="scramble.js?v=100" defer></script>
+<script src="app.js?v=100" defer></script>
+<script src="navigation.js?v=100" defer></script>
 
 </body>
 </html>

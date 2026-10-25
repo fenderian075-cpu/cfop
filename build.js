@@ -21,7 +21,11 @@ function bindSetupToggle(card){
   const row=card.querySelector('.setuprow');
   if(!nm||!row)return;
   let timer=null,fired=false;
-  const show=()=>{fired=true;row.hidden=!row.hidden;if(navigator.vibrate)navigator.vibrate(8);};
+  const button=document.createElement('button');button.type='button';button.className='setup-toggle';setMessage(button,'setup');button.setAttribute('aria-expanded','false');
+  const toggle=()=>{row.hidden=!row.hidden;button.setAttribute('aria-expanded',String(!row.hidden));};
+  button.addEventListener('click',e=>{e.stopPropagation();toggle();});
+  row.before(button);
+  const show=()=>{fired=true;toggle();if(navigator.vibrate)navigator.vibrate(8);};
   nm.addEventListener('pointerdown',e=>{
     fired=false;timer=setTimeout(show,450);
   });
@@ -79,14 +83,14 @@ function buildPLLFlow(w){
     return `<button type="button" class="pfrow" data-anchor="${anchor}"><span class="pfbadge">${badge}</span><span class="pfbd"><b>${name}</b><span class="pfd">${desc}</span></span>${svgs}</button>`;
   }).join('');
   box.querySelectorAll('.pfrow').forEach(r=>r.addEventListener('click',()=>{
-    const t=[...document.querySelectorAll('#pllList h2.sec')].find(h=>h.textContent.includes(r.dataset.anchor));
+    const t=document.getElementById(r.dataset.target);
     if(t&&t.scrollIntoView)try{t.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
   }));
   w.appendChild(box);
 }
 function buildPLL(){
   const w=$('#pllList');w.innerHTML='';
-  buildPLLFlow(w);allPurge('P');allPurge('OE')/*no-op safe*/;
+  buildPLLFlow(w);allPurge('P');
   if(mode==='s'){
     $('#pllSub').textContent='2-Look PLL:6手順。①コーナー位置 → ②エッジ位置';
     const secs=[["① コーナーの位置(2)",["T","Y"],"ヘッドライトあり=T/なし=Y"],["② エッジの位置(4)",["Ua","Ub","H","Z"],""]];
@@ -105,6 +109,10 @@ function buildPLL(){
       w.appendChild(g);
     });
   }
+  // Store stable section identities before translating their visible labels.
+  const heads=[...w.querySelectorAll('h2.sec')];
+  heads.forEach((h,i)=>{h.id=`pll-section-${mode}-${i}`;});
+  w.querySelectorAll('.pfrow').forEach(row=>{const h=heads.find(h=>h.textContent.includes(row.dataset.anchor));if(h)row.dataset.target=h.id;});
 }
 /* ===== F2L 左スロット(FL)ミラー ===== */
 const MIRP=(()=>{const m=new Array(54);
@@ -126,7 +134,7 @@ function buildF2L(){
   segw.style.cssText='display:flex;align-items:center;gap:10px;margin-bottom:12px';
   segw.innerHTML=`<div class="seg" id="f2lSlotSeg"><button data-sl="r" class="${f2lMirror?'':'on'}">FR(右)</button><button data-sl="l" class="${f2lMirror?'on':''}">FL(左・ミラー)</button></div><span style="font-size:.66rem;color:var(--tx3)">${f2lMirror?'鏡像手順。図は左スロット視点':'標準の右前スロット'}</span>`;
   w.appendChild(segw);
-  segw.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{f2lMirror=b.dataset.sl==='l';buildF2L();}));allPurge('F');
+  segw.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{f2lMirror=b.dataset.sl==='l';buildF2L();buildSubnav();}));allPurge('F');
   const list = mode==='s' ? F2L.filter((c,i)=>F2LSIMPLE.includes(i)) : F2L;
   $('#f2lSub').textContent = mode==='s'
     ? '基本4形+代表的な応用4。まずペアを作る→差し込む、の二段で考える'
@@ -139,7 +147,7 @@ function buildF2L(){
     items.forEach(({c,gi})=>{
       const d=document.createElement('div');d.className='acard fcard';
       const useAlg=f2lMirror?mirAlg(c.a):c.a;
-      const svg=f2lMirror?isoSVG(mirState(caseState(useAlg)),true):isoSVG(caseState(c.a));
+      const svg=f2lMirror?isoSVG(mirState(caseState(useAlg)),true,undefined,caseState(useAlg)):isoSVG(caseState(c.a));
       d.innerHTML=`<div class="chk">✓</div>${svg}<div class="bd algbody"><div class="nm">F2L #${gi+1}${f2lMirror?' <span style="color:var(--tx3)">FL</span>':''}<span class="mv">${hm(useAlg)}手</span></div><div class="alg mono">${chunk(useAlg)}</div><div class="algmeta"><span class="cycle">${cycleText(useAlg)}</span><button class="playmini">3Dで再生</button></div></div>`;
       attach3DButton(d,useAlg,`F2L #${gi+1}${f2lMirror?'(FL)':''}`,'f2l');
       bindCard(d,'F'+gi);
@@ -155,6 +163,7 @@ function allPurge(prefix){for(let i=allIds.length-1;i>=0;i--){if(allIds[i].start
 function buildTasks(){
   document.querySelectorAll('.tasks[data-tasks]').forEach(box=>{
     box.innerHTML='';
+    if((box.closest('#crossSimple')&&mode!=='s')||(box.closest('#crossAdv')&&mode==='s'))return;
     box.dataset.tasks.split('|').forEach(def=>{
       const [id,label]=def.split(':');
       const d=document.createElement('div');d.className='task';
@@ -190,7 +199,7 @@ function chunkMoves(seq,step){
     }
     if(hit){
       const inner=seq.slice(i,i+hit[1]).map((t,k)=>tk(t,i+k)).join('');
-      out+=`<span class="ckg ck-${hit[0]}"><span class="cklabel">${hit[2]}</span><span class="ckwrap">${inner}</span></span>`;
+      out+=`<span class="ckg ck-${hit[0]}"><span class="cklabel">${LANG==='en'?toEnglish(hit[2]):hit[2]}</span><span class="ckwrap">${inner}</span></span>`;
       i+=hit[1];
     }else{
       out+=`<span class="cksingle"><span class="cklabel" aria-hidden="true">・</span><span class="ckwrap">${tk(seq[i],i)}</span></span>`;
@@ -222,7 +231,7 @@ function chunkLive(alg){
     }
     if(hit){
       const inner=t.slice(i,i+hit[1]).map((tk,k)=>mv1(tk,i+k)).join(' ');
-      out.push(`<ruby class="ck ck-${hit[0]}">(${inner})<rt>${hit[2]}</rt></ruby>`);i+=hit[1];
+      out.push(`<ruby class="ck ck-${hit[0]}">(${inner})<rt>${LANG==='en'?toEnglish(hit[2]):hit[2]}</rt></ruby>`);i+=hit[1];
     }
     else{out.push(mv1(t[i],i));i++;}
   }
@@ -267,7 +276,7 @@ function cubeNetSVG(state,{interactive=false,labels=false}={}){
       }
     }
   }
-  return `<svg class="cube-net${interactive?' cube-net--interactive':''}" viewBox="-3 -3 ${W+6} ${H+6}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cube net">${s}</svg>`;
+  return stateSVG(`<svg class="cube-net${interactive?' cube-net--interactive':''}" viewBox="-3 -3 ${W+6} ${H+6}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`,state||SOLVED);
 }
 function buildNet(){
   $('#netbox').innerHTML=cubeNetSVG(SOLVED,{interactive:true,labels:true});
@@ -276,6 +285,7 @@ function buildNet(){
 }
 function netPaint(state,colorizer){
   if(!state||!netCells)return;
+  const svg=$('#netbox svg');if(svg){svg.dataset.cubestate=state.join(',');svg.setAttribute('aria-label',cubeStateDescription(state));}
   netCells.forEach(r=>{
     const p=+r.dataset.p,content=state[p];
     r.setAttribute('fill',colorizer?colorizer(content):FC[Math.floor(content/9)]);
@@ -349,7 +359,7 @@ function isoCrossSVG(st){
   draw(0,T,d1,d2);
   draw(18,add(T,mul(d2,3)),d1,v);
   draw(9,add(add(T,mul(d1,3)),mul(d2,3)),[-d2[0],-d2[1]],v);
-  return `<svg viewBox="0 0 98 102" xmlns="http://www.w3.org/2000/svg">${base}${hls}</svg>`;
+  return stateSVG(`<svg viewBox="0 0 98 102" xmlns="http://www.w3.org/2000/svg">${base}${hls}</svg>`,st);
 }
 function buildCrossPatterns(){
   $('#crossPatterns').innerHTML=CROSSP.map(([t,a,d])=>

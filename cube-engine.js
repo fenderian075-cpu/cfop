@@ -3,7 +3,7 @@ function permFromCycles(cy){const p=Array.from({length:54},(_,i)=>i);for(const c
 function ap(s,p){const r=new Array(54);for(let i=0;i<54;i++)r[i]=s[p[i]];return r;}
 function comp(a,b){const r=new Array(54);for(let i=0;i<54;i++)r[i]=a[b[i]];return r;}
 function invp(p){const r=new Array(54);for(let i=0;i<54;i++)r[p[i]]=i;return r;}
-const M={};
+const M=Object.create(null);
 M.U=permFromCycles([[0,2,8,6],[1,5,7,3],[18,36,45,9],[19,37,46,10],[20,38,47,11]]);
 {const xc=[];for(let i=0;i<9;i++)xc.push([18+i,i,45+(8-i),27+i]);xc.push([9,11,17,15],[10,14,16,12],[36,42,44,38],[37,39,43,41]);M.x=permFromCycles(xc);}
 {const yc=[[0,2,8,6],[1,5,7,3],[29,27,33,35],[28,30,34,32]];for(let i=0;i<9;i++)yc.push([18+i,36+i,45+i,9+i]);M.y=permFromCycles(yc);}
@@ -19,7 +19,8 @@ M.S=sq("F'",'z','B');M["S'"]=invp(M.S);M.S2=sq('S','S');
 M.r=sq('R',"M'");M.l=sq('L','M');M.u=sq('U',"E'");M.f=sq('F','S');M.b=sq('B',"S'");M.d=sq('D','E');
 for(const w of['r','l','u','f','b','d']){M[w+"'"]=invp(M[w]);M[w+"2"]=sq(w,w);}
 const SOLVED=Array.from({length:54},(_,i)=>i);
-function toks(a){return a.replace(/[()]/g,' ').trim().split(/\s+/).filter(Boolean);}
+function toks(a){return String(a).replace(/[′’]/g,"'").replace(/[()]/g,' ').trim().split(/\s+/).filter(Boolean).map(t=>t.replace(/^([URFDLB])w/,(_,f)=>f.toLowerCase()).replace(/2'$/, '2'));}
+function parseAlg(a){const tokens=toks(a);return {tokens,valid:tokens.filter(t=>Object.hasOwn(M,t)),invalid:tokens.filter(t=>!Object.hasOwn(M,t))};}
 function run(s,a){let r=s.slice();for(const t of toks(a)){r=ap(r,M[t]);}return r;}
 function inv(a){return toks(a).reverse().map(t=>t.endsWith('2')?t:(t.endsWith("'")?t.slice(0,-1):t+"'")).join(' ');}
 function caseState(alg){return run(SOLVED,inv(alg));}
