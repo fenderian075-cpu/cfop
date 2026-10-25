@@ -313,11 +313,13 @@ function buildNamed(){
   $('#namedAlgs').innerHTML=NAMED.map(([n,a,d])=>
     `<div class="trg" data-alg="${a}" data-name="${n}"><div class="algbody"><b class="nm">${n}<span class="mv">${hm(a)}手</span></b><span class="alg mono">${chunk(a)}</span><span class="carddesc">${d}</span><div class="algmeta"><span class="cycle">${cycleText(a)}</span><button class="playmini">3Dで再生</button></div></div></div>`).join('');
   document.querySelectorAll('#namedAlgs [data-alg]').forEach(d=>attach3DButton(d,d.dataset.alg,d.dataset.name,d.dataset.name.includes('パーム')?'pll':'oll'));
-  const tCard=$('#namedAlgs [data-name="Tパーム"]');
-  tCard.className='acard';
-  tCard.style.cursor='default';
-  tCard.insertAdjacentHTML('afterbegin',llSVG(caseState(PLL.T),'pll',false,true));
-  $('#basicTPerm').replaceChildren(tCard);
+  const tTarget=$('#basicTPerm'),tCard=$('#namedAlgs [data-name="Tパーム"]');
+  if(tTarget&&tCard){
+    tCard.className='acard';
+    tCard.style.cursor='default';
+    tCard.insertAdjacentHTML('afterbegin',llSVG(caseState(PLL.T),'pll',false,true));
+    tTarget.replaceChildren(tCard);
+  }
 }
 /* ================= cross insertion patterns ================= */
 const CROSSP=[
