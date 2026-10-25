@@ -37,7 +37,7 @@ function wcaInit(){
   if(WCA.worker||WCA.failed)return;
   try{
     if(typeof Worker==='undefined')throw new Error('Worker unavailable');
-    const worker=new Worker('cube-worker.js?v=102');WCA.worker=worker;
+    const worker=new Worker('cube-worker.js?v=103');WCA.worker=worker;
     WCA.initTimer=setTimeout(wcaFail,15000);
     worker.onerror=worker.onmessageerror=()=>{if(WCA.worker===worker)wcaFail();};
     worker.onmessage=e=>{

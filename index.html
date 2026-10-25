@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-app-version="103">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -31,10 +31,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="64x64" href="icon-64.png">
-<link rel="stylesheet" href="styles.css?v=102">
+<link rel="stylesheet" href="styles.css?v=103">
 </head>
 <body data-page="home">
-<script src="theme-init.js?v=102"></script>
+<script src="theme-init.js?v=103"></script>
 
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -56,6 +56,58 @@
 <main>
   <!-- ============ HOME ============ -->
   <section class="page on" id="pg-home">
+    <section class="learning-home" id="learningHome" data-learning-root aria-labelledby="learningTitle">
+      <div class="learning-eyebrow">CFOP TRAINER</div>
+      <h1 id="learningTitle" data-l10n="today">今日の練習</h1>
+      <p data-l10n="intro">見分ける・思い出す・実物で回す。今の目的から始めましょう。</p>
+      <div class="learning-actions">
+        <button class="btn pri" id="startReview" data-l10n="review">今日の復習</button>
+        <button class="btn" id="continueLearning" data-l10n="continue">続きから</button>
+        <button class="btn" id="startPractice" data-l10n="practice">練習する</button>
+      </div>
+      <p class="learning-due" id="learningDue" role="status"></p>
+      <div class="learning-shortcuts">
+        <button class="btn" id="learnNotation" data-l10n="learnNotation">記号を学ぶ</button>
+        <button class="btn" id="learnCFOP" data-l10n="learnCFOP">初心者CFOP</button>
+        <button class="btn" id="showRecords" data-l10n="records">記録を見る</button>
+      </div>
+      <p id="learningStorageStatus" role="status" hidden></p>
+      <p id="learningUpdate" role="status" hidden></p>
+    </section>
+
+    <section id="practiceSession" class="learning-panel" data-learning-root hidden aria-labelledby="practiceTitle">
+      <div class="learning-panel-head"><h2 id="practiceTitle" tabindex="-1" data-l10n="practiceTitle">ケース練習</h2><button class="btn" id="closePractice" data-l10n="close">閉じる</button></div>
+      <div class="learning-fields">
+        <label><span data-l10n="mode">練習の段階</span><select id="practiceMode"><option value="learn" data-l10n="learn">特徴を学ぶ</option><option value="compare" data-l10n="compare">似たケースを比べる</option><option value="mixed" data-l10n="mixed">混ぜて復習</option></select></label>
+        <label><span data-l10n="task">何を練習する？</span><select id="practiceTask"><option value="recognition" data-l10n="recognition">ケースを見分ける</option><option value="recall" data-l10n="recall">手順を思い出す</option><option value="execution" data-l10n="execution">実物で回す</option><option value="solve" data-l10n="solve">全体ソルブを計る</option></select></label>
+        <label class="learning-case-field"><span data-l10n="case">ケース</span><select id="practiceCase"></select></label>
+      </div>
+      <div id="practiceLesson" class="practice-lesson"></div>
+      <div id="practiceDiagram" class="practice-diagram"></div>
+      <div id="practicePrompt"></div>
+      <div id="practiceChoices" class="learning-actions"></div>
+      <div id="practiceRecall" hidden><label for="practiceInput" data-l10n="moves">回転記号を入力</label><input id="practiceInput" class="apinput" spellcheck="false" autocapitalize="off" autocomplete="off"><button class="btn pri" id="practiceSubmit" data-l10n="submit">回答する</button></div>
+      <div id="practicePhysical" hidden>
+        <p data-l10n="timerHint">実物のキューブで回し、計測後に結果を記録してください。</p>
+        <output id="practiceClock" class="practice-clock" aria-label="Timer">0.0 s</output>
+        <div class="learning-actions"><button class="btn pri" id="practiceTimer" data-l10n="startTimer">計測を始める</button><button class="btn" id="practiceSuccess" data-l10n="success" disabled>正確にできた</button><button class="btn" id="practiceFailure" data-l10n="failure" disabled>間違えた・未完了</button></div>
+        <p class="learning-muted" data-l10n="self">実物の結果は自己申告です</p>
+      </div>
+      <div class="learning-actions"><button class="btn" id="practiceHint" data-l10n="hint">ヒントを見る</button><button class="btn" id="practiceReveal" data-l10n="answer">手順を表示</button><button class="btn" id="practice3D">3D</button><button class="btn pri" id="practiceNext" data-l10n="next">次のケース</button></div>
+      <p id="practiceFeedback" role="status" aria-live="polite"></p>
+      <p class="learning-muted" data-l10n="noAuto">3Dの再生は、本人の成功記録には加算されません。</p>
+    </section>
+
+    <section id="learningRecords" class="learning-panel" data-learning-root hidden aria-labelledby="recordsTitle">
+      <div class="learning-panel-head"><h2 id="recordsTitle" tabindex="-1" data-l10n="historyTitle">練習の記録</h2><button class="btn" id="closeRecords" data-l10n="close">閉じる</button></div>
+      <p id="learningHistoryEmpty" data-l10n="emptyHistory">まだ練習記録はありません。従来の習得チェックは引き継がれています。</p>
+      <div class="learning-fields"><label><span data-l10n="caseRecords">ケース別の記録</span><select id="recordCase"></select></label></div>
+      <div id="learningMetrics" class="learning-metrics"></div>
+      <details><summary data-l10n="caseRecords">ケース別の記録</summary><ul id="learningCaseRows"></ul></details>
+      <h3 data-l10n="latest">最近の記録</h3><ol id="learningRecent"></ol>
+      <p class="learning-muted" data-l10n="reviewPolicy">復習間隔は練習用の目安です。習得を保証する判定ではありません。</p>
+      <details><summary data-l10n="performance">この端末の応答記録</summary><p data-l10n="perfNote">操作から描画までの参考値です。実ユーザーINPとは異なります。</p><pre id="performanceSamples"></pre></details>
+    </section>
     <h2 class="sec">ソルブフロー</h2>
     <div class="flow" id="flowBox"></div>
 
@@ -118,15 +170,16 @@
       <div class="fpnet" id="fpNet2" hidden></div>
     </div>
 
-    <details class="code">
-      <summary>進捗の保存・復元(コード方式)</summary>
+    <details class="code" id="learningBackup" data-learning-root>
+      <summary data-l10n="backupLabel">進捗と練習履歴のバックアップ</summary>
       <textarea aria-label="進捗コード" id="codeBox" placeholder="ここに進捗コードが表示されます"></textarea>
       <div class="btnrow">
         <button class="btn pri" id="btnGen">コード発行</button>
         <button class="btn" id="btnCopy">コピー</button>
         <button class="btn" id="btnLoad">復元</button>
       </div>
-      <div style="font-size:.68rem;color:var(--tx3);margin-top:8px">進捗はこの端末に自動保存されます。別端末への移行・バックアップにはコードを使用してください。</div>
+      <p class="learning-muted" data-l10n="backupNote">旧CFOP:コードも読み込めます。読み込みは現在の記録へ追加し、履歴を消しません。</p>
+      <p id="learningVersion" class="learning-muted"></p>
     </details>
 
     <h2 class="sec">クイズ <span class="hint">ケースを見て手順を即答</span></h2>
@@ -227,6 +280,15 @@
         <button class="btn" id="apend" aria-label="最後へ進む">▶|</button>
       </div>
       <input class="apslider" id="apslider" type="range" min="0" max="4" value="0" step="1" aria-label="手順の再生位置。左へ戻すと逆方向に確認できます">
+      <div class="ap-practice" data-learning-root>
+        <div class="learning-fields">
+          <label><span data-l10n="speed">再生速度</span><select id="apSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+          <label><span data-l10n="sections">区間練習</span><select id="apPracticeMode"><option value="continuous" data-l10n="continuous">連続再生</option><option value="predict" data-l10n="predictMode">区切りで予測</option></select></label>
+          <label><span data-l10n="sections">区間練習</span><select id="apSegment"></select></label>
+        </div>
+        <div class="learning-actions"><button class="btn" id="apSegmentPlay" data-l10n="nextSegment">次の区間へ</button><button class="btn" id="apRepeat" data-l10n="repeat" aria-pressed="false">この区間を反復</button></div>
+        <p id="apPrediction" role="status" hidden data-l10n="predict">次の区間で動かすピースと、戻すペアを予測してから続けましょう。</p>
+      </div>
       <div class="apstartrow"><div class="seg" id="apstart">
         <button data-st="case"><span class="aplabel-full">ケースから解く</span><span class="aplabel-short">ケースから</span></button><button data-st="solved" class="on"><span class="aplabel-full">完成から適用</span><span class="aplabel-short">完成から</span></button>
       </div><div class="seg" id="apfocus">
@@ -487,18 +549,20 @@
   </div>
 </nav>
 
-<script src="i18n.js?v=102" defer></script>
-<script src="cube-engine.js?v=102" defer></script>
-<script src="rendering.js?v=102" defer></script>
-<script src="algorithms.js?v=102" defer></script>
-<script src="progress.js?v=102" defer></script>
-<script src="build.js?v=102" defer></script>
-<script src="player.js?v=102" defer></script>
-<script src="freeplay.js?v=102" defer></script>
-<script src="solver.js?v=102" defer></script>
-<script src="scramble.js?v=102" defer></script>
-<script src="app.js?v=102" defer></script>
-<script src="navigation.js?v=102" defer></script>
+<script src="i18n.js?v=103" defer></script>
+<script src="cube-engine.js?v=103" defer></script>
+<script src="rendering.js?v=103" defer></script>
+<script src="algorithms.js?v=103" defer></script>
+<script src="learning-core.js?v=103" defer></script>
+<script src="progress.js?v=103" defer></script>
+<script src="build.js?v=103" defer></script>
+<script src="player.js?v=103" defer></script>
+<script src="freeplay.js?v=103" defer></script>
+<script src="solver.js?v=103" defer></script>
+<script src="scramble.js?v=103" defer></script>
+<script src="app.js?v=103" defer></script>
+<script src="learning-ui.js?v=103" defer></script>
+<script src="navigation.js?v=103" defer></script>
 
 </body>
 </html>

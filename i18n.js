@@ -186,7 +186,7 @@ function applyLanguage(rebuildToc=true){
   document.documentElement.lang=LANG;document.title='CFOP Trainer';
   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
   while(n=walker.nextNode()){
-    if(n.parentElement?.closest('script,style,#fsHdr,#fpSolveBox,#qStateText,[data-message]'))continue;
+    if(n.parentElement?.closest('script,style,#fsHdr,#fpSolveBox,#qStateText,[data-message],[data-learning-root],[data-learning-text]'))continue;
     const hasJa=/[ぁ-んァ-ヶ一-龠]/.test(n.nodeValue);
     if(hasJa)n.__ja=n.nodeValue;
     if(LANG==='en'){
@@ -195,6 +195,7 @@ function applyLanguage(rebuildToc=true){
     }else if(n.__ja&&n.nodeValue!==n.__ja)n.nodeValue=n.__ja;
   }
   document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>['placeholder','aria-label','title'].forEach(a=>{
+    if(el.closest('[data-learning-root],[data-learning-text]'))return;
     if(a==='aria-label'&&el.hasAttribute('data-cubestate'))return;
     if(!el.hasAttribute(a))return;const key='i18n'+a.replace('-','');let src=el.dataset[key];
     if(!src||/[ぁ-んァ-ヶ一-龠]/.test(el.getAttribute(a))){src=el.getAttribute(a);el.dataset[key]=src;}
@@ -208,6 +209,7 @@ function applyLanguage(rebuildToc=true){
   }
   if(typeof syncModeControls==='function')syncModeControls();
   refreshMessages();
+  if(typeof learningRefresh==='function')learningRefresh();
   refreshCubeDescriptions();
   if(rebuildToc){
     buildSubnav();refreshCounts();scrBtnLabel();scrUpdate();n3updatePlayer();
@@ -218,10 +220,10 @@ function applyLanguage(rebuildToc=true){
 let i18nQueued=false;
 function queueLanguage(records=[]){
   if(LANG!=='en'||i18nQueued)return;
-  if(records.length&&records.every(r=>(r.target.nodeType===Node.TEXT_NODE?r.target.parentElement:r.target)?.closest?.('#fsHdr,#fpSolveBox,[data-message]')))return;
+  if(records.length&&records.every(r=>(r.target.nodeType===Node.TEXT_NODE?r.target.parentElement:r.target)?.closest?.('#fsHdr,#fpSolveBox,[data-message],[data-learning-root],[data-learning-text]')))return;
   i18nQueued=true;setTimeout(()=>{i18nQueued=false;applyLanguage(false);},0);
 }
-function setLanguage(lang){if(!['ja','en'].includes(lang))return;LANG=lang;try{localStorage.setItem('cfop-lang',lang);}catch(e){}applyLanguage();}
+function setLanguage(lang){if(!['ja','en'].includes(lang))return;LANG=lang;try{localStorage.setItem('cfop-lang',lang);}catch(e){}if(typeof learningMeasure==='function')learningMeasure('language-change',()=>applyLanguage());else applyLanguage();}
 function applyTheme(){
   document.body.dataset.theme=THEME;document.documentElement.dataset.theme=THEME;
   const chromeColor=THEME==='light'?'#f2f4f9':'#101014';

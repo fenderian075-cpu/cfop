@@ -57,7 +57,7 @@ document.addEventListener('keydown',e=>{
 function attach3DButton(root,alg,name,kind){
   const bt=root.querySelector('.playmini');
   if(!bt)return;
-  bt.addEventListener('click',e=>{e.stopPropagation();n3loadAlg(alg,name,false,false,'case',kind||'trigger');openPP();});
+  bt.addEventListener('click',e=>{e.stopPropagation();const c=learningCases.find(c=>toks(c.alg).join(' ')===toks(alg).join(' '));if(c)learningSeen(c.id);n3loadAlg(alg,name,false,false,'case',kind||'trigger');openPP();});
 }
 
 /* ================= rendering ================= */

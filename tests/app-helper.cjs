@@ -4,11 +4,13 @@ const { JSDOM } = require('jsdom');
 const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 
-function app({ language = 'ja', mode = 's', width = 1280, Worker, workerDeadline } = {}) {
+function app({ language = 'ja', mode = 's', width = 1280, Worker, workerDeadline, storage = {}, materialize = true } = {}) {
   const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), {
     url: 'http://localhost:4173/cfop/', runScripts: 'outside-only', pretendToBeVisual: true,
   });
   const w = dom.window;
+  w.structuredClone=structuredClone;
+  for(const [key,value] of Object.entries(storage)) w.localStorage.setItem(key,value);
   if(Worker)w.Worker=Worker;
   if(workerDeadline){const timeout=w.setTimeout.bind(w);w.setTimeout=(fn,ms,...args)=>timeout(fn,ms===15000?workerDeadline:ms,...args);}
   w.localStorage.setItem('cfop-lang', language);
@@ -33,6 +35,8 @@ function app({ language = 'ja', mode = 's', width = 1280, Worker, workerDeadline
   for (const script of w.document.querySelectorAll('script[src]')) {
     vm.runInContext(fs.readFileSync(path.join(root, script.getAttribute('src').split('?')[0]), 'utf8'), dom.getInternalVMContext());
   }
+  // Component tests explicitly materialize all lessons. E2E tests exercise lazy navigation.
+  if(materialize)w.eval('["basic","cross","f2l","oll","pll"].forEach(ensureLesson);refreshCounts()');
   return { w, doc: w.document, tick, value: expression => w.eval(expression), close: () => dom.window.close() };
 }
 module.exports = { app, root };

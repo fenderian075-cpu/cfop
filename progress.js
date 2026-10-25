@@ -2,7 +2,7 @@
 /* ================= progress ================= */
 const prog=new Set();
 const allIds=[];
-function saveProg(){try{localStorage.setItem('cfop-prog',[...prog].join(','));}catch(e){}}
+function saveProg(){try{localStorage.setItem('cfop-prog',[...prog].join(','));}catch(e){if(typeof learningStorageError!=='undefined')learningStorageError=true;}}
 function syncProgressControl(el,id){
   const control=el.querySelector('.chk');if(!control)return;
   const done=prog.has(id);control.setAttribute('aria-pressed',String(done));
@@ -14,6 +14,7 @@ function toggleId(id,el){
   el.classList.toggle('done',prog.has(id));
   syncProgressControl(el,id);
   refreshCounts();saveProg();
+  if(typeof learningRefreshDashboard==='function')learningRefreshDashboard();
 }
 try{const v=localStorage.getItem('cfop-prog');if(v)v.split(',').filter(Boolean).forEach(id=>prog.add(id));}catch(e){}
 function bindCard(el,id){

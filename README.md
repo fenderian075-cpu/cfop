@@ -3,6 +3,20 @@
 A static Japanese/English CFOP trainer with 41 F2L, 57 OLL and 21 PLL
 algorithms, a 3D player, practice scrambles and quizzes.
 
+Home now starts with due reviews, resume, notation and beginner lessons. Case
+practice has feature examples, comparison and mixed modes, with separate
+recognition, move-recall, physical-execution and full-solve records. Physical
+results are explicitly self-reported; watching 3D does not earn a successful
+attempt. Review intervals are a transparent starting policy, not a mastery claim.
+
+Existing `cfop-prog` checks are retained exactly during migration, with an
+untouched `cfop-prog-backup-v102` copy. Practice history uses the separate,
+versioned `cfop-learning-v1` key. `CFOP2:` exports include both; legacy `CFOP:`
+imports remain supported. Imports validate first and **merge** rather than erase
+existing records. Unsupported stored versions are protected from automatic
+overwriting and can be exported as `CFOP-RAW:` for recovery. No learning data or
+local performance samples are transmitted by the application.
+
 ## Develop and check
 
 Use Node.js 24.15.0 or later and npm. Development dependencies are pinned in
@@ -21,6 +35,21 @@ Preview pages: `home`, `basic`, `cross`, `f2l`, `oll`, `pll`.
 The check runs DOM/event regressions, algorithm properties, Worker failures,
 Service Worker recovery, release checks and Worker reproducibility. DOM tests
 do not replace physical iOS/Android or VoiceOver testing.
+
+The CI browser job additionally installs pinned Playwright browsers and runs
+`npm run test:e2e` against Chromium/Pixel and WebKit/iPhone touch profiles. It
+covers navigation, learning, backup merging, multiple tabs, 3D, and an old cached
+shell upgrading to this release and reopening offline. Browser fixtures are
+served only with `CFOP_E2E=1` and are excluded from deployment packages. These
+profiles are emulations and do not certify physical devices.
+
+The pure learning model and keyed JA/EN messages live in `lib/*.mjs`. Build their
+small classic-script adapter with `npm run build:learning`; `npm run check`
+verifies the checked-in `learning-core.js` is reproducible. The existing static
+runtime can migrate incrementally. Hidden lesson grids and notation diagrams
+materialize on their first visit. Mode changes preserve the Home cube and inputs.
+Local action-to-paint and long-task samples appear in Records; these are lab
+observations, not field INP. CI also captures 4x CPU-throttled Chromium samples.
 
 ## Worker provenance
 
@@ -73,6 +102,12 @@ close all site tabs and reopen to complete an update. Only `cfop-runtime-`
 caches may be removed. Query versions are release identifiers, not immutable
 content hashes: update HTML, Worker URL and SW together, deploy the package
 atomically where possible, and test upgrades with old tabs present.
+
+Edit `release.json` and run `npm run version:sync` to update HTML, Worker URL and
+SW together. `npm run check` rejects a mismatched release. Home announces a
+waiting update without forcing a reload. App and catalog versions appear in the
+backup panel. 3D supports speed selection, prediction pauses, section replay,
+repeat cancellation and tap-only viewpoint controls.
 
 Precache installation bypasses the browser HTTP cache, and online navigation
 explicitly revalidates it. Navigation preload is disabled to prevent its own

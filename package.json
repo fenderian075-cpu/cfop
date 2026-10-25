@@ -12,9 +12,14 @@
     "check:worker": "node scripts/build-worker.cjs --check",
     "serve": "node scripts/serve.cjs",
     "package:site": "node scripts/package-site.cjs",
-    "check": "npm test && npm run check:worker"
+    "check": "npm test && npm run check:worker && npm run check:learning && node scripts/release-version.cjs --check",
+    "build:learning": "node scripts/build-learning.cjs",
+    "check:learning": "node scripts/build-learning.cjs --check",
+    "test:e2e": "playwright test",
+    "version:sync": "node scripts/release-version.cjs"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "esbuild": "0.28.2",
     "jsdom": "30.1.3"
   }

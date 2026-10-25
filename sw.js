@@ -1,25 +1,27 @@
 /* CFOP Trainer Service Worker — online-first with offline fallback */
 const CACHE_PREFIX = 'cfop-runtime-';
-const CACHE = CACHE_PREFIX + 'v102';
+const CACHE = CACHE_PREFIX + 'v103';
 const NETWORK_TIMEOUT_MS = 4000;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=102',
-  './theme-init.js?v=102',
-  './i18n.js?v=102',
-  './cube-engine.js?v=102',
-  './progress.js?v=102',
-  './build.js?v=102',
-  './player.js?v=102',
-  './freeplay.js?v=102',
-  './solver.js?v=102',
-  './scramble.js?v=102',
-  './cube-worker.js?v=102',
-  './navigation.js?v=102',
-  './rendering.js?v=102',
-  './algorithms.js?v=102',
-  './app.js?v=102',
+  './styles.css?v=103',
+  './theme-init.js?v=103',
+  './i18n.js?v=103',
+  './cube-engine.js?v=103',
+  './progress.js?v=103',
+  './build.js?v=103',
+  './player.js?v=103',
+  './freeplay.js?v=103',
+  './solver.js?v=103',
+  './scramble.js?v=103',
+  './cube-worker.js?v=103',
+  './navigation.js?v=103',
+  './rendering.js?v=103',
+  './algorithms.js?v=103',
+  './learning-core.js?v=103',
+  './learning-ui.js?v=103',
+  './app.js?v=103',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -77,7 +79,7 @@ async function networkFirst(request) {
 
 async function respond(request) {
   // Versioned assets belong to the installed shell. Keep them coherent offline and online.
-  if (new URL(request.url).searchParams.get('v') === '102') {
+  if (new URL(request.url).searchParams.get('v') === '103') {
     const cached = await (await caches.open(CACHE)).match(request);
     if (cached) return cached;
   }

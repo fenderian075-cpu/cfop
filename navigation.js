@@ -17,6 +17,8 @@ function goCore(p,historyMode='push'){
   nextPage.style.transform='';nextPage.style.opacity='';nextPage.style.willChange='';
   nextPage.classList.add('on');
   document.body.dataset.page=p;
+  ensureLesson(p);
+  if(typeof learningRememberPage==='function')learningRememberPage(p);
   if(p==='basic'&&typeof n3resetBasic==='function')n3resetBasic();
   document.querySelectorAll('.navmain').forEach(b=>{const on=b.dataset.p===p;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current');});
   document.querySelectorAll('#tabbar button').forEach(b=>{const on=b.dataset.p===p;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current');});
@@ -68,15 +70,32 @@ function syncModeControls(){
 function setMode(m){
   mode=m;
   try{localStorage.setItem('cfop-mode',mode);}catch(e){}
-  rebuild();
+  learningMeasure('mode-change',()=>rebuild());
 }
 document.querySelectorAll('#modeSeg button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.m)));
 $('#modeIco').addEventListener('click',()=>setMode(mode==='s'?'a':'s'));
+const lessonModes=new Map();
+let commonBuilt=false;
+function ensureLesson(page){
+  if(!['cross','f2l','oll','pll','basic'].includes(page)||lessonModes.get(page)===mode)return;
+  learningMeasure('lesson-'+page,()=>{
+    if(page==='cross'){buildTasks();buildCross();}
+    else if(page==='f2l')buildF2L();
+    else if(page==='oll')buildOLL();
+    else if(page==='pll')buildPLL();
+    else if(!lessonModes.has('basic')){buildBasics();n3initNotation();}
+    lessonModes.set(page,mode);
+    buildSubnav();
+    if(LANG==='en')applyLanguage(false);
+  });
+}
 function rebuild(){
   allIds.length=0;
-  buildTasks();buildCross();buildF2L();buildOLL();buildPLL();buildBasics();
+  if(!commonBuilt){buildFlow();scrInit();buildStruct();fpInit();commonBuilt=true;}
+  ensureLesson(document.body.dataset.page||'home');
   syncModeControls();
-  refreshCounts();buildFlow();qNext();scrInit();buildStruct();fpInit();buildSubnav();
+  refreshCounts();buildFlow();qNext();buildSubnav();
+  learningRefresh();
 }
 // mobile nav auto-hide (scroll down = hide / up or top = show)
 (()=>{
@@ -519,6 +538,11 @@ applyLanguage();
 
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
   window.addEventListener('load',async()=>{
-    try{const registration=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});await registration.update();}catch(e){}
+    try{
+      const registration=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});
+      const announce=()=>{if(registration.waiting&&navigator.serviceWorker.controller){$('#learningUpdate').hidden=false;$('#learningUpdate').textContent=learningText('update');}};
+      announce();registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',announce);});
+      await registration.update();announce();
+    }catch(e){}
   });
 }

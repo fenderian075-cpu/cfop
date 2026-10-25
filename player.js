@@ -44,30 +44,6 @@ function n3init(){
   }
   n3view();
   // tribox式静止画カード(タップで3D再生)
-  document.querySelectorAll('.nchips[data-n3g]').forEach(box=>{
-    box.classList.add('ngrid');
-    N3B.filter(b=>b.g===box.dataset.n3g).forEach(b=>{
-      const variants=box.dataset.n3g==='base'?[b.k,b.k+"'",b.k+'2']:(box.dataset.n3g==='wide'?[b.k]:[b.k,b.k+"'"]);
-      const group=document.createElement('div');
-      group.className=`nmovegroup variants-${variants.length}${box.dataset.n3g==='rot'?' axisgroup':''}`;
-      group.dataset.move=b.k;
-      group.innerHTML=`<div class="nmovegrouptitle"><b class="mono">${b.k.toUpperCase()}</b><span>${b.jp}</span></div>`;
-      variants.forEach(tok=>{
-        const bt=document.createElement('button');bt.className='ncard';bt.dataset.tok=tok;
-        const wAlias=box.dataset.n3g==='wide'?` <i class="walias">(${tok[0].toUpperCase()}w)</i>`:'';
-        bt.innerHTML=triboxSVG(tok)+`<b class="mono">${tok}${wAlias}</b>`;
-        bt.addEventListener('click',()=>{
-          document.querySelectorAll('.ncard.on').forEach(x=>x.classList.remove('on'));
-          bt.classList.add('on');
-          N3.cur=b.k;N3.mod=tok.replace(b.k,'');
-          ncardAnimate(bt,tok);
-          n3loadAlg(tok,`${b.jp} ${tok}`,true,false);
-        });
-        group.appendChild(bt);
-      });
-      box.appendChild(group);
-    });
-  });
   // 持ち替えのアニメーションはタップ操作時のみ再生する(自動デモは行わない)
   $('#n3view').addEventListener('click',()=>{N3.yaw=-35;N3.pitch=-25;n3view();});
   // drag orbit
@@ -124,6 +100,11 @@ function n3init(){
   $('#apprev').addEventListener('click',()=>{n3pause();n3stepBack();});
   $('#apnext').addEventListener('click',()=>{n3pause();n3stepForward();});
   $('#apslider').addEventListener('input',e=>{n3pause();n3setStep(+e.target.value);});
+  $('#apSpeed').addEventListener('change',e=>{N3.rate=Number(e.target.value);});
+  $('#apPracticeMode').addEventListener('change',e=>{n3pause();N3.practiceMode=e.target.value;n3PracticeRefresh();});
+  $('#apSegment').addEventListener('change',e=>{n3pause();N3.segmentIndex=Number(e.target.value);n3setStep(N3.segments[N3.segmentIndex]?.start||0);});
+  $('#apSegmentPlay').addEventListener('click',()=>n3PlaySegment(false));
+  $('#apRepeat').addEventListener('click',()=>{if(N3.repeat)n3pause();else n3PlaySegment(true);});
   n3paint();n3sync();n3loadAlg($('#apinput').value,'セクシームーブ',false,false);
 }
 function n3pos(c){return `translate3d(${c.x*53}px,${c.y*53}px,${c.z*53}px)`;}
@@ -263,7 +244,7 @@ function n3animate(token,done,dir=1){
   const mod=shown.slice(1),target=90*b.sg*(mod==="'"?-1:1)*(mod==='2'?2:1);
   const movers=N3.cubies.filter(b.ly);
   N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));
-  const D=mod==='2'?680:480,t0=performance.now();
+  const D=(mod==='2'?680:480)/(N3.rate||1),t0=performance.now();
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const ar=document.getElementById('n3arrow3d');
   function frame(now){
@@ -295,6 +276,7 @@ function n3updatePlayer(){
     :t('▶ 再生','▶ Play');
   $('#applay').textContent=lbl;
   $('#apmoves').innerHTML=chunkMoves(N3.seq,N3.step);
+  n3PracticeRefresh();
   if(!N3.animating)n3previewNext(N3.step+1);
   const now=$('#apmoves .now');
   if(now){
@@ -317,16 +299,33 @@ function n3stepForward(){if(N3.step<N3.seq.length)n3animate(N3.seq[N3.step]);}
 function n3stepBack(){if(N3.step>0)n3animate(N3.seq[N3.step-1],null,-1);}
 function n3start(){
   if(!N3.seq.length)return;if(N3.step>=N3.seq.length)n3setStep(0);N3.playing=true;n3updatePlayer();
-  const loop=()=>{if(!N3.playing)return;if(N3.step>=N3.seq.length){N3.playing=false;n3updatePlayer();return;}n3animate(N3.seq[N3.step],loop);};loop();
+  N3.prediction=false;
+  const chosen=N3.segments?.[N3.segmentIndex||0];
+  const stop=N3.segmentEnd??(N3.practiceMode==='predict'?(N3.segments.find(s=>s.end>N3.step)?.end||N3.seq.length):N3.seq.length);
+  const loop=()=>{
+    if(!N3.playing)return;
+    if(N3.step>=stop){
+      if(N3.repeat&&chosen){
+        const session=N3.session;
+        N3.repeatTimer=setTimeout(()=>{
+          N3.repeatTimer=null;if(!N3.repeat||!N3.playing||session!==N3.session)return;
+          n3setStep(chosen.start);N3.playing=true;loop();
+        },350);
+      }else{N3.playing=false;N3.segmentEnd=null;N3.prediction=N3.practiceMode==='predict'&&N3.step<N3.seq.length;n3updatePlayer();}
+      return;
+    }
+    n3animate(N3.seq[N3.step],loop);
+  };loop();
 }
 function n3cancelAnimation(){
+  clearTimeout(N3.repeatTimer);N3.repeatTimer=null;
   N3.session=(N3.session||0)+1;
   if(N3.raf!==null)cancelAnimationFrame(N3.raf);
   N3.raf=null;N3.animating=false;
   N3.cubies.forEach(c=>c.el.style.transform=n3pos(c));
   const arrow=document.getElementById('n3arrow3d');if(arrow?.dataset.base)arrow.style.transform=arrow.dataset.base;
 }
-function n3pause(){N3.playing=false;n3cancelAnimation();n3paint();n3updatePlayer();}
+function n3pause(){N3.playing=false;N3.repeat=false;N3.segmentEnd=null;N3.prediction=false;n3cancelAnimation();n3paint();n3updatePlayer();}
 function n3resetBasic(){
   n3pause();N3.yaw=-35;N3.pitch=-25;N3.focus=true;
   const preset=$('#appreset');if(preset)preset.selectedIndex=0;
@@ -366,6 +365,9 @@ function n3loadAlg(alg,name,autoplay,navigate=true,startMode='solved',kind){
   const parsed=parseAlg(alg);if(parsed.invalid.length){showToast(tj('認識できない記号: ','Unrecognized tokens: ')+parsed.invalid.join(' '),true);return false;}
   n3cancelAnimation();
   const seq=parsed.valid;N3.playing=false;N3.seq=seq;N3.algName=name||'手順';
+  N3.repeat=false;N3.segmentEnd=null;N3.segmentIndex=0;N3.prediction=false;
+  const catalogCase=learningCases.find(c=>toks(c.alg).join(' ')===seq.join(' '));
+  N3.segments=catalogCase?.segments||CFOPLearning.segments(seq,CHUNKS.map(([label,,tokens])=>({label,tokens})));
   N3.startMode=startMode;
   if(kind!==undefined)N3.caseKind=kind;
   if(startMode==='case'&&seq.length){
@@ -378,6 +380,23 @@ function n3loadAlg(alg,name,autoplay,navigate=true,startMode='solved',kind){
   $('#apinput').value=seq.join(' ');n3setStep(0);
   if(navigate&&!$('#pg-basic').classList.contains('on')){go('basic');requestAnimationFrame(()=>{const st=$('#n3stage');if(st&&st.scrollIntoView)try{st.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}});}
   if(autoplay)n3start();
+}
+function n3PracticeRefresh(){
+  const select=$('#apSegment');if(!select)return;
+  const sections=N3.segments||[],index=Math.min(N3.segmentIndex||0,Math.max(0,sections.length-1));
+  const signature=LANG+'|'+sections.map(s=>s.start+':'+s.end+':'+s.label).join(',');
+  if(select.dataset.signature!==signature){
+    select.replaceChildren();sections.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=learningText('segment',{number:i+1,count:sections.length})+(s.label?' · '+(LANG==='en'?toEnglish(s.label):s.label):'')+' ('+(s.start+1)+'–'+s.end+')';select.appendChild(o);});select.dataset.signature=signature;
+  }
+  select.value=String(index);$('#apSpeed').value=String(N3.rate||1);$('#apPracticeMode').value=N3.practiceMode||'continuous';
+  $('#apRepeat').setAttribute('aria-pressed',String(!!N3.repeat));$('#apRepeat').textContent=learningText(N3.repeat?'repeatOff':'repeat');
+  $('#apPrediction').hidden=!N3.prediction;$('#apPrediction').textContent=learningText('predict');
+  select.disabled=!sections.length;$('#apSegmentPlay').disabled=!sections.length;$('#apRepeat').disabled=!sections.length;
+}
+function n3PlaySegment(repeat){
+  if(!repeat&&N3.step>=(N3.segments?.[N3.segmentIndex||0]?.end||Infinity))N3.segmentIndex=Math.min((N3.segmentIndex||0)+1,N3.segments.length-1);
+  const section=N3.segments?.[N3.segmentIndex||0];if(!section)return;
+  n3pause();n3setStep(section.start);N3.segmentEnd=section.end;N3.repeat=repeat;n3start();
 }
 
 /* ================= tribox-style static notation diagrams ================= */
@@ -593,3 +612,31 @@ function buildStruct(){
 }
 
 const PERFECT=["U F' L' U' R2 F' R2 B' U' R F' U F D' L2 F2 L2 U'","U' F R U L2 F L2 B U L' F U' F' D R2 F2 R2 U"];
+
+function n3initNotation(){
+  if(n3initNotation.done)return;n3initNotation.done=true;
+  document.querySelectorAll('.nchips[data-n3g]').forEach(box=>{
+    box.classList.add('ngrid');
+    N3B.filter(b=>b.g===box.dataset.n3g).forEach(b=>{
+      const variants=box.dataset.n3g==='base'?[b.k,b.k+"'",b.k+'2']:(box.dataset.n3g==='wide'?[b.k]:[b.k,b.k+"'"]);
+      const group=document.createElement('div');
+      group.className=`nmovegroup variants-${variants.length}${box.dataset.n3g==='rot'?' axisgroup':''}`;
+      group.dataset.move=b.k;
+      group.innerHTML=`<div class="nmovegrouptitle"><b class="mono">${b.k.toUpperCase()}</b><span>${b.jp}</span></div>`;
+      variants.forEach(tok=>{
+        const bt=document.createElement('button');bt.className='ncard';bt.dataset.tok=tok;
+        const wAlias=box.dataset.n3g==='wide'?` <i class="walias">(${tok[0].toUpperCase()}w)</i>`:'';
+        bt.innerHTML=triboxSVG(tok)+`<b class="mono">${tok}${wAlias}</b>`;
+        bt.addEventListener('click',()=>{
+          document.querySelectorAll('.ncard.on').forEach(x=>x.classList.remove('on'));
+          bt.classList.add('on');
+          N3.cur=b.k;N3.mod=tok.replace(b.k,'');
+          ncardAnimate(bt,tok);
+          n3loadAlg(tok,`${b.jp} ${tok}`,true,false);
+        });
+        group.appendChild(bt);
+      });
+      box.appendChild(group);
+    });
+  });
+}

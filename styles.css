@@ -1,4 +1,5 @@
 html{background:#101014}
+[hidden]{display:none!important}
 html:not([data-app-visible]) body{visibility:hidden}
 html[data-theme="light"]{background:#f2f4f9}
 :root{
@@ -1204,3 +1205,55 @@ body[data-theme="light"] .acard .setuprow{background:color-mix(in srgb,#ffcf1a 1
   .setupseq,.setuplbl,.acard .setupseq,.acard .setuplbl{font-size:.78rem}
   .taskcount{display:block;font-size:.65rem}
 }
+
+/* Purpose-first learning, practice and records. Every action has a tap alternative. */
+.learning-home,.learning-panel{border:1px solid var(--line);border-radius:20px;background:var(--panel);padding:22px;margin:8px 0 24px;min-width:0;scroll-margin-top:80px}
+.learning-home{background:linear-gradient(135deg,var(--panel),var(--panel2))}
+.learning-eyebrow{font-size:.66rem;letter-spacing:.15em;color:var(--tx3);font-weight:800}
+.learning-home h1{font-size:clamp(1.4rem,4vw,2rem);margin:8px 0 10px;letter-spacing:-.04em}
+.learning-home p,.learning-panel p{line-height:1.7;font-size:.86rem}
+.learning-actions,.learning-shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.learning-actions .btn,.learning-shortcuts .btn{min-height:44px;white-space:normal}
+.learning-shortcuts{border-top:1px solid var(--line);padding-top:14px}
+.learning-due{color:var(--tx2);font-size:.78rem!important}
+.learning-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.learning-panel-head h2{margin:0;font-size:1.15rem}
+.learning-fields{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+.learning-fields label{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 150px;font-size:.78rem;color:var(--tx2)}
+.learning-fields select{box-sizing:border-box;max-width:100%;width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--tx);font:inherit;padding:8px}
+.learning-case-field{flex-basis:100%!important}
+.practice-lesson{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.practice-lesson article{border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.practice-lesson h3{font-size:1rem;margin:0 0 8px}
+.practice-lesson svg{display:block;width:100%;max-width:180px;margin:auto}
+.practice-lesson .mono{overflow-wrap:anywhere}
+.practice-diagram svg{display:block;width:100%;max-width:235px;margin:14px auto}
+#practicePrompt{font-weight:700;text-align:center;margin:12px 0}
+#practiceRecall label{display:block;margin:10px 0;font-size:.85rem}
+#practiceRecall input{width:100%;box-sizing:border-box;margin-bottom:10px}
+.practice-clock{display:block;font-variant-numeric:tabular-nums;font-size:2rem;margin:12px 0}
+.learning-muted{color:var(--tx2);font-size:.74rem!important;line-height:1.65}
+.learning-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px}
+.learning-metrics article{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.learning-metrics h3{font-size:.9rem;margin:0 0 12px}
+.learning-metrics dl{display:grid;grid-template-columns:1fr auto;gap:10px;margin:0;font-size:.76rem}
+.learning-metrics dt{color:var(--tx2)}.learning-metrics dd{margin:0;font-variant-numeric:tabular-nums}
+#learningRecent{padding-left:22px;font-size:.8rem;line-height:1.7}
+#learningRecent li{margin:12px 0;overflow-wrap:anywhere}#learningRecent small{display:block;color:var(--tx2)}
+#learningStorageStatus{color:var(--rd)}
+#learningRecords details{margin-top:16px}#learningRecords pre{max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.75rem}
+.view-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:5px;margin:8px 0;min-width:0}
+.view-controls .btn{width:44px;min-width:44px;height:44px;padding:0;font-size:1.1rem}
+.ap-practice{border-top:1px solid var(--line);margin-top:12px;padding-top:6px}
+.ap-practice .learning-fields{gap:8px;margin:8px 0}.ap-practice .learning-fields label{flex-basis:115px}
+.ap-practice p{font-size:.8rem;line-height:1.6}
+@media(max-width:760px){
+  .learning-home,.learning-panel{padding:16px;border-radius:16px}
+  .learning-home h1{font-size:1.65rem}
+  .learning-shortcuts .btn{flex:1 1 100px}
+  .learning-panel-head{align-items:flex-start}.learning-panel-head .btn{flex-shrink:0}
+  .learning-home .learning-actions .btn{flex:1 1 125px}
+  .practice-lesson{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){.learning-home,.learning-panel{scroll-behavior:auto}}
+#learningCaseRows{list-style:none;padding:0}#learningCaseRows li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;font-size:.76rem;color:var(--tx2)}

@@ -6,6 +6,7 @@ const os = require('node:os');
 const crypto = require('node:crypto');
 const vm = require('node:vm');
 const { siteFiles, packageSite, root } = require('../scripts/package-site.cjs');
+const {version}=require('../release.json');
 
 test('F14: all runtime scripts parse and every HTML dependency is precached at one version', () => {
   for (const file of siteFiles().filter(file => file.endsWith('.js'))) new vm.Script(fs.readFileSync(path.join(root, file), 'utf8'), { filename: file });
@@ -15,8 +16,8 @@ test('F14: all runtime scripts parse and every HTML dependency is precached at o
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const scripts = [...html.matchAll(/<script src="([^"]+)"/g)].map(match => match[1]);
   const stylesheet = html.match(/rel="stylesheet" href="([^"]+)"/)[1];
-  for (const file of [...scripts, stylesheet, 'cube-worker.js?v=102']) {
-    assert.ok(core.includes('./' + file), file);assert.equal(new URL(file, 'https://test/').searchParams.get('v'), '102');
+  for (const file of [...scripts, stylesheet, 'cube-worker.js?v='+version]) {
+    assert.ok(core.includes('./' + file), file);assert.equal(new URL(file, 'https://test/').searchParams.get('v'), String(version));
   }
   for (const file of core) assert.ok(fs.existsSync(path.join(root, file.split('?')[0])), file);
 });

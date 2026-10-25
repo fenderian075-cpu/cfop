@@ -41,6 +41,7 @@ function buildFlow(){
   });
 }
 function refreshCounts(){
+  if(typeof activeProgressIds==='function'){allIds.splice(0,allIds.length,...activeProgressIds());}
   const ids=allIds.filter(id=>!/^X/.test(id)),tasks=allIds.filter(id=>/^X/.test(id));
   const done=ids.filter(i=>prog.has(i)).length;
   $('#hcount').innerHTML=`${LANG==='en'?'Learned':'習得'} <b>${done}</b>/${ids.length} <span class="taskcount">${LANG==='en'?'Tasks':'課題'} ${tasks.filter(id=>prog.has(id)).length}/${tasks.length}</span>`;
@@ -132,7 +133,7 @@ function isKnownProgressId(id){
   if(id.startsWith('P'))return Object.hasOwn(PLL,id.slice(1));
   return false;
 }
-$('#btnGen').addEventListener('click',()=>{$('#codeBox').value='CFOP:'+btoa([...prog].join(','));showToast('進捗コードを発行しました');});
+$('#btnGen').addEventListener('click',()=>{$('#codeBox').value=learningExport();showToast(learningText('backupMade'));});
 $('#btnCopy').addEventListener('click',async()=>{
   const box=$('#codeBox'),value=box.value.trim();if(!value){showToast('先に進捗コードを発行してください',true);return;}
   try{
@@ -143,12 +144,7 @@ $('#btnCopy').addEventListener('click',async()=>{
 });
 $('#btnLoad').addEventListener('click',()=>{
   const v=$('#codeBox').value.trim();
-  if(!v.startsWith('CFOP:')){showToast('CFOP: で始まる進捗コードを入力してください',true);return;}
   try{
-    const ids=atob(v.slice(5)).split(',').filter(Boolean);
-    if(ids.some(id=>!isKnownProgressId(id)))throw new Error('unknown progress id');
-    const restored=new Set(ids);prog.clear();restored.forEach(id=>prog.add(id));
-    saveProg();rebuild();
-    showToast('進捗を復元しました');
-  }catch(e){showToast('進捗コードが壊れているか、対応していない形式です',true);}
+    learningImport(v);showToast(learningText('backupAdded'));
+  }catch(e){showToast(learningText('backupBad'),true);}
 });
