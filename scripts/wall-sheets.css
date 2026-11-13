@@ -217,3 +217,4 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .s1 .to,.s1 .rule{height:var(--aw);background:var(--ac);border-radius:var(--aw)}
 .s1 .to::after,.s1 .rule::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
 .s1 .half .to{width:4mm}
+.s1 .half{grid-template-columns:15mm 1fr;column-gap:2.4mm}

@@ -101,7 +101,7 @@ function simpleSheets(){
   const subhead=(label,pic,question='')=>`<div class="subhead">${look(label,pic,question)}</div>`;
   // The first look shares the row with the step title; the second look gets its own row.
   const stepWithLook=(n,name,label,pic,question='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${look(label,pic,question)}</header>`;
-  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div><i class="to"></i>${card(c,short(c))}</div>`;
+  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div>${card(c,short(c))}</div>`;
   return `<section class="sheet s1">${title}
   ${step(1,'Cross',goal(d.goalCross))}
   <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
