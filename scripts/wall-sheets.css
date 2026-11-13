@@ -210,3 +210,10 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .s1 .no{font-size:10pt;color:#4b5563}
 .s1 .step{margin:4.4mm 0 2.3mm}
 .s1 .title+.step{margin-top:0}
+
+/* Simple: one arrow style everywhere (step goals, look rules, PLL branch): same weight, colour and head. */
+/* Whole device pixels on purpose: Chromium snaps border widths to whole pixels, so a millimetre border would print thinner than the shaft. */
+.s1{--aw:2px;--ac:#929aaa;--ah:2.5mm}
+.s1 .to,.s1 .rule{height:var(--aw);background:var(--ac);border-radius:var(--aw)}
+.s1 .to::after,.s1 .rule::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
+.s1 .half .to{width:4mm}
