@@ -198,3 +198,15 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .s1 .rule::after{width:2.4mm;height:2.4mm;border-top:.55mm solid #b9c0cc;border-right:.55mm solid #b9c0cc;right:-1.1mm}
 .s1 .gp svg{width:9.5mm}
 .s1 .step .goal svg{width:11mm}
+
+/* Simple: type scale. Title > step headings > look labels > card labels, all sharing one baseline logic. */
+.s1 .title{align-items:baseline;gap:4mm;margin-bottom:3.2mm;padding-bottom:2.2mm;border-bottom-width:.9mm}
+.s1 .title b{font-size:25pt;font-weight:800;letter-spacing:-.025em;line-height:1}
+.s1 .title span{font-size:13pt;font-weight:600;color:#4b5563;line-height:1}
+.s1 .num{width:10mm;height:10mm;font-size:18pt}
+.s1 h1{font-size:21pt}
+.pill{font-size:11.5pt;padding:.8mm 2.8mm}
+.q{font-size:11.5pt}
+.s1 .no{font-size:10pt;color:#4b5563}
+.s1 .step{margin:4.4mm 0 2.3mm}
+.s1 .title+.step{margin-top:0}
