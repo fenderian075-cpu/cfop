@@ -125,19 +125,19 @@ function fullSheets(){
   function groups(list){
     const out=[];let cur=null;
     for(const c of list){if(!cur||cur.sec!==c.sec){cur={sec:c.sec,items:[]};out.push(cur);}cur.items.push(c);}
-    return out.map(g=>`<div class="grp">${g.sec}</div><div class="grid ${g.items.length===4?'four':'three'}">${g.items.map(c=>card(c,fl(c))).join('')}</div>`).join('');
+    return out.map(g=>`<div class="grp"><span>${g.sec}</span><i class="gline"></i></div><div class="grid ${g.items.length===4?'four':'three'}">${g.items.map(c=>card(c,fl(c))).join('')}</div>`).join('');
   }
   const num=c=>Number(c.name.replace('OLL ',''));
   const ollSorted=[...oll].sort((x,y)=>num(x)-num(y));
   const ol=c=>`${c.name.replace('OLL ','#')}<em>${c.sec.replace(/ shapes?$/,'').replace(' (corners only)','')}</em>`;
   const ollPage=(n,list)=>`<section class="sheet full o">${title(n)}
-  ${step(3,'OLL',goal(d.goalOll),`#${num(list[0])} – #${num(list[list.length-1])}`)}
+  ${step(3,'OLL',goal(d.flatOll),`#${num(list[0])} – #${num(list[list.length-1])}`)}
   <div class="grid two fill">${list.map(c=>card(c,ol(c))).join('')}</div>
 </section>`;
   // PLL branches by how many sides show headlights, computed from each case's state.
   const byCount={4:[],1:[],0:[]};
   for(const c of pll){const n=d.headlights(d.pllState(short(c)));if(!byCount[n])throw new Error(`Unexpected headlight count ${n} for ${c.name}`);byCount[n].push(c);}
-  const block=(n,rep)=>`<div class="cond">${d.headlightIcon(d.pllState(rep),n?String(n):'no')}</div><i class="to"></i><div class="grid two">${byCount[n].map(c=>card(c,short(c))).join('')}</div>`;
+  const block=(n,rep)=>`<div class="cond">${d.headlightIcon(d.pllState(rep),n?String(n):'no')}</div><div class="grid two">${byCount[n].map(c=>card(c,short(c))).join('')}</div>`;
   const per=Math.ceil(ollSorted.length/3);
   return `<section class="sheet full f1">${title(1)}
   ${step(1,'Cross',goal(d.goalCross))}
@@ -151,8 +151,8 @@ function fullSheets(){
 </section>
 ${[0,1,2].map(i=>ollPage(3+i,ollSorted.slice(i*per,(i+1)*per))).join('\n')}
 <section class="sheet full p">${title(6)}
-  ${step(4,'PLL',goal(d.goalPll))}
-  <div class="branch"><div class="q">Headlights?</div>${block(4,'Ua')}${block(1,'T')}${block(0,'Y')}</div>
+  <header class="step"><span class="num">4</span><h1>PLL</h1><span class="q">Headlights?</span>${goal(d.flatPll)}</header>
+  <div class="branch">${block(4,'Ua')}<div class="sep"></div>${block(1,'T')}<div class="sep"></div>${block(0,'Y')}</div>
 </section>`;
 }
 

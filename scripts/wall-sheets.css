@@ -218,3 +218,24 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .s1 .to::after,.s1 .rule::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
 .s1 .half .to{width:4mm}
 .s1 .half{grid-template-columns:15mm 1fr;column-gap:2.4mm}
+
+/* Full CFOP: the Simple sheet's look. One arrow style, a title that leads, group labels with a plain rule (no arrow). */
+.full{--aw:2px;--ac:#929aaa;--ah:2.5mm}
+.full .to{width:7mm;height:var(--aw);background:var(--ac);border-radius:var(--aw)}
+.full .to::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
+.full .title{align-items:baseline;gap:4mm;margin-bottom:3.2mm;padding-bottom:2.2mm;border-bottom-width:.9mm}
+.full .title b{font-size:25pt;font-weight:800;letter-spacing:-.025em;line-height:1}
+.full .title span{font-size:13pt;font-weight:600;color:#4b5563;line-height:1}
+.full .title i{font-size:11pt;font-weight:700;color:#4b5563}
+.full .num{width:10mm;height:10mm;font-size:18pt}
+.full h1{font-size:21pt}
+.full .goal svg{width:11mm}
+.full .range{font-size:11.5pt;margin-left:2mm;padding-bottom:1.2mm}
+.full .step .q{font-size:11.5pt;font-weight:800;margin-left:3mm}
+.full .no{font-size:9.5pt;color:#4b5563}
+.full .no em{color:#8b93a1}
+.grp{display:flex;align-items:center;gap:2.5mm;font-size:9.5pt;font-weight:800;color:#4b5563;margin:2.2mm 0 1.2mm .5mm}
+.gline{flex:1;height:1px;background:#c3cad5}
+.p .branch{grid-template-columns:17mm 1fr;gap:3mm 2.4mm;align-items:start;flex:1}
+.p .cond svg{width:16mm}
+.sep{grid-column:1/-1;height:1px;background:#c3cad5}
