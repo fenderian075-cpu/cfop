@@ -38,7 +38,7 @@ var CFOPLearning = (() => {
 
   // lib/learning.mjs
   var SCHEMA_VERSION = 1;
-  var CATALOG_VERSION = "cfop-2026-10-25";
+  var CATALOG_VERSION = "cfop-2026-11-13";
   var TASKS = ["recognition", "recall", "execution", "solve"];
   var DAY = 864e5;
   function emptyState() {
