@@ -1,0 +1,143 @@
+/* Wall-sheet styles: base rules first, then the full-CFOP overrides. Later rules win. */
+@page{size:A4;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{--dline:#374151;--hl:#0b0f19;--dOff:#c9cfd9;--dMask:#eef0f4;--ollOff:#c9cfd9;font-family:Inter,system-ui,sans-serif;color:#0b0f19;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{width:210mm;height:297mm;padding:10mm 12mm 8mm;display:flex;flex-direction:column;page-break-after:always;overflow:hidden}
+.step{display:flex;align-items:center;gap:4mm;margin:0 0 3mm}
+.grid+.step{margin-top:5mm}
+.num{display:flex;align-items:center;justify-content:center;width:13mm;height:13mm;border-radius:50%;background:#0b0f19;color:#fff;font-size:24pt;font-weight:800}
+h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
+.goal{margin-left:auto;display:flex;align-items:center;gap:2.5mm}
+.goal svg{width:15mm;height:auto;display:block}
+.to{display:block;position:relative;width:9mm;height:1.1mm;background:#0b0f19;border-radius:1mm;margin-right:1.2mm}
+.to::after{content:"";position:absolute;right:-1.4mm;top:50%;width:3.2mm;height:3.2mm;border-top:1.1mm solid #0b0f19;border-right:1.1mm solid #0b0f19;transform:translateY(-50%) rotate(45deg);border-radius:.4mm}
+.grid{display:grid;gap:3mm}
+.grid+.grid{margin-top:3mm}
+.two{grid-template-columns:1fr 1fr}
+.case{display:flex;align-items:center;gap:4mm;border:.5mm solid #c3cad5;border-radius:3.5mm;padding:2mm 3.5mm;min-width:0}
+.case .fig svg{display:block;width:27mm;height:auto}
+.case .txt{min-width:0;flex:1}
+.no{font-size:10.5pt;font-weight:800;color:#6b7280;margin-bottom:.6mm}
+.alg{font-family:"DejaVu Sans Mono",monospace;font-weight:700;font-size:18pt;line-height:1.3;word-spacing:-.14em;text-wrap:balance}
+.trg{white-space:nowrap;border-radius:1.6mm;padding:0 .7mm;margin:0 -.7mm}
+.ck-sexy{color:#0e7a34;background:#dff3e5}.ck-isexy{color:#1d55c4;background:#e1eafb}.ck-sledge{color:#c2410c;background:#fde8da}.ck-sune{color:#8a5f00;background:#faedc6}.ck-anti{color:#475569;background:#e6eaf0}
+.cross{grid-template-columns:repeat(4,1fr)}
+.case.v{flex-direction:column;gap:1mm;padding:2.5mm 2mm;text-align:center}
+.case.v .fig svg{width:29mm}
+.f2l{flex:1;grid-auto-rows:1fr}
+.keys{display:flex;justify-content:space-between;align-items:center;gap:2mm;margin-top:4mm;padding-top:3mm;border-top:.5mm solid #c3cad5}
+.key{display:flex;flex-direction:column;align-items:center}
+.key svg{width:18mm;height:auto;display:block}
+.key b{font-family:"DejaVu Sans Mono",monospace;font-size:15pt;line-height:1.1}
+/* page 2: flat last-layer diagrams read well smaller, algorithms are longer */
+.p2 .case{padding:1.6mm 3mm;gap:3.5mm}
+.p2 .case .fig svg{width:20mm}
+.p2 .alg{font-size:14.5pt;line-height:1.28}
+.p2 .no{font-size:10pt;margin-bottom:.3mm}
+.subgoal{display:flex;align-items:center;justify-content:center;gap:2mm;border:.5mm dashed #c3cad5;border-radius:3.5mm}
+.subgoal svg{width:17mm;height:auto;display:block}
+.p2 .keys{margin-top:auto}
+.p2 .key svg{width:16mm}
+.trigs{display:grid;grid-template-columns:auto auto;gap:1.5mm 5mm}
+.trigs .alg{font-size:13pt}
+.p2{padding-top:8mm;padding-bottom:6mm}
+.p2 .grid{gap:2.2mm}.p2 .grid+.grid{margin-top:2.2mm}.p2 .grid+.step{margin-top:3.5mm}
+.p2 .step{margin-bottom:2.2mm}
+.p2 .num{width:12mm;height:12mm;font-size:22pt}.p2 h1{font-size:25pt}.p2 .goal svg{width:13mm}
+.p2 .case{padding:1.1mm 3mm}
+.p2 .case .fig svg{width:17.5mm}
+.p2 .alg{font-size:14pt;line-height:1.24}
+.p2 .subgoal svg{width:14.5mm}
+.p2 .keys{margin-top:auto;padding-top:2mm}
+.p2 .key svg{width:14mm}.p2 .key b{font-size:13pt}
+.key .fig{position:relative}
+.p2 .case .fig svg{width:19.5mm}
+.p2 .alg{font-size:15pt}
+.p2 .subgoal svg{width:16mm}
+/* v2: title line, no notation key, PLL headlights branch */
+.title{display:flex;align-items:baseline;gap:4mm;margin:0 0 4mm;padding-bottom:2.5mm;border-bottom:.8mm solid #0b0f19}
+.title b{font-size:17pt;font-weight:800;letter-spacing:-.01em}
+.title span{font-size:10.5pt;font-weight:600;color:#4b5563}
+.title i{margin-left:auto;font-style:normal;font-size:10.5pt;font-weight:700;color:#4b5563}
+.p1{padding-bottom:10mm}
+.p1 .case .fig svg{width:31mm}.p1 .case.v .fig svg{width:31mm}
+.p1 .alg{font-size:20pt}
+.p2{padding-top:9mm;padding-bottom:9mm}
+.p2 .title{margin-bottom:3mm}
+.branch{display:grid;grid-template-columns:24mm 12mm 1fr;align-items:center;gap:2.2mm 0;margin-bottom:2.2mm}
+.branch .q{grid-column:1/-1;font-size:11pt;font-weight:800;color:#0b0f19;margin:0 0 -.6mm .5mm}
+.cond svg{display:block;width:22mm;height:auto}
+.branch .to{justify-self:center;margin:0}
+.branch .case{min-height:21mm}
+.p2 .case .fig svg{width:17.3mm}
+.p2 .subgoal svg{width:14.5mm}
+.cond svg{width:19.5mm}
+.branch .case{min-height:0}
+.branch{grid-template-columns:22mm 12mm 1fr;gap:2mm 0}
+.p2 .grid+.step{margin-top:3mm}
+
+/* Full CFOP: denser pages in the same visual language */
+.full{padding:9mm 11mm 8mm}
+.full .title{margin-bottom:3mm}
+.full .step{margin-bottom:2mm}
+.full .num{width:11.5mm;height:11.5mm;font-size:21pt}.full h1{font-size:24pt}.full .goal svg{width:12.5mm}
+.range{font-size:11pt;font-weight:700;color:#4b5563;margin-left:1mm;align-self:flex-end;padding-bottom:1.6mm}
+.three{grid-template-columns:repeat(3,1fr)}
+.full .grid{gap:1.8mm}
+.full .case{padding:1.2mm 2.2mm;gap:2.4mm;border-radius:3mm}
+.full .case .fig svg{width:17mm}
+.full .alg{font-size:11.5pt;line-height:1.22;word-spacing:-.2em}
+.full .no{font-size:8.5pt;margin-bottom:.2mm;display:flex;gap:1.6mm;align-items:baseline}
+.full .no em{font-style:normal;font-weight:600;color:#9aa1ad}
+.grp{font-size:8.5pt;font-weight:800;color:#4b5563;letter-spacing:.02em;margin:1.8mm 0 1mm .5mm}
+.full .grid+.step{margin-top:3mm}
+.f1 .cross .case.v{flex-direction:row;gap:2mm;padding:1.2mm 2mm;text-align:left}
+.f1 .cross .case.v .fig svg{width:17mm}
+.f1 .cross .alg{font-size:12.5pt}
+.f1 .case .fig svg{width:16mm}
+.f2 .three{grid-auto-rows:1fr}
+.f2 .case .fig svg{width:24mm}.f2 .alg{font-size:14pt}.f2 .no{font-size:10pt}.f2 .grp{font-size:10pt;margin-top:4mm}
+.f2 .case{padding:3mm}
+.o .fill{flex:1;grid-auto-rows:1fr}
+.o .case .fig svg{width:16.5mm}
+.o .alg{font-size:10.6pt}
+.p .branch{grid-template-columns:19mm 9mm 1fr;gap:3.5mm 0;align-items:start;flex:1}
+.p .cond svg{width:18mm}.p .cond{padding-top:1mm}
+.p .branch .to{width:6mm;margin-top:9mm}
+.p .case .fig svg{width:16.5mm}
+.p .alg{font-size:11.5pt}
+.p .branch .grid{gap:1.6mm}
+.ck-hedge{color:#bb271c;background:#fbe3e0}
+.four{grid-template-columns:repeat(4,1fr)}
+.four .case{gap:1.6mm;padding:1.2mm 1.6mm}
+.four .case .fig svg{width:14.5mm}
+.o .alg{font-size:10.2pt}
+.o .case{padding:1.2mm 1.8mm;gap:2mm}
+.f1 .case .fig svg{width:19.5mm}
+.f1 .alg{font-size:12.4pt}
+.f1 .four .case .fig svg{width:16.5mm}
+.f1 .cross .case.v .fig svg{width:18mm}
+.f2 .case .fig svg{width:29mm}.f2 .alg{font-size:15pt}
+.f2 .case{padding:4mm 3mm}
+.f2 .grid{gap:3mm}
+.f2 .case .fig svg{width:25mm}.f2 .alg{font-size:13.6pt}
+.f2 .case{padding:2.6mm 2.6mm}
+.f2 .case .fig svg{width:27mm}.f2 .alg{font-size:14pt}
+.f2 .case{padding:3.4mm 2.6mm}
+.f1 .four .case .fig svg{width:14mm}
+.f1 .four .alg{font-size:11.4pt}
+.f2 .case .fig svg{width:25mm}.f2 .alg{font-size:13.4pt}
+.f2 .case{padding:4.4mm 2.4mm;gap:2mm}
+/* OLL: two columns over three pages, in number order */
+.o .fill{flex:0 1 auto;grid-auto-rows:auto}
+.o .case{padding:1.6mm 3mm;gap:3.5mm}
+.o .case .fig svg{width:19mm}
+.o .alg{font-size:13.6pt;line-height:1.25}
+.o .no{font-size:10pt}
+.o .grid{gap:2.2mm}
+.o .case .fig svg{width:20mm}
+.o .alg{font-size:14.2pt}
+.o .case .fig svg{width:19mm}
+.o .case{padding:1.5mm 3mm}
+.o .alg{font-size:14pt;line-height:1.22}

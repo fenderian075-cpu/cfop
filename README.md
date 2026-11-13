@@ -66,6 +66,17 @@ latest 500 solves in the versioned `cfop-timer-v1` key. Timer solves stay on the
 device and are not part of `CFOP2:` backup codes. An unreadable or newer stored
 format is left untouched rather than overwritten.
 
+## Printable wall sheets
+
+`print/cfop-simple-a4.pdf` (2 pages, Simple mode) and `print/cfop-full-a4.pdf`
+(6 pages, all 41 F2L, 57 OLL and 21 PLL) are A4 sheets meant for a wall: case
+diagram, algorithm, a goal picture per step and a headlights branch for PLL.
+`npm run build:print` regenerates both from the site's own diagram functions and
+algorithm data, so rerun it after changing algorithms or diagrams. It needs the
+Playwright Chromium and the Inter and DejaVu Sans Mono fonts; set `PW_EXE` to
+use a specific Chromium binary. The build fails if a page or card overflows.
+The PDFs are not part of `npm run check` or the release package.
+
 ## Worker provenance
 
 The training scrambler is cubejs **1.3.2**. Its original runtime source and
