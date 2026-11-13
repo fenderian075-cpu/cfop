@@ -41,7 +41,7 @@ test('cache quota failure does not replace a successful network response', async
 test('versioned assets use the installed cache without going online', async () => {
   let fetched = false;
   const w = worker({ fetch: async () => { fetched = true; throw new Error('unexpected network'); } });
-  assert.equal((await w.run('respond({url:"https://example.test/cfop/player.js?v='+version+'",mode:"cors"})')).status, 200);
+  assert.equal((await w.run('respond({url:"https://example.test/cfop/app.bundle.js?v='+version+'",mode:"cors"})')).status, 200);
   assert.equal(fetched, false);
 });
 

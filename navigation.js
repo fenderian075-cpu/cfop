@@ -73,8 +73,16 @@ function setMode(m){
   try{localStorage.setItem('cfop-mode',mode);}catch(e){}
   learningMeasure('mode-change',()=>rebuild());
 }
-document.querySelectorAll('#modeSeg button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.m)));
-$('#modeIco').addEventListener('click',()=>setMode(mode==='s'?'a':'s'));
+function announceMode(){
+  const count=activeProgressIds().filter(id=>!/^X/.test(id)).length;
+  showToast(mode==='a'?tj(`本格モード：全${count}手順を表示`,`Advanced mode: all ${count} algorithms`):tj(`簡易モード：基本の${count}手順に絞って表示`,`Simple mode: the ${count} core algorithms`));
+}
+document.querySelectorAll('#modeSeg button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.m===mode)return;setMode(b.dataset.m);announceMode();}));
+$('#modeIco').addEventListener('click',()=>{setMode(mode==='s'?'a':'s');announceMode();});
+document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>{
+  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  document.getElementById(b.dataset.jump)?.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+}));
 const lessonModes=new Map();
 let commonBuilt=false;
 function ensureLesson(page){
@@ -369,7 +377,7 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.addEventListener('click
   if(pull){
     const THRESH=72,FLICK_V=-650,MIN_FLICK_DIST=24;
     // 除外領域: これらの中で始まったタッチはページ送りにしない
-    const EXCLUDE='#tabbar,.pullnav,#n3stage,.n3wrap,#netbox,.netwrap,#fpSwipe,.fpstage,input,textarea,select,.cmdk,.tocsheet,.pp,[data-hscroll]';
+    const EXCLUDE='#tabbar,.pullnav,.tmpad,#n3stage,.n3wrap,#netbox,.netwrap,#fpSwipe,.fpstage,input,textarea,select,.cmdk,.tocsheet,.pp,[data-hscroll]';
     let pg=null,startY=0,dist=0,visual=0,baseY=0,armed=false,active=false,page=null,samples=[];
     const atBottom=()=>window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2;
     const nextOf=p=>{const i=LEARN.indexOf(p);return i<0?null:LEARN[(i+1)%LEARN.length];};

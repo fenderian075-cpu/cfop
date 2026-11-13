@@ -33,6 +33,10 @@ const EN={
   '上段の右側コーナー2個と、左右のエッジ2個を交換。最初の4手はセクシームーブ。':'Swap the two right-hand corners and the left/right edges in the top layer. The first four moves are a Sexy Move.',
   'ヘッドライト（側面の同色コーナー2個）を左にして回す。完成状態から同じ手順を2回繰り返すと元に戻る。':'Hold the headlights (two matching corner stickers on one side) on the left. Repeat the algorithm twice from solved to return to the start.',
   'モード':'Mode',
+  'タイマー':'Timer','長押しして離すとスタート':'Hold, then release to start','次のスクランブル':'Next scramble','▶ 3Dで確認':'▶ View in 3D',
+  'Homeの練習ツールへ移動':'Jump to the practice tools on Home',
+  'にしてスクランブルを回す':' while scrambling',
+  '記録はこの端末だけに保存されます(最新500回まで)。スクランブルは練習用で、公式大会用の生成器ではありません。':'Solves are saved on this device only (latest 500). Scrambles are for practice and are not an official competition generator.',
   'CFOP トレーナー':'CFOP Trainer','習得マップ':'Learning Map','簡易':'Simple','本格':'Advanced','習得':'Learned',
   'Cross → F2L → OLL → PLL の順に完成させる。まず簡易で1周、その後本格へ。':'Complete Cross → F2L → OLL → PLL in order. Finish one pass in Simple mode, then move to Advanced.',
   '覚える手順(アルゴリズム)の数':'Algorithms to Learn','デイジー法':'Daisy method','直接・8手以内':'Direct · within 8 moves','基本形+応用':'Basics + applications','全ケース':'All cases','合計':'Total',
@@ -213,6 +217,7 @@ function applyLanguage(rebuildToc=true){
   refreshCubeDescriptions();
   if(rebuildToc){
     buildSubnav();refreshCounts();scrBtnLabel();scrUpdate();n3updatePlayer();
+    if(typeof tmRender==='function')tmRender();
     if(typeof FP!=='undefined'&&FP.solving&&FP.plan&&typeof fpRefreshSolve==='function')fpRefreshSolve();
   }
   }finally{observeLanguage();}

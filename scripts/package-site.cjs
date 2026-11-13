@@ -2,8 +2,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const root = path.join(__dirname, '..');
+const { BUNDLE_SOURCES } = require('./build-bundle.cjs');
 function siteFiles() {
-  return fs.readdirSync(root).filter(name => /\.(?:js|css|html|webmanifest|png|jpg)$/.test(name) || ['_headers', 'THIRD_PARTY_NOTICES.md'].includes(name)).sort();
+  // Bundled sources ship only inside app.bundle.js.
+  return fs.readdirSync(root).filter(name => !BUNDLE_SOURCES.includes(name) && (/\.(?:js|css|html|webmanifest|png|jpg)$/.test(name) || ['_headers', 'THIRD_PARTY_NOTICES.md'].includes(name))).sort();
 }
 function packageSite(destination = path.join(root, 'dist/site')) {
   // Release packages contain explicit runtime files, never a copy of the repository.

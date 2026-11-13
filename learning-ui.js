@@ -93,6 +93,11 @@ function learningRefreshDashboard(){
   const due=CFOPLearning.reviewQueue(learningState,learningActiveCases(),prog,Date.now());
   $('#learningDue').textContent=due.length?learningText('due',{count:due.length}):learningText('emptyDue');
   $('#continueLearning').disabled=!learningState.resume;
+  // 主ボタンは「今できること」に合わせる: 復習あり→復習、初回→初心者CFOP、それ以外→練習
+  const hasDue=due.length>0,fresh=!hasDue&&!learningState.attempts.length&&!prog.size&&!Object.keys(learningState.seen||{}).length;
+  $('#startReview').classList.toggle('pri',hasDue);
+  $('#startPractice').classList.toggle('pri',!hasDue&&!fresh);
+  $('#learnCFOP').classList.toggle('pri',fresh);
   const status=$('#learningStorageStatus');status.hidden=!learningStorageError&&!learningProtected;
   $('#saveLearningBackup').hidden=status.hidden;
   status.textContent=learningProtected?learningText('protected'):learningText('storageError');
