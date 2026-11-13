@@ -51,6 +51,21 @@ materialize on their first visit. Mode changes preserve the Home cube and inputs
 Local action-to-paint and long-task samples appear in Records; these are lab
 observations, not field INP. CI also captures 4x CPU-throttled Chromium samples.
 
+## Runtime bundle and timer
+
+`index.html` loads `theme-init.js` and one generated `app.bundle.js`. The bundle
+is the classic-script sources listed in `scripts/build-bundle.cjs`, joined in
+load order with whitespace-only minification, so top-level names stay global.
+After editing any of those sources run `npm run build:bundle` before reloading
+or committing; `npm run check` fails when the checked-in bundle is stale.
+`npm run version:sync` rebuilds it. Release packages contain the bundle, not
+the separate sources.
+
+Home has a hold-to-start solve timer (`timer.js`) with +2/DNF, ao5, ao12 and the
+latest 500 solves in the versioned `cfop-timer-v1` key. Timer solves stay on the
+device and are not part of `CFOP2:` backup codes. An unreadable or newer stored
+format is left untouched rather than overwritten.
+
 ## Worker provenance
 
 The training scrambler is cubejs **1.3.2**. Its original runtime source and

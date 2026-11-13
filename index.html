@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-app-version="104">
+<html lang="ja" data-app-version="105">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -31,10 +31,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="64x64" href="icon-64.png">
-<link rel="stylesheet" href="styles.css?v=104">
+<link rel="stylesheet" href="styles.css?v=105">
 </head>
 <body data-page="home">
-<script src="theme-init.js?v=104"></script>
+<script src="theme-init.js?v=105"></script>
 
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -112,11 +112,17 @@
       <p class="learning-muted" data-l10n="reviewPolicy">復習間隔は練習用の目安です。習得を保証する判定ではありません。</p>
       <details><summary data-l10n="performance">この端末の応答記録</summary><p data-l10n="perfNote">操作から描画までの参考値です。実ユーザーINPとは異なります。</p><pre id="performanceSamples"></pre></details>
     </section>
+    <div class="homejump mOnly" role="navigation" aria-label="Homeの練習ツールへ移動">
+      <button class="btn" data-jump="sec-scramble">スクランブル</button>
+      <button class="btn" data-jump="sec-timer">タイマー</button>
+      <button class="btn" data-jump="sec-freeplay">フリープレイ</button>
+      <button class="btn" data-jump="sec-quiz">クイズ</button>
+    </div>
     <h2 class="sec">ソルブフロー</h2>
     <div class="flow" id="flowBox"></div>
 
 
-    <h2 class="sec">スクランブル</h2>
+    <h2 class="sec" id="sec-scramble">スクランブル</h2>
     <div class="scrwrap">
       <div class="scrhold">持ち方: <b>黄を上・青を正面</b>にして回し始める(下の展開図・3Dと同じ向き)</div>
       <input aria-label="スクランブルの回転記号" aria-describedby="scrmeta" class="apinput" id="scrinput" placeholder="スクランブルを入力(例: R U F2 D' ...)" spellcheck="false" autocapitalize="off">
@@ -133,7 +139,24 @@
     </div>
 
 
-    <h2 class="sec">フリープレイ</h2>
+    <h2 class="sec" id="sec-timer">タイマー <span class="hint">長押しして離すとスタート</span></h2>
+    <div class="scrwrap tmwrap" id="tmWrap">
+      <div class="scrhold tmhold">持ち方: <b>黄を上・青を正面</b>にしてスクランブルを回す</div>
+      <p class="tmscr mono" id="tmScramble" data-learning-text></p>
+      <div class="scrbtns">
+        <button class="btn" id="tmNext">次のスクランブル</button>
+        <button class="btn" id="tmShow">▶ 3Dで確認</button>
+      </div>
+      <button type="button" class="tmpad" id="tmPad" data-learning-text><span class="tmtime mono" id="tmTime">0.00</span><span class="tmhint" id="tmHint"></span></button>
+      <div class="tmstats" id="tmStats" data-learning-text></div>
+      <ol class="tmlist" id="tmList" data-learning-text></ol>
+      <p class="tmnote" id="tmMore" data-learning-text hidden></p>
+      <p class="tmnote tmstatus" id="tmStatus" role="status" data-learning-text hidden></p>
+      <div class="scrbtns"><button class="btn" id="tmClear" data-learning-text hidden></button></div>
+      <p class="tmnote">記録はこの端末だけに保存されます(最新500回まで)。スクランブルは練習用で、公式大会用の生成器ではありません。</p>
+    </div>
+
+    <h2 class="sec" id="sec-freeplay">フリープレイ</h2>
     <div class="fpwrap">
       <div class="fshdr" id="fsHdr" hidden>
         <span class="fscmdbadge" id="fsStageBadge"></span>
@@ -186,7 +209,7 @@
       <p id="learningVersion" class="learning-muted"></p>
     </details>
 
-    <h2 class="sec">クイズ <span class="hint">ケースを見て手順を即答</span></h2>
+    <h2 class="sec" id="sec-quiz">クイズ <span class="hint">ケースを見て手順を即答</span></h2>
     <label class="quiz-access"><input type="checkbox" id="qTextMode"> 文字で出題（非視覚モード）</label>
     <div class="qfilters" id="qFilters">
       <button class="fchip" data-qopt="auf">向きランダム</button>
@@ -554,20 +577,7 @@
   </div>
 </nav>
 
-<script src="i18n.js?v=104" defer></script>
-<script src="cube-engine.js?v=104" defer></script>
-<script src="rendering.js?v=104" defer></script>
-<script src="algorithms.js?v=104" defer></script>
-<script src="learning-core.js?v=104" defer></script>
-<script src="progress.js?v=104" defer></script>
-<script src="build.js?v=104" defer></script>
-<script src="player.js?v=104" defer></script>
-<script src="freeplay.js?v=104" defer></script>
-<script src="solver.js?v=104" defer></script>
-<script src="scramble.js?v=104" defer></script>
-<script src="app.js?v=104" defer></script>
-<script src="learning-ui.js?v=104" defer></script>
-<script src="navigation.js?v=104" defer></script>
+<script src="app.bundle.js?v=105" defer></script>
 
 </body>
 </html>
