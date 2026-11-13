@@ -141,3 +141,36 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .o .case .fig svg{width:19mm}
 .o .case{padding:1.5mm 3mm}
 .o .alg{font-size:14pt;line-height:1.22}
+
+/* Simple CFOP on one page: compact 4-column cards */
+.s1{padding:8mm 10mm 7mm}
+.s1 .title{margin-bottom:3mm;padding-bottom:2mm}
+.s1 .step{margin:3.5mm 0 2mm}
+.s1 .title+.step{margin-top:0}
+.s1 .num{width:11mm;height:11mm;font-size:20pt}
+.s1 h1{font-size:23pt}
+.s1 .goal svg{width:12mm}
+.s1 .grid{gap:2mm;margin-top:0}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:1fr 1fr}
+.s1 .case{padding:1.4mm 2mm;gap:2mm;border-radius:3mm}
+.s1 .case .fig svg{width:15mm}
+.s1 .alg{font-size:11.5pt;line-height:1.24;word-spacing:-.16em}
+.s1 .no{font-size:8.5pt;margin-bottom:.2mm}
+.s1 .subgoal{border-radius:3mm}
+.s1 .subgoal svg{width:13mm}
+.s1 .subgoal .to{width:6mm}
+.headq{font-size:10pt;font-weight:800;margin:0 0 1.2mm .5mm}
+.s1 .half{display:grid;grid-template-columns:15mm 7mm 1fr;align-items:center;min-width:0}
+.s1 .half .cond svg{width:14mm}
+.s1 .half .to{justify-self:center;width:5mm;margin:0}
+.s1 .br{margin-bottom:0}
+.s1 .longchip{white-space:normal;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.g3{grid-template-columns:repeat(3,1fr)}
+.s1 .case .fig svg{width:14mm}
+.s1 .case{padding:1.3mm 1.8mm;gap:1.8mm}
+.s1 .alg{font-size:11.8pt}
+.s1 .case .fig svg{width:14.4mm}
+.s1 .no{font-size:9pt}
+.s1 .grid{gap:2.1mm}
+.s1 .step{margin:4mm 0 2.2mm}

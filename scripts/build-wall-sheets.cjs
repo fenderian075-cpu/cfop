@@ -51,30 +51,31 @@ function load(mode){
   return data;
 }
 // Trigger names are dropped; the coloured brackets stay.
-const alg=h=>h.replace(/<rt>[^<]*<\/rt>/g,'').replace(/<ruby class="ck (ck-\w+)">/g,'<span class="trg $1">').replace(/<\/ruby>/g,'</span>');
+const alg=h=>h.replace(/<rt>[^<]*<\/rt>/g,'')
+  // A bracketed group stays on one line unless it is too long for any card column (more than 12 characters of moves).
+  .replace(/<ruby class="ck (ck-\w+)">([^<]*)<\/ruby>/g,(_,cls,text)=>`<span class="trg ${cls}${text.length>13?' longchip':''}">${text}</span>`);
 const card=(c,label,cls='')=>`<div class="case ${cls}"><div class="fig">${c.svg}</div><div class="txt">${label?`<div class="no">${label}</div>`:''}<div class="alg">${alg(c.alg)}</div></div></div>`;
 const goal=(...pics)=>`<span class="goal">${pics.map(p=>`<i class="to"></i>${p}`).join('')}</span>`;
 const step=(n,name,g,more='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${more?`<span class="range">${more}</span>`:''}${g}</header>`;
 const short=c=>c.name.replace(' perm','');
 
 function simpleSheets(){
+  // One page: every step in compact cards. Goal pictures replace words; the PLL headlights question is a two-way branch.
   const d=load('s'),{cross,f2l,oll,pll}=d.cases;
-  const title=n=>`<div class="title"><b>Simple CFOP</b><span>beginner set · 2-look OLL &amp; PLL</span><i>${n} / 2</i></div>`;
+  const title='<div class="title"><b>Simple CFOP</b><span>beginner set · 2-look OLL &amp; PLL</span></div>';
   const sub=pic=>`<div class="subgoal"><i class="to"></i>${pic}</div>`;
-  const branch=(icon,c)=>`<div class="cond">${icon}</div><i class="to"></i>${card(c,short(c))}`;
-  return `<section class="sheet p1">${title(1)}
+  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div><i class="to"></i>${card(c,short(c))}</div>`;
+  return `<section class="sheet s1">${title}
   ${step(1,'Cross',goal(d.goalCross))}
-  <div class="grid cross">${cross.map(c=>card(c,'','v')).join('')}</div>
+  <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
   ${step(2,'F2L',goal(d.goalF2L))}
-  <div class="grid two f2l">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
-</section>
-<section class="sheet p2">${title(2)}
+  <div class="grid g4">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
   ${step(3,'OLL',goal(d.goalOllEdges,d.goalOll))}
-  <div class="grid two">${oll.slice(0,3).map(c=>card(c,'')).join('')}${sub(d.goalOllEdges)}</div>
-  <div class="grid two">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}${sub(d.goalOll)}</div>
+  <div class="grid g3">${oll.slice(0,3).map(c=>card(c,'')).join('')}${sub(d.goalOllEdges)}${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}${sub(d.goalOll)}</div>
   ${step(4,'PLL',goal(d.goalPll))}
-  <div class="branch"><div class="q">Headlights?</div>${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
-  <div class="grid two">${pll.slice(2).map(c=>card(c,short(c))).join('')}</div>
+  <div class="headq">Headlights?</div>
+  <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
+  <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c))).join('')}</div>
 </section>`;
 }
 
