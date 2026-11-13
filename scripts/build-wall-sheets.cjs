@@ -46,7 +46,9 @@ function load(mode){
     goalCross:v(`isoSVG(run(SOLVED,'z2'),false,new Set([1,3,4,5,7,19,22,10,13]))`),
     goalF2L:v(`isoSVG(SOLVED,false,new Set([21,22,23,24,25,26,12,13,14,15,16,17]))`),
     goalOllEdges:v(`llSVG(SOLVED,'oll',true)`),goalOll:v(`llSVG(SOLVED,'oll')`),
-    goalPll:v(`isoSVG(SOLVED,false,new Set(${all}))`)};
+    goalPll:v(`isoSVG(SOLVED,false,new Set(${all}))`),
+    // first PLL look: corners (and centres) in place, edges not yet
+    goalPllCorners:v(`isoSVG(SOLVED,false,new Set([0,2,4,6,8,18,20,22,24,26,9,11,13,15,17]))`)};
   a.close();
   return data;
 }
@@ -60,21 +62,26 @@ const step=(n,name,g,more='')=>`<header class="step"><span class="num">${n}</spa
 const short=c=>c.name.replace(' perm','');
 
 function simpleSheets(){
-  // One page: every step in compact cards. Goal pictures replace words; the PLL headlights question is a two-way branch.
+  // One page. OLL and PLL are two looks each: a rule with an arrow ends in that look's goal picture.
   const d=load('s'),{cross,f2l,oll,pll}=d.cases;
   const title='<div class="title"><b>Simple CFOP</b><span>beginner set · 2-look OLL &amp; PLL</span></div>';
-  const sub=pic=>`<div class="subgoal"><i class="to"></i>${pic}</div>`;
+  const look=(label,pic,question='')=>`<span class="pill">${label}</span>${question?`<span class="q">${question}</span>`:''}<i class="rule"></i><span class="gp">${pic}</span>`;
+  const subhead=(label,pic,question='')=>`<div class="subhead">${look(label,pic,question)}</div>`;
+  // The first look shares the row with the step title; the second look gets its own row.
+  const stepWithLook=(n,name,label,pic,question='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${look(label,pic,question)}</header>`;
   const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div><i class="to"></i>${card(c,short(c))}</div>`;
   return `<section class="sheet s1">${title}
   ${step(1,'Cross',goal(d.goalCross))}
   <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
   ${step(2,'F2L',goal(d.goalF2L))}
   <div class="grid g4">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
-  ${step(3,'OLL',goal(d.goalOllEdges,d.goalOll))}
-  <div class="grid g3">${oll.slice(0,3).map(c=>card(c,'')).join('')}${sub(d.goalOllEdges)}${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}${sub(d.goalOll)}</div>
-  ${step(4,'PLL',goal(d.goalPll))}
-  <div class="headq">Headlights?</div>
+  ${stepWithLook(3,'OLL','3-1',d.goalOllEdges)}
+  <div class="grid g3">${oll.slice(0,3).map(c=>card(c,'')).join('')}</div>
+  ${subhead('3-2',d.goalOll)}
+  <div class="grid g4">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}</div>
+  ${stepWithLook(4,'PLL','4-1',d.goalPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
+  ${subhead('4-2',d.goalPll)}
   <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c))).join('')}</div>
 </section>`;
 }
@@ -137,7 +144,11 @@ async function render(browser,name,body){
     });
     return out;
   });
-  if(problems.length)throw new Error(name+': '+problems.join('; '));
+  if(problems.length){
+    // PRINT_KEEP_GOING=1 prints the problems and still writes the files, to look at a layout while tuning it.
+    if(!process.env.PRINT_KEEP_GOING)throw new Error(name+': '+problems.join('; '));
+    console.warn(name+': '+problems.join('; '));
+  }
   fs.mkdirSync(outDir,{recursive:true});
   await page.pdf({path:path.join(outDir,name+'.pdf'),format:'A4',printBackground:true,preferCSSPageSize:true});
   const pages=await page.locator('.sheet').count();
