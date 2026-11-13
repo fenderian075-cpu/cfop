@@ -190,3 +190,11 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .step .pill{margin-left:3mm}
 .step .rule{margin-left:0}
 .subhead{margin:2.2mm 0 1.6mm}
+
+/* Simple: quieter arrows, so the goal pictures carry the message */
+.s1 .to{height:.6mm;background:#8b93a1;width:7mm}
+.s1 .to::after{width:2.6mm;height:2.6mm;border-top:.6mm solid #8b93a1;border-right:.6mm solid #8b93a1;right:-1.2mm}
+.s1 .rule{height:.45mm;background:#b9c0cc}
+.s1 .rule::after{width:2.4mm;height:2.4mm;border-top:.55mm solid #b9c0cc;border-right:.55mm solid #b9c0cc;right:-1.1mm}
+.s1 .gp svg{width:9.5mm}
+.s1 .step .goal svg{width:11mm}

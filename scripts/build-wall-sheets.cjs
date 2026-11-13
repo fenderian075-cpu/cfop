@@ -7,6 +7,26 @@ const {app}=require('../tests/app-helper.cjs');
 const root=path.join(__dirname,'..'),outDir=path.join(root,'print');
 
 const SIDES=[[47,46,45],[18,19,20],[36,37,38],[11,10,9]]; // side stickers of the last layer: back, front, left, right
+// Plain goal pictures for the two-look sections: no cube, no stickers that do not matter for that look.
+function flatGoals(FC){
+  const S=26,G=2,GRAY='var(--dOff)';
+  const rect=(x,y,w,h,fill,stroke)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.6" fill="${fill}" stroke="${stroke||'var(--dline)'}" stroke-width="${stroke?1.3:1}"/>`;
+  const wrap=(w,body)=>`<svg viewBox="-2 -2 ${w+4} ${w+4}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  // OLL looks only concern the top face: the yellow cross, then all nine yellow.
+  const top=yellow=>{let o='';for(let k=0;k<9;k++)o+=rect((k%3)*(S+G),Math.floor(k/3)*(S+G),S,S,yellow.has(k)?FC[0]:GRAY);return wrap(3*S+2*G,o);};
+  // PLL looks only concern the side colours: the top is already finished (and drawn grey, as on the case cards).
+  // Corners done: only the outer two stickers of each side row match; everything done: all three.
+  const side=cornersOnly=>{
+    const T=12,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G,edge='#737683';
+    let out='';
+    for(let k=0;k<9;k++)out+=rect(X(k%3),X(Math.floor(k/3)),S,S,GRAY);
+    // back (green), front (blue), left (orange), right (red) as on the PLL case cards
+    const rows=[[FC[5],i=>[X(i),0,S,T]],[FC[2],i=>[X(i),far,S,T]],[FC[4],i=>[0,X(i),T,S]],[FC[1],i=>[far,X(i),T,S]]];
+    for(const [colour,box] of rows)for(let i=0;i<3;i++)out+=rect(...box(i),cornersOnly&&i===1?GRAY:colour,edge);
+    return wrap(W,out);
+  };
+  return {flatOllEdges:top(new Set([1,3,4,5,7])),flatOll:top(new Set([0,1,2,3,4,5,6,7,8])),flatPllCorners:side(true),flatPll:side(false)};
+}
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
   for(const pg of ['cross','f2l','oll','pll']){
@@ -47,8 +67,7 @@ function load(mode){
     goalF2L:v(`isoSVG(SOLVED,false,new Set([21,22,23,24,25,26,12,13,14,15,16,17]))`),
     goalOllEdges:v(`llSVG(SOLVED,'oll',true)`),goalOll:v(`llSVG(SOLVED,'oll')`),
     goalPll:v(`isoSVG(SOLVED,false,new Set(${all}))`),
-    // first PLL look: corners (and centres) in place, edges not yet
-    goalPllCorners:v(`isoSVG(SOLVED,false,new Set([0,2,4,6,8,18,20,22,24,26,9,11,13,15,17]))`)};
+    ...flatGoals(FC)};
   a.close();
   return data;
 }
@@ -75,13 +94,13 @@ function simpleSheets(){
   <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
   ${step(2,'F2L',goal(d.goalF2L))}
   <div class="grid g4">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
-  ${stepWithLook(3,'OLL','3-1',d.goalOllEdges)}
+  ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
   <div class="grid g3">${oll.slice(0,3).map(c=>card(c,'')).join('')}</div>
-  ${subhead('3-2',d.goalOll)}
+  ${subhead('3-2',d.flatOll)}
   <div class="grid g4">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}</div>
-  ${stepWithLook(4,'PLL','4-1',d.goalPllCorners,'Headlights?')}
+  ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
-  ${subhead('4-2',d.goalPll)}
+  ${subhead('4-2',d.flatPll)}
   <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c))).join('')}</div>
 </section>`;
 }
