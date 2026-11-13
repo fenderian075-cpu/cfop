@@ -141,3 +141,80 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .o .case .fig svg{width:19mm}
 .o .case{padding:1.5mm 3mm}
 .o .alg{font-size:14pt;line-height:1.22}
+
+/* Simple CFOP on one page: compact 4-column cards */
+.s1{padding:8mm 10mm 7mm}
+.s1 .title{margin-bottom:3mm;padding-bottom:2mm}
+.s1 .step{margin:3.5mm 0 2mm}
+.s1 .title+.step{margin-top:0}
+.s1 .num{width:11mm;height:11mm;font-size:20pt}
+.s1 h1{font-size:23pt}
+.s1 .goal svg{width:12mm}
+.s1 .grid{gap:2mm;margin-top:0}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:1fr 1fr}
+.s1 .case{padding:1.4mm 2mm;gap:2mm;border-radius:3mm}
+.s1 .case .fig svg{width:15mm}
+.s1 .alg{font-size:11.5pt;line-height:1.24;word-spacing:-.16em}
+.s1 .no{font-size:8.5pt;margin-bottom:.2mm}
+.s1 .subgoal{border-radius:3mm}
+.s1 .subgoal svg{width:13mm}
+.s1 .subgoal .to{width:6mm}
+.headq{font-size:10pt;font-weight:800;margin:0 0 1.2mm .5mm}
+.s1 .half{display:grid;grid-template-columns:15mm 7mm 1fr;align-items:center;min-width:0}
+.s1 .half .cond svg{width:14mm}
+.s1 .half .to{justify-self:center;width:5mm;margin:0}
+.s1 .br{margin-bottom:0}
+.s1 .longchip{white-space:normal;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.g3{grid-template-columns:repeat(3,1fr)}
+.s1 .case .fig svg{width:14mm}
+.s1 .case{padding:1.3mm 1.8mm;gap:1.8mm}
+.s1 .alg{font-size:11.8pt}
+.s1 .case .fig svg{width:14.4mm}
+.s1 .no{font-size:9pt}
+.s1 .grid{gap:2.1mm}
+.s1 .step{margin:4mm 0 2.2mm}
+
+/* Simple: two-look sections (3-1/3-2, 4-1/4-2) and an even PLL branch row */
+.subhead{display:flex;align-items:center;gap:2.5mm;margin:2.6mm 0 1.8mm}
+.pill{font-size:10.5pt;font-weight:800;color:#fff;background:#0b0f19;border-radius:1.6mm;padding:.7mm 2.6mm;line-height:1.25}
+.q{font-size:10.5pt;font-weight:800}
+.rule{flex:1;height:.9mm;background:#0b0f19;border-radius:1mm;position:relative;margin-right:2mm}
+.rule::after{content:"";position:absolute;right:-1.6mm;top:50%;width:3.4mm;height:3.4mm;border-top:.9mm solid #0b0f19;border-right:.9mm solid #0b0f19;transform:translateY(-50%) rotate(45deg);border-radius:.4mm}
+.gp svg{display:block;width:10.5mm;height:auto}
+.s1 .half{align-items:stretch}
+.s1 .half .cond{display:flex;align-items:center}
+.s1 .half .to{align-self:center}
+.s1 .br{align-items:stretch;margin-bottom:0}
+.s1 .step+.subhead{margin-top:0}
+.step .pill{margin-left:3mm}
+.step .rule{margin-left:0}
+.subhead{margin:2.2mm 0 1.6mm}
+
+/* Simple: quieter arrows, so the goal pictures carry the message */
+.s1 .to{height:.6mm;background:#8b93a1;width:7mm}
+.s1 .to::after{width:2.6mm;height:2.6mm;border-top:.6mm solid #8b93a1;border-right:.6mm solid #8b93a1;right:-1.2mm}
+.s1 .rule{height:.45mm;background:#b9c0cc}
+.s1 .rule::after{width:2.4mm;height:2.4mm;border-top:.55mm solid #b9c0cc;border-right:.55mm solid #b9c0cc;right:-1.1mm}
+.s1 .gp svg{width:9.5mm}
+.s1 .step .goal svg{width:11mm}
+
+/* Simple: type scale. Title > step headings > look labels > card labels, all sharing one baseline logic. */
+.s1 .title{align-items:baseline;gap:4mm;margin-bottom:3.2mm;padding-bottom:2.2mm;border-bottom-width:.9mm}
+.s1 .title b{font-size:25pt;font-weight:800;letter-spacing:-.025em;line-height:1}
+.s1 .title span{font-size:13pt;font-weight:600;color:#4b5563;line-height:1}
+.s1 .num{width:10mm;height:10mm;font-size:18pt}
+.s1 h1{font-size:21pt}
+.pill{font-size:11.5pt;padding:.8mm 2.8mm}
+.q{font-size:11.5pt}
+.s1 .no{font-size:10pt;color:#4b5563}
+.s1 .step{margin:4.4mm 0 2.3mm}
+.s1 .title+.step{margin-top:0}
+
+/* Simple: one arrow style everywhere (step goals, look rules, PLL branch): same weight, colour and head. */
+/* Whole device pixels on purpose: Chromium snaps border widths to whole pixels, so a millimetre border would print thinner than the shaft. */
+.s1{--aw:2px;--ac:#929aaa;--ah:2.5mm}
+.s1 .to,.s1 .rule{height:var(--aw);background:var(--ac);border-radius:var(--aw)}
+.s1 .to::after,.s1 .rule::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
+.s1 .half .to{width:4mm}
+.s1 .half{grid-template-columns:15mm 1fr;column-gap:2.4mm}
