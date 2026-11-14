@@ -75,6 +75,34 @@ function cornerCaseFigure(FC,state){
   }
   return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${yellowShape(FC,yellow,k=>[X(k%3),X(Math.floor(k/3))],S,G)}${strong}</svg>`;
 }
+// Ua / Ub: the three-edge cycle with the solved edge at the back. What tells them apart on a real cube is the colour of the
+// front edge: it belongs on the right face (Ua) or the left face (Ub). The figure marks that colour, the matching corner stickers
+// on the destination side, and an arrow in that colour from the front edge slot to the destination slot. The back edge gets a tick.
+function edgeCycleFigure(FC,state){
+  const S=26,G=2,T=12,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G,GRAY='var(--dOff)';
+  const col=i=>FC[Math.floor(state[i]/9)];
+  const toRight=Math.floor(state[19]/9)===1; // face 1 = R; otherwise the front edge belongs on the left face
+  const rect=(x,y,w,h,fill,stroke,sw)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.6" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  let out='';
+  for(let k=0;k<9;k++)out+=rect(X(k%3),X(Math.floor(k/3)),S,S,GRAY,'var(--dline)',1);
+  const strips=[[[47,46,45],i=>[X(i),0,S,T]],[[18,19,20],i=>[X(i),far,S,T]],[[36,37,38],i=>[0,X(i),T,S]],[[11,10,9],i=>[far,X(i),T,S]]];
+  for(const [idx,box] of strips)for(let i=0;i<3;i++)out+=rect(...box(i),col(idx[i]),'#737683',1.3);
+  // rings: the front edge's sticker and the two corner stickers of the same colour on the destination side
+  const ring=(x,y,w,h)=>`<rect x="${x-1}" y="${y-1}" width="${w+2}" height="${h+2}" rx="2.4" fill="none" stroke="${INK}" stroke-width="2.6"/>`;
+  out+=ring(X(1),far,S,T);
+  const dx=toRight?far:0;
+  out+=ring(dx,X(0),T,S)+ring(dx,X(2),T,S);
+  // arrow from the front edge slot (top-face cell 7) to the destination slot (cell 5 or 3), in the front edge's colour
+  const c=k=>[X(k%3)+S/2,X(Math.floor(k/3))+S/2];
+  const [x1,y1]=c(7),[x2,y2]=c(toRight?5:3),len=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/len,uy=(y2-y1)/len;
+  const sx=x1+ux*8,sy=y1+uy*8,ex=x2-ux*13,ey=y2-uy*13,ang=Math.atan2(uy,ux)*180/Math.PI,colour=col(19);
+  out+=`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${INK}" stroke-width="9" stroke-linecap="round"/>`
+     +`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${colour}" stroke-width="5" stroke-linecap="round"/>`
+     +`<polygon points="-1,-9 14,0 -1,9" transform="translate(${ex.toFixed(1)},${ey.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="${colour}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>`;
+  const [bx,by]=c(1);
+  out+=`<circle cx="${bx}" cy="${by}" r="10" fill="#0e7a34" stroke="#fff" stroke-width="2"/><path d="M${bx-5} ${by+0.5} l4 4 l7 -8.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
+}
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
   for(const pg of ['cross','f2l','oll','pll']){
@@ -117,6 +145,7 @@ function load(mode){
     goalPll:v(`isoSVG(SOLVED,false,new Set(${all}))`),
     ...flatGoals(FC),
     edgeFigures:v('OLL2E.map(([name,alg])=>caseState(alg))').map(state=>topCaseFigure(FC,state)),
+    edgeCycleFigures:['Ua','Ub'].map(n=>edgeCycleFigure(FC,v(`caseState(PLL.${n})`))),
     cornerFigures:v('[21,22,23,24,25,26,27].map(n=>caseState(OLL[n]))').map(state=>cornerCaseFigure(FC,state))};
   a.close();
   return data;
@@ -151,7 +180,7 @@ function simpleSheets(){
   ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
   ${subhead('4-2',d.flatPll)}
-  <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c),'ll')).join('')}</div>
+  <div class="grid g4 edgegrid"><div class="pair">${pll.slice(2,4).map((c,i)=>card({...c,svg:d.edgeCycleFigures[i]},short(c),'ll bare')).join('')}</div>${pll.slice(4).map(c=>card(c,short(c),'ll')).join('')}</div>
 </section>`;
 }
 

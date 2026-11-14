@@ -242,3 +242,12 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 
 /* OLL and PLL pictures: lighter greys and outlines, so the yellow and the coloured stickers read first. */
 svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a8290}
+
+/* Simple 4-2: Ua and Ub share one block, side by side, with figures that read the same way. */
+.s1 .pair{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;border:.5mm solid #c3cad5;border-radius:3mm;min-width:0}
+.s1 .pair .case{border:0;border-radius:0;min-width:0}
+.s1 .pair .case+.case{border-left:1px dashed #c3cad5}
+.s1 .pair .case .fig svg{width:19mm}
+.s1 .pair .no{font-size:12pt;font-weight:800;color:#111827}
+.s1 .edgegrid{grid-template-columns:1.3fr 1.3fr 1fr 1fr}
+.s1 .pair .case .fig svg{width:17mm}
