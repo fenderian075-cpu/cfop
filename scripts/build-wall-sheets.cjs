@@ -39,6 +39,22 @@ function topCaseFigure(FC,state){
   const W=3*S+2*G;
   return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
 }
+// Corner-orientation (3-2) case figure. The cross is done, so what tells the cases apart is where each corner's yellow sits:
+// on top, or on which side. The top face gets a firm frame and the yellow side stickers a strong outline; non-yellow sides stay faint.
+function cornerCaseFigure(FC,state){
+  const S=26,G=2,T=14,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G;
+  const yellow=i=>state[i]<9;
+  const rect=(x,y,w,h,fill,stroke,sw)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  let faint='',strong='',top='';
+  for(let k=0;k<9;k++)top+=yellow(k)?rect(X(k%3),X(Math.floor(k/3)),S,S,FC[0],'#4b5563',1.3):rect(X(k%3),X(Math.floor(k/3)),S,S,'#edf0f5','#9aa3b0',1);
+  const sides=[[[47,46,45],i=>[X(i),0,S,T]],[[18,19,20],i=>[X(i),far,S,T]],[[36,37,38],i=>[0,X(i),T,S]],[[11,10,9],i=>[far,X(i),T,S]]];
+  for(const [idx,box] of sides)for(let i=0;i<3;i++){
+    if(yellow(idx[i]))strong+=rect(...box(i),FC[0],'#111827',2.4);
+    else faint+=rect(...box(i),'#f5f6f9','#c3cad5',1);
+  }
+  const frame=`<rect x="${o+G-2}" y="${o+G-2}" width="${3*S+2*G+4}" height="${3*S+2*G+4}" rx="3.5" fill="none" stroke="#111827" stroke-width="2.6"/>`;
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${top}${frame}${strong}</svg>`;
+}
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
   for(const pg of ['cross','f2l','oll','pll']){
@@ -80,7 +96,8 @@ function load(mode){
     goalOllEdges:v(`llSVG(SOLVED,'oll',true)`),goalOll:v(`llSVG(SOLVED,'oll')`),
     goalPll:v(`isoSVG(SOLVED,false,new Set(${all}))`),
     ...flatGoals(FC),
-    edgeFigures:v('OLL2E.map(([name,alg])=>caseState(alg))').map(state=>topCaseFigure(FC,state))};
+    edgeFigures:v('OLL2E.map(([name,alg])=>caseState(alg))').map(state=>topCaseFigure(FC,state)),
+    cornerFigures:v('[21,22,23,24,25,26,27].map(n=>caseState(OLL[n]))').map(state=>cornerCaseFigure(FC,state))};
   a.close();
   return data;
 }
@@ -110,7 +127,7 @@ function simpleSheets(){
   ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
   <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'','ll')).join('')}</div>
   ${subhead('3-2',d.flatOll)}
-  <div class="grid g4">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'),'ll')).join('')}</div>
+  <div class="grid g4">${oll.slice(3).map((c,i)=>card({...c,svg:d.cornerFigures[i]},c.name.replace('OLL ','#'),'ll')).join('')}</div>
   ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
   ${subhead('4-2',d.flatPll)}
