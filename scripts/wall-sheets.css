@@ -251,3 +251,11 @@ svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a
 .s1 .pair .no{font-size:12pt;font-weight:800;color:#111827}
 .s1 .edgegrid{grid-template-columns:1.3fr 1.3fr 1fr 1fr}
 .s1 .pair .case .fig svg{width:17mm}
+
+/* Simple 3-2: cases grouped by how many corners are already yellow on top (0, 1, 2). */
+.s1 .og{display:grid;border:.5mm solid #c3cad5;border-radius:3mm;min-width:0}
+.s1 .og .case{border:0;border-radius:0;min-width:0}
+.s1 .og .badge+.case{border-radius:0}
+.s1 .og .case+.case{border-left:1px dashed #c3cad5}
+.s1 .og .badge{display:flex;align-items:center;justify-content:center;background:#f5f6f9;border-right:1px solid #c3cad5;border-radius:2.6mm 0 0 2.6mm}
+.s1 .og .badge svg{width:5.4mm;height:auto;display:block}

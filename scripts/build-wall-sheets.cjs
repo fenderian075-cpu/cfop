@@ -136,7 +136,7 @@ function load(mode){
       :`<circle cx="${c}" cy="${c}" r="20" fill="#0e7a34"/>${text('×'+badge,23)}`;
     return `<svg class="ll" viewBox="-5 -5 ${W+10} ${W+10}" xmlns="http://www.w3.org/2000/svg">${out}${ring}${mark}</svg>`;
   }
-  const data={cases,pllState,headlightIcon,
+  const data={FC,cases,pllState,headlightIcon,
     headlights:state=>SIDES.filter(s=>colour(state,s[0])===colour(state,s[2])).length,
     // goal pictures: only the part that is solved after the step is coloured
     goalCross:v(`isoSVG(run(SOLVED,'z2'),false,new Set([1,3,4,5,7,19,22,10,13]))`),
@@ -159,6 +159,16 @@ const goal=(...pics)=>`<span class="goal">${pics.map(p=>`<i class="to"></i>${p}`
 const step=(n,name,g,more='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${more?`<span class="range">${more}</span>`:''}${g}</header>`;
 const short=c=>c.name.replace(' perm','');
 
+// Group badge for 3-2: the four top-face corners, with as many yellow as the group has (0, 1 or 2). It is the first thing to count.
+function cornerCountBadge(FC,n){
+  const S=10,G=3,W=2*S+G;
+  let o='';
+  for(let k=0;k<4;k++){
+    const x=(k%2)*(S+G),y=Math.floor(k/2)*(S+G),on=k<n;
+    o+=`<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="2" fill="${on?FC[0]:'#f1f3f7'}" stroke="${on?INK:'#b9c0cc'}" stroke-width="${on?2:1.2}"/>`;
+  }
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
+}
 function simpleSheets(){
   // One page. OLL and PLL are two looks each: a rule with an arrow ends in that look's goal picture.
   const d=load('s'),{cross,f2l,oll,pll}=d.cases;
@@ -176,7 +186,7 @@ function simpleSheets(){
   ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
   <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'','ll')).join('')}</div>
   ${subhead('3-2',d.flatOll)}
-  <div class="grid g4">${oll.slice(3).map((c,i)=>card({...c,svg:d.cornerFigures[i]},c.name.replace('OLL ','#'),'ll')).join('')}</div>
+  <div class="grid g4">${[[0,[21,22],'8mm 1.25fr 1fr',2],[1,[27,26],'8mm 1fr 1fr',2],[2,[23,24,25],'8mm 1fr 1fr 1fr',3]].map(([count,nums,cols,span])=>`<div class="og" style="grid-template-columns:${cols};grid-column:span ${span}"><div class="badge">${cornerCountBadge(d.FC,count)}</div>${nums.map(n=>card({...oll.find(c=>c.name==='OLL '+n),svg:d.cornerFigures[n-21]},'#'+n,'ll bare')).join('')}</div>`).join('')}</div>
   ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
   ${subhead('4-2',d.flatPll)}
