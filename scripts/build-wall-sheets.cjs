@@ -27,45 +27,53 @@ function flatGoals(FC){
   };
   return {flatOllEdges:top(new Set([1,3,4,5,7])),flatOll:top(new Set([0,1,2,3,4,5,6,7,8])),flatPllCorners:side(true),flatPll:side(false)};
 }
-// Edge-orientation (3-1) case figure: only the top face matters, so no side stickers. Corners are muted because they are ignored.
+// Case figures for the two OLL looks. In both, the yellow cells on top are drawn as one solid shape with a bold outline:
+// the shape is what you recognise. Everything that is not yellow stays faint.
+const INK='#111827';
+function yellowShape(FC,yellow,pos,S,G){
+  const P=S+G,h=G/2;
+  let fill='',divide='',edge='';
+  for(const k of yellow){
+    const [x,y]=pos(k),r=Math.floor(k/3),c=k%3,cx=x-h,cy=y-h;
+    fill+=`<rect x="${cx}" y="${cy}" width="${P}" height="${P}" fill="${FC[0]}"/>`;
+    const has=n=>yellow.has(n);
+    if(!(r>0&&has(k-3)))edge+=`M${cx} ${cy}h${P}`;
+    if(!(r<2&&has(k+3)))edge+=`M${cx} ${cy+P}h${P}`;
+    if(!(c>0&&has(k-1)))edge+=`M${cx} ${cy}v${P}`;
+    if(!(c<2&&has(k+1)))edge+=`M${cx+P} ${cy}v${P}`;
+    if(c<2&&has(k+1))divide+=`M${cx+P} ${cy+3}v${P-6}`;
+    if(r<2&&has(k+3))divide+=`M${cx+3} ${cy+P}h${P-6}`;
+  }
+  return `${fill}<path d="${divide}" fill="none" stroke="#b8a800" stroke-width="1"/><path d="${edge}" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+const faintRect=(x,y,w,h,fill,stroke)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+// 3-1 (edge orientation): the top face only. Corners are ignored, so they are barely drawn.
 function topCaseFigure(FC,state){
-  const S=26,G=2,corners=[0,2,6,8];
-  let o='';
+  const S=26,G=2,corners=[0,2,6,8],X=i=>i*(S+G);
+  const yellow=new Set([4,...[1,3,5,7].filter(k=>state[k]<9)]);
+  let faint='';
   for(let k=0;k<9;k++){
-    const yellow=k===4||(!corners.includes(k)&&state[k]<9);
-    const fill=corners.includes(k)?'var(--dMask)':yellow?FC[0]:'var(--ollOff)';
-    o+=`<rect x="${(k%3)*(S+G)}" y="${Math.floor(k/3)*(S+G)}" width="${S}" height="${S}" rx="1.6" fill="${fill}" stroke="var(--dline)" stroke-width="1"/>`;
+    if(yellow.has(k))continue;
+    faint+=corners.includes(k)?faintRect(X(k%3),X(Math.floor(k/3)),S,S,'#fafbfc','#e6e9ef'):faintRect(X(k%3),X(Math.floor(k/3)),S,S,'#f3f5f8','#cfd5de');
   }
   const W=3*S+2*G;
-  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
+  return `<svg class="ll" viewBox="-3 -3 ${W+6} ${W+6}" xmlns="http://www.w3.org/2000/svg">${faint}${yellowShape(FC,yellow,k=>[X(k%3),X(Math.floor(k/3))],S,G)}</svg>`;
 }
-// Corner-orientation (3-2) case figure. The cross is done, so the cases differ by where each corner's yellow sits.
-// The yellow cells on top are drawn as one solid shape with a bold outline; the yellow side stickers get a strong outline;
-// everything that is not yellow stays faint. No frame around the top face: a plain square carries no information.
+// 3-2 (corner orientation): the cross is done, so the cases differ by where each corner's yellow sits. The yellow side
+// stickers get a strong outline as well. No frame around the top face: a plain square carries no information.
 function cornerCaseFigure(FC,state){
-  const S=26,G=2,T=14,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G,P=S+G,h=G/2;
-  const yellow=i=>state[i]<9;
-  const rect=(x,y,w,hh,fill,stroke,sw)=>`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-  let faint='',fill='',divide='',edge='',strong='';
-  for(let k=0;k<9;k++){
-    const r=Math.floor(k/3),c=k%3,x=X(c),y=X(r);
-    if(!yellow(k)){faint+=rect(x,y,S,S,'#f3f5f8','#cfd5de',1);continue;}
-    const cx=x-h,cy=y-h;
-    fill+=`<rect x="${cx}" y="${cy}" width="${P}" height="${P}" fill="${FC[0]}"/>`;
-    const up=r>0&&yellow(k-3),down=r<2&&yellow(k+3),left=c>0&&yellow(k-1),right=c<2&&yellow(k+1);
-    if(!up)edge+=`M${cx} ${cy}h${P}`;
-    if(!down)edge+=`M${cx} ${cy+P}h${P}`;
-    if(!left)edge+=`M${cx} ${cy}v${P}`;
-    if(!right)edge+=`M${cx+P} ${cy}v${P}`;
-    if(right)divide+=`M${cx+P} ${cy+3}v${P-6}`;
-    if(down)divide+=`M${cx+3} ${cy+P}h${P-6}`;
-  }
+  const S=26,G=2,T=14,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G;
+  const isYellow=i=>state[i]<9;
+  const yellow=new Set([...Array(9).keys()].filter(isYellow));
+  let faint='',strong='';
+  for(let k=0;k<9;k++)if(!yellow.has(k))faint+=faintRect(X(k%3),X(Math.floor(k/3)),S,S,'#f3f5f8','#cfd5de');
   const sides=[[[47,46,45],i=>[X(i),0,S,T]],[[18,19,20],i=>[X(i),far,S,T]],[[36,37,38],i=>[0,X(i),T,S]],[[11,10,9],i=>[far,X(i),T,S]]];
   for(const [idx,box] of sides)for(let i=0;i<3;i++){
-    if(yellow(idx[i]))strong+=rect(...box(i),FC[0],'#111827',2.4);
-    else faint+=rect(...box(i),'#f7f8fa','#d5dae2',1);
+    const [x,y,w,hh]=box(i);
+    if(isYellow(idx[i]))strong+=`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="2" fill="${FC[0]}" stroke="${INK}" stroke-width="2.4"/>`;
+    else faint+=faintRect(x,y,w,hh,'#f7f8fa','#d5dae2');
   }
-  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${fill}<path d="${divide}" fill="none" stroke="#b8a800" stroke-width="1"/><path d="${edge}" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>${strong}</svg>`;
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${yellowShape(FC,yellow,k=>[X(k%3),X(Math.floor(k/3))],S,G)}${strong}</svg>`;
 }
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
