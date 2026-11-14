@@ -11,7 +11,7 @@ const SIDES=[[47,46,45],[18,19,20],[36,37,38],[11,10,9]]; // side stickers of th
 function flatGoals(FC){
   const S=26,G=2,GRAY='var(--dOff)';
   const rect=(x,y,w,h,fill,stroke)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.6" fill="${fill}" stroke="${stroke||'var(--dline)'}" stroke-width="${stroke?1.3:1}"/>`;
-  const wrap=(w,body)=>`<svg viewBox="-2 -2 ${w+4} ${w+4}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  const wrap=(w,body)=>`<svg class="ll" viewBox="-2 -2 ${w+4} ${w+4}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
   // OLL looks only concern the top face: the yellow cross, then all nine yellow.
   const top=yellow=>{let o='';for(let k=0;k<9;k++)o+=rect((k%3)*(S+G),Math.floor(k/3)*(S+G),S,S,yellow.has(k)?FC[0]:GRAY);return wrap(3*S+2*G,o);};
   // PLL looks only concern the side colours: the top is already finished (and drawn grey, as on the case cards).
@@ -37,7 +37,7 @@ function topCaseFigure(FC,state){
     o+=`<rect x="${(k%3)*(S+G)}" y="${Math.floor(k/3)*(S+G)}" width="${S}" height="${S}" rx="1.6" fill="${fill}" stroke="var(--dline)" stroke-width="1"/>`;
   }
   const W=3*S+2*G;
-  return `<svg viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
 }
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
@@ -70,7 +70,7 @@ function load(mode){
     const mark=badge==='yes'?`<circle cx="${c}" cy="${c}" r="19" fill="#0e7a34"/><path d="M${c-10} ${c+1} l7 7 l13 -15" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>`
       :badge==='no'?`<circle cx="${c}" cy="${c}" r="19" fill="#c62828"/><path d="M${c-8} ${c-8} l16 16 M${c+8} ${c-8} l-16 16" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/>`
       :`<circle cx="${c}" cy="${c}" r="20" fill="#0e7a34"/>${text('×'+badge,23)}`;
-    return `<svg viewBox="-5 -5 ${W+10} ${W+10}" xmlns="http://www.w3.org/2000/svg">${out}${ring}${mark}</svg>`;
+    return `<svg class="ll" viewBox="-5 -5 ${W+10} ${W+10}" xmlns="http://www.w3.org/2000/svg">${out}${ring}${mark}</svg>`;
   }
   const data={cases,pllState,headlightIcon,
     headlights:state=>SIDES.filter(s=>colour(state,s[0])===colour(state,s[2])).length,
@@ -101,20 +101,20 @@ function simpleSheets(){
   const subhead=(label,pic,question='')=>`<div class="subhead">${look(label,pic,question)}</div>`;
   // The first look shares the row with the step title; the second look gets its own row.
   const stepWithLook=(n,name,label,pic,question='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${look(label,pic,question)}</header>`;
-  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div>${card(c,short(c))}</div>`;
+  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div>${card(c,short(c),'ll')}</div>`;
   return `<section class="sheet s1">${title}
   ${step(1,'Cross',goal(d.goalCross))}
   <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
   ${step(2,'F2L',goal(d.goalF2L))}
   <div class="grid g4">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
   ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
-  <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'')).join('')}</div>
+  <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'','ll')).join('')}</div>
   ${subhead('3-2',d.flatOll)}
-  <div class="grid g4">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}</div>
+  <div class="grid g4">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'),'ll')).join('')}</div>
   ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
   ${subhead('4-2',d.flatPll)}
-  <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c))).join('')}</div>
+  <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c),'ll')).join('')}</div>
 </section>`;
 }
 
@@ -132,12 +132,12 @@ function fullSheets(){
   const ol=c=>`${c.name.replace('OLL ','#')}<em>${c.sec.replace(/ shapes?$/,'').replace(' (corners only)','')}</em>`;
   const ollPage=(n,list)=>`<section class="sheet full o">${title(n)}
   ${step(3,'OLL',goal(d.flatOll),`#${num(list[0])} – #${num(list[list.length-1])}`)}
-  <div class="grid two fill">${list.map(c=>card(c,ol(c))).join('')}</div>
+  <div class="grid two fill">${list.map(c=>card(c,ol(c),'ll')).join('')}</div>
 </section>`;
   // PLL branches by how many sides show headlights, computed from each case's state.
   const byCount={4:[],1:[],0:[]};
   for(const c of pll){const n=d.headlights(d.pllState(short(c)));if(!byCount[n])throw new Error(`Unexpected headlight count ${n} for ${c.name}`);byCount[n].push(c);}
-  const block=(n,rep)=>`<div class="cond">${d.headlightIcon(d.pllState(rep),n?String(n):'no')}</div><div class="grid two">${byCount[n].map(c=>card(c,short(c))).join('')}</div>`;
+  const block=(n,rep)=>`<div class="cond">${d.headlightIcon(d.pllState(rep),n?String(n):'no')}</div><div class="grid two">${byCount[n].map(c=>card(c,short(c),'ll')).join('')}</div>`;
   const per=Math.ceil(ollSorted.length/3);
   return `<section class="sheet full f1">${title(1)}
   ${step(1,'Cross',goal(d.goalCross))}
