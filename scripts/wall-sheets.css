@@ -241,4 +241,4 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .sep{grid-column:1/-1;height:1px;background:#c3cad5}
 
 /* OLL and PLL pictures: lighter greys and outlines, so the yellow and the coloured stickers read first. */
-svg.ll,.case.ll .fig{--dOff:#e3e7ee;--ollOff:#e3e7ee;--dMask:#f5f6f9;--dline:#646c7a}
+svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a8290}
