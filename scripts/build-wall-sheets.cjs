@@ -39,21 +39,33 @@ function topCaseFigure(FC,state){
   const W=3*S+2*G;
   return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
 }
-// Corner-orientation (3-2) case figure. The cross is done, so what tells the cases apart is where each corner's yellow sits:
-// on top, or on which side. The top face gets a firm frame and the yellow side stickers a strong outline; non-yellow sides stay faint.
+// Corner-orientation (3-2) case figure. The cross is done, so the cases differ by where each corner's yellow sits.
+// The yellow cells on top are drawn as one solid shape with a bold outline; the yellow side stickers get a strong outline;
+// everything that is not yellow stays faint. No frame around the top face: a plain square carries no information.
 function cornerCaseFigure(FC,state){
-  const S=26,G=2,T=14,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G;
+  const S=26,G=2,T=14,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G,P=S+G,h=G/2;
   const yellow=i=>state[i]<9;
-  const rect=(x,y,w,h,fill,stroke,sw)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-  let faint='',strong='',top='';
-  for(let k=0;k<9;k++)top+=yellow(k)?rect(X(k%3),X(Math.floor(k/3)),S,S,FC[0],'#4b5563',1.3):rect(X(k%3),X(Math.floor(k/3)),S,S,'#edf0f5','#9aa3b0',1);
+  const rect=(x,y,w,hh,fill,stroke,sw)=>`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  let faint='',fill='',divide='',edge='',strong='';
+  for(let k=0;k<9;k++){
+    const r=Math.floor(k/3),c=k%3,x=X(c),y=X(r);
+    if(!yellow(k)){faint+=rect(x,y,S,S,'#f3f5f8','#cfd5de',1);continue;}
+    const cx=x-h,cy=y-h;
+    fill+=`<rect x="${cx}" y="${cy}" width="${P}" height="${P}" fill="${FC[0]}"/>`;
+    const up=r>0&&yellow(k-3),down=r<2&&yellow(k+3),left=c>0&&yellow(k-1),right=c<2&&yellow(k+1);
+    if(!up)edge+=`M${cx} ${cy}h${P}`;
+    if(!down)edge+=`M${cx} ${cy+P}h${P}`;
+    if(!left)edge+=`M${cx} ${cy}v${P}`;
+    if(!right)edge+=`M${cx+P} ${cy}v${P}`;
+    if(right)divide+=`M${cx+P} ${cy+3}v${P-6}`;
+    if(down)divide+=`M${cx+3} ${cy+P}h${P-6}`;
+  }
   const sides=[[[47,46,45],i=>[X(i),0,S,T]],[[18,19,20],i=>[X(i),far,S,T]],[[36,37,38],i=>[0,X(i),T,S]],[[11,10,9],i=>[far,X(i),T,S]]];
   for(const [idx,box] of sides)for(let i=0;i<3;i++){
     if(yellow(idx[i]))strong+=rect(...box(i),FC[0],'#111827',2.4);
-    else faint+=rect(...box(i),'#f5f6f9','#c3cad5',1);
+    else faint+=rect(...box(i),'#f7f8fa','#d5dae2',1);
   }
-  const frame=`<rect x="${o+G-2}" y="${o+G-2}" width="${3*S+2*G+4}" height="${3*S+2*G+4}" rx="3.5" fill="none" stroke="#111827" stroke-width="2.6"/>`;
-  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${top}${frame}${strong}</svg>`;
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${fill}<path d="${divide}" fill="none" stroke="#b8a800" stroke-width="1"/><path d="${edge}" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>${strong}</svg>`;
 }
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
