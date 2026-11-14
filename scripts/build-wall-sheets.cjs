@@ -191,6 +191,94 @@ function simpleSheets(){
 </section>`;
 }
 
+// ---- Reference page: the back of the Simple sheet (notation, pieces, flow, common moves) ----
+// Flat net with the face letters: U on top, L F R B in a row, D below. Each face is one coloured square.
+function flatNet(FC){
+  const S=20,G=2,cell=(c,r,colour,letter)=>`<rect x="${c*(S+G)}" y="${r*(S+G)}" width="${S}" height="${S}" rx="3" fill="${colour}" stroke="#4b5563" stroke-width="1.2"/><text x="${c*(S+G)+S/2}" y="${r*(S+G)+S/2+1}" text-anchor="middle" dominant-baseline="central" font-family="Inter,sans-serif" font-weight="800" font-size="11" fill="#111827" stroke="#fff" stroke-width="2.4" paint-order="stroke">${letter}</text>`;
+  // face colours in the site's order U R F D L B
+  const faces=[[1,0,FC[0],'U'],[0,1,FC[4],'L'],[1,1,FC[2],'F'],[2,1,FC[1],'R'],[3,1,FC[5],'B'],[1,2,FC[3],'D']];
+  return `<svg viewBox="-2 -2 ${4*S+3*G+4} ${3*S+2*G+4}" xmlns="http://www.w3.org/2000/svg">${faces.map(f=>cell(...f)).join('')}</svg>`;
+}
+function loadRef(){
+  const a=app({mode:'s',language:'en'}),v=x=>a.value(x);
+  const FC=v('FC');
+  // Geometry of the site's isometric cube (rendering.js isoSVG): top face U, front face F on the left, right face R on the right.
+  const s=15.5,T=[49,6],d1=[Math.sqrt(3)/2*s,.5*s],d2=[-Math.sqrt(3)/2*s,.5*s],vv=[0,s];
+  const add=(p,q)=>[p[0]+q[0],p[1]+q[1]],mul=(p,k)=>[p[0]*k,p[1]*k];
+  const FO=add(T,mul(d2,3)),RO=add(add(T,mul(d1,3)),mul(d2,3)),md2=[-d2[0],-d2[1]];
+  const pt=(face,r,c)=>face==='U'?add(add(T,mul(d1,c+.5)),mul(d2,r+.5)):face==='F'?add(add(FO,mul(d1,c+.5)),mul(vv,r+.5)):add(add(RO,mul(md2,c+.5)),mul(vv,r+.5));
+  const range=(a0,b0)=>Array.from({length:b0-a0+1},(_,i)=>a0+i);
+  const iso=keep=>v(`isoSVG(SOLVED,false,new Set(${JSON.stringify(keep)}))`);
+  const withExtra=(svg,extra)=>svg.replace('</svg>',extra+'</svg>');
+  const arrow=(p,q,double)=>{
+    const ang=Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI,len=Math.hypot(q[0]-p[0],q[1]-p[1]),n=[(q[0]-p[0])/len,(q[1]-p[1])/len];
+    const head=(x,y)=>`<polygon points="-7,-5.2 2.5,0 -7,5.2" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="${INK}" stroke="#fff" stroke-width="1" stroke-linejoin="round"/>`;
+    const line=(w,c)=>`<line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${(q[0]-n[0]*4).toFixed(1)}" y2="${(q[1]-n[1]*4).toFixed(1)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+    return line(6.4,'#fff')+line(3.6,INK)+head(q[0],q[1])+(double?head(q[0]-n[0]*9,q[1]-n[1]*9):'');
+  };
+  const U=range(0,8),F=range(18,26),R=range(9,17),ALL=[...U,...R,...F];
+  // layer = the stickers of the turning layer that are visible; clockwise arrow as seen from that face
+  const layers={
+    U:{keep:[...U,18,19,20,9,10,11],from:['F',0,2],to:['F',0,0]},
+    D:{keep:[24,25,26,15,16,17],from:['F',2,0],to:['F',2,2]},
+    L:{keep:[0,3,6,18,21,24],from:['F',0,0],to:['F',2,0]},
+    R:{keep:[2,5,8,20,23,26,...R],from:['F',2,2],to:['F',0,2]},
+    F:{keep:[6,7,8,...F,9,12,15],from:['U',2,0],to:['U',2,2]},
+    B:{keep:[0,1,2,11,14,17],from:['U',0,2],to:['U',0,0]},
+    M:{keep:[1,4,7,19,22,25],from:['F',0,1],to:['F',2,1]},
+    r:{keep:[1,4,7,19,22,25,2,5,8,20,23,26,...R],from:['F',2,1.5],to:['F',0,1.5]},
+    x:{keep:ALL,from:['F',2,1],to:['F',0,1]},
+    y:{keep:ALL,from:['F',1,2],to:['F',1,0]},
+    z:{keep:ALL,from:['U',1,0],to:['U',1,2]},
+  };
+  const moveIcon=move=>{
+    const base=move[0],L=layers[base],prime=move.endsWith("'"),dbl=move.endsWith('2');
+    let p=pt(...L.from),q=pt(...L.to);if(prime)[p,q]=[q,p];
+    return withExtra(iso(L.keep),arrow(p,q,dbl));
+  };
+  const label=(face,text)=>{const [x,y]=pt(face,1,1);return `<text x="${x.toFixed(1)}" y="${(y+1).toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-family="Inter,sans-serif" font-weight="800" font-size="13" fill="${INK}" stroke="#fff" stroke-width="3" paint-order="stroke">${text}</text>`;};
+  const swatch=cols=>`<span class="sw">${cols.map(c=>`<i style="background:${c}"></i>`).join('')}</span>`;
+  const data={FC,
+    moves:Object.fromEntries(['R',"R'",'R2','U',"U'",'U2','D','L','F','B','M','r',"r'",'x','y','z'].map(m=>[m,moveIcon(m)])),
+    labelled:withExtra(iso(ALL),label('U','U')+label('F','F')+label('R','R')),
+    net:flatNet(FC),
+    centres:iso([4,13,22]),edges:iso([1,3,5,7,10,12,14,16,19,21,23,25]),corners:iso([0,2,6,8,9,11,15,17,18,20,24,26]),
+    sw:{c:swatch([FC[0]]),e:swatch([FC[0],FC[2]]),k:swatch([FC[0],FC[2],FC[1]])},
+    // FC order: U R F D L B -> yellow, red, blue, white, orange, green
+    pairs:[[FC[0],FC[3]],[FC[2],FC[5]],[FC[1],FC[4]]],
+    triggers:[['Sexy Move',"R U R' U'"],['Inverse Sexy',"U R U' R'"],['Sledgehammer',"R' F R F'"],['Hedgeslammer',"F R' F' R"],['Sune',"R U R' U R U2 R'"],['Anti-Sune',"R U2 R' U' R U' R'"]].map(([name,alg])=>({
+      name,alg,chip:v(`chunk(${JSON.stringify(alg)})`),order:v(`algOrder(${JSON.stringify(alg)})`),
+      effect:v(`isoSVG(run(SOLVED,${JSON.stringify(alg)}),false,new Set(${JSON.stringify(ALL)}))`)}))};
+  a.close();
+  return data;
+}
+function referenceSheet(){
+  const d=load('s'),r=loadRef();
+  const title='<div class="title"><b>Cube Reference</b><span>notation · pieces · flow · common moves</span></div>';
+  const icon=(m,text=m)=>`<div class="icon refbox"><div class="fig">${r.moves[m]}</div><b>${text}</b></div>`;
+  const grp=t=>`<div class="grp"><span>${t}</span><i class="gline"></i></div>`;
+  const stepA=(n,name)=>step(n,name,'');
+  const piece=(svg,sw,count)=>`<div class="piece refbox"><div class="fig">${svg}</div><div class="cnt"><b>${count}</b>${sw}</div></div>`;
+  const flow=[[1,'Cross',d.goalCross],[2,'F2L',d.goalF2L],[3,'OLL',d.flatOll],[4,'PLL',d.flatPll]];
+  return `<section class="sheet s1 ref">${title}
+  ${stepA('A','Moves')}
+  ${grp('Faces · Whole cube')}
+  <div class="iconrow n9">${['U','D','L','R','F','B','x','y','z'].map(m=>icon(m)).join('')}</div>
+  ${grp('Direction · Layers')}
+  <div class="iconrow n9">${['R',"R'",'R2','U',"U'",'U2','M','r',"r'"].map(m=>icon(m)).join('')}</div>
+  ${stepA('B','Cube')}
+  <div class="cubebox">
+    <div class="refbox hold"><div class="fig">${r.labelled}</div><div class="fig net">${r.net}</div></div>
+    <div class="pieces">${piece(r.centres,r.sw.c,6)}${piece(r.edges,r.sw.e,12)}${piece(r.corners,r.sw.k,8)}</div>
+    <div class="refbox pairs">${r.pairs.map(([a,b])=>`<div class="pair2"><i style="background:${a}"></i><i style="background:${b}"></i></div>`).join('')}</div>
+  </div>
+  ${stepA('C','Flow')}
+  <div class="flow">${flow.map(([n,name,pic],i)=>`${i?'<i class="to"></i>':''}<div class="fstep refbox"><div class="fig">${pic}</div><b><em>${n}</em>${name}</b></div>`).join('')}</div>
+  ${stepA('D','Common moves')}
+  <div class="grid g3 trig">${r.triggers.map(t=>`<div class="case refbox"><div class="fig">${t.effect}</div><div class="txt"><div class="no">${t.name}</div><div class="alg">${alg(t.chip)}</div><div class="cyc">↻ ×${t.order}</div></div></div>`).join('')}</div>
+</section>`;
+}
+
 function fullSheets(){
   const d=load('a'),{cross,f2l,oll,pll}=d.cases,PAGES=6;
   const title=n=>`<div class="title"><b>Full CFOP</b><span>${f2l.length} F2L · ${oll.length} OLL · ${pll.length} PLL</span><i>${n} / ${PAGES}</i></div>`;
@@ -240,7 +328,7 @@ async function render(browser,name,body){
     const out=[];
     document.querySelectorAll('.sheet').forEach((sheet,i)=>{
       const limit=sheet.getBoundingClientRect().bottom-19; // keep about 5 mm clear at the bottom edge
-      const bottom=Math.max(...[...sheet.querySelectorAll('.case,.cond,.subgoal')].map(e=>e.getBoundingClientRect().bottom));
+      const bottom=Math.max(...[...sheet.querySelectorAll('.case,.cond,.subgoal,.refbox')].map(e=>e.getBoundingClientRect().bottom));
       if(bottom>limit)out.push(`page ${i+1} overflows by ${Math.round(bottom-limit)}px`);
     });
     document.querySelectorAll('.case').forEach(c=>{
@@ -267,5 +355,6 @@ async function render(browser,name,body){
   try{
     await render(browser,'cfop-simple-a4',simpleSheets());
     await render(browser,'cfop-full-a4',fullSheets());
+    await render(browser,'cfop-reference-a4',referenceSheet());
   }finally{await browser.close();}
 })().catch(error=>{console.error(error.message);process.exit(1);});

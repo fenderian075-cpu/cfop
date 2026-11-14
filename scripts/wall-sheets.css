@@ -278,3 +278,46 @@ svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a
 .s1 .og .badge .n{font-size:22pt}
 .s1 .subhead .goal svg{width:11mm;height:auto;display:block}
 .s1 .subhead .goal svg{width:10mm}
+
+/* Reference page (back of the Simple sheet) */
+.ref .iconrow{display:grid;gap:2.2mm}
+.ref .iconrow.n6{grid-template-columns:repeat(6,1fr)}
+.ref .icon{display:flex;flex-direction:column;align-items:center;gap:.6mm;border:.5mm solid #c3cad5;border-radius:3mm;padding:1.4mm 1mm 1.2mm}
+.ref .icon .fig svg{width:19mm;height:auto;display:block}
+.ref .icon b{font-family:"DejaVu Sans Mono",monospace;font-size:14pt;line-height:1}
+.ref .cubebox{display:grid;grid-template-columns:1.25fr 1.5fr .6fr;gap:2.2mm}
+.ref .hold{display:flex;align-items:center;justify-content:space-around;border:.5mm solid #c3cad5;border-radius:3mm;padding:1.6mm}
+.ref .hold .fig svg{display:block;width:27mm;height:auto}
+.ref .hold .net svg{width:30mm}
+.ref .pieces{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2mm}
+.ref .piece{display:flex;flex-direction:column;align-items:center;gap:1mm;border:.5mm solid #c3cad5;border-radius:3mm;padding:1.4mm 1mm}
+.ref .piece .fig svg{width:18mm;height:auto;display:block}
+.ref .cnt{display:flex;align-items:center;gap:2mm}
+.ref .cnt b{font-size:17pt;font-weight:800;line-height:1}
+.ref .sw{display:flex;gap:.8mm}
+.ref .sw i{width:3.4mm;height:3.4mm;border-radius:.8mm;border:.3mm solid #4b5563;display:block}
+.ref .pairs{display:flex;flex-direction:column;justify-content:center;gap:2.4mm;border:.5mm solid #c3cad5;border-radius:3mm;padding:1.6mm}
+.ref .pair2{display:flex;justify-content:center;gap:1.2mm}
+.ref .pair2 i{width:7mm;height:7mm;border-radius:1.4mm;border:.4mm solid #4b5563;display:block}
+.ref .flow{display:flex;align-items:center;gap:2mm}
+.ref .fstep{flex:1;display:flex;flex-direction:column;align-items:center;gap:.8mm;border:.5mm solid #c3cad5;border-radius:3mm;padding:1.6mm 1mm}
+.ref .fstep .fig svg{width:20mm;height:auto;display:block}
+.ref .fstep b{display:flex;align-items:center;gap:1.4mm;font-size:12pt;font-weight:800}
+.ref .fstep em{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:5.4mm;height:5.4mm;border-radius:50%;background:#0b0f19;color:#fff;font-size:9.5pt}
+.ref .flow .to{flex:none}
+.ref .trig{grid-template-columns:repeat(3,1fr)}
+.ref .trig .case{padding:1.4mm 2mm}
+.ref .trig .fig svg{width:17mm}
+.ref .trig .no{font-size:11pt;font-weight:800;color:#111827}
+.ref .cyc{margin-top:.8mm;display:inline-block;font-size:9.5pt;font-weight:700;color:#4b5563;background:#eef1f5;border-radius:3mm;padding:.2mm 2.2mm}
+.ref .iconrow.n9{grid-template-columns:repeat(9,1fr)}
+.ref .icon .fig svg{width:15.5mm}
+.ref .icon b{font-size:12pt}
+.ref .icon{padding:1.2mm .6mm 1mm}
+.ref .trig{grid-template-columns:repeat(2,1fr)}
+.ref .trig .fig svg{width:19mm}
+.ref .hold .net svg{width:34mm}
+.ref .hold .fig svg{width:25mm}
+.ref .hold .net svg{width:40mm}
+.ref .hold .fig svg{width:24mm}
+.ref .icon .fig svg{width:16.5mm}

@@ -71,7 +71,10 @@ format is left untouched rather than overwritten.
 `print/cfop-simple-a4.pdf` (1 page, Simple mode) and `print/cfop-full-a4.pdf`
 (6 pages, all 41 F2L, 57 OLL and 21 PLL) are A4 sheets meant for a wall: case
 diagram, algorithm, a goal picture per step and a headlights branch for PLL.
-`npm run build:print` regenerates both from the site's own diagram functions and
+`print/cfop-reference-a4.pdf` (1 page) is meant as the back of the Simple sheet when printing double-sided
+(flip on the long edge): notation, the pieces and colours of the cube, the CFOP flow and the common
+moves (Sexy Move, Sledgehammer, Sune and so on).
+`npm run build:print` regenerates all three from the site's own diagram functions and
 algorithm data, so rerun it after changing algorithms or diagrams. It needs the
 Playwright Chromium and the Inter and DejaVu Sans Mono fonts; set `PW_EXE` to
 use a specific Chromium binary. The build fails if a page or card overflows.
