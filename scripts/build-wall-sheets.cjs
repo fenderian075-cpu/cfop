@@ -151,23 +151,30 @@ function load(mode){
   return data;
 }
 // Trigger names are dropped; the coloured brackets stay.
+// The last two moves are joined with a no-break space so a line never ends with a lone move.
 const alg=h=>h.replace(/<rt>[^<]*<\/rt>/g,'')
   // A bracketed group stays on one line unless it is too long for any card column (more than 12 characters of moves).
-  .replace(/<ruby class="ck (ck-\w+)">([^<]*)<\/ruby>/g,(_,cls,text)=>`<span class="trg ${cls}${text.length>13?' longchip':''}">${text}</span>`);
+  .replace(/<ruby class="ck (ck-\w+)">([^<]*)<\/ruby>/g,(_,cls,text)=>`<span class="trg ${cls}${text.length>13?' longchip':''}">${text}</span>`)
+  .replace(/([^\s>]+) ([^\s<]+)$/,'$1&nbsp;$2');
 const card=(c,label,cls='')=>`<div class="case ${cls}"><div class="fig">${c.svg}</div><div class="txt">${label?`<div class="no">${label}</div>`:''}<div class="alg">${alg(c.alg)}</div></div></div>`;
 const goal=(...pics)=>`<span class="goal">${pics.map(p=>`<i class="to"></i>${p}`).join('')}</span>`;
 const step=(n,name,g,more='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${more?`<span class="range">${more}</span>`:''}${g}</header>`;
 const short=c=>c.name.replace(' perm','');
 
-// Group badge for 3-2: the four top-face corners, with as many yellow as the group has (0, 1 or 2). It is the first thing to count.
+// Group badge for 3-2: a 3x3 top face with the cross done (pale yellow); the four corners show how many are already yellow
+// (0, 1 or 2). Counting them is the first step of the choice, so it reads like the top face itself.
 function cornerCountBadge(FC,n){
-  const S=10,G=3,W=2*S+G;
+  const S=10,G=2,W=3*S+2*G;
+  const corners=[0,2,6,8];
   let o='';
-  for(let k=0;k<4;k++){
-    const x=(k%2)*(S+G),y=Math.floor(k/2)*(S+G),on=k<n;
-    o+=`<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="2" fill="${on?FC[0]:'#f1f3f7'}" stroke="${on?INK:'#b9c0cc'}" stroke-width="${on?2:1.2}"/>`;
+  for(let k=0;k<9;k++){
+    const x=(k%3)*(S+G),y=Math.floor(k/3)*(S+G);
+    if(!corners.includes(k)){o+=`<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="1.5" fill="#fbf7c4" stroke="#e5dc86" stroke-width="1"/>`;continue;}
+    const on=corners.indexOf(k)<n;
+    o+=`<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="1.5" fill="${on?FC[0]:'#ffffff'}" stroke="${on?INK:'#b9c0cc'}" stroke-width="${on?2.2:1.2}" ${on?'':'stroke-dasharray="2.5 2"'}/>`;
   }
-  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
+  // The number comes first: a bare picture of four squares reads like part of the layout, not like a count.
+  return `<span class="n">${n}</span><svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
 }
 function simpleSheets(){
   // One page. OLL and PLL are two looks each: a rule with an arrow ends in that look's goal picture.
@@ -186,7 +193,7 @@ function simpleSheets(){
   ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
   <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'','ll')).join('')}</div>
   ${subhead('3-2',d.flatOll)}
-  <div class="grid g4">${[[0,[21,22],'8mm 1.25fr 1fr',2],[1,[27,26],'8mm 1fr 1fr',2],[2,[23,24,25],'8mm 1fr 1fr 1fr',3]].map(([count,nums,cols,span])=>`<div class="og" style="grid-template-columns:${cols};grid-column:span ${span}"><div class="badge">${cornerCountBadge(d.FC,count)}</div>${nums.map(n=>card({...oll.find(c=>c.name==='OLL '+n),svg:d.cornerFigures[n-21]},'#'+n,'ll bare')).join('')}</div>`).join('')}</div>
+  <div class="ogs">${[[0,[21,22]],[1,[27,26]],[2,[23,24,25]]].map(([count,nums])=>`<div class="og" style="grid-template-columns:18mm repeat(${nums.length},1fr)"><div class="badge">${cornerCountBadge(d.FC,count)}</div>${nums.map(n=>card({...oll.find(c=>c.name==='OLL '+n),svg:d.cornerFigures[n-21]},'#'+n,'ll bare')).join('')}</div>`).join('')}</div>
   ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
   ${subhead('4-2',d.flatPll)}
