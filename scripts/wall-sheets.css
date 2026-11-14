@@ -321,3 +321,9 @@ svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a
 .ref .hold .net svg{width:40mm}
 .ref .hold .fig svg{width:24mm}
 .ref .icon .fig svg{width:16.5mm}
+.ref .trig{gap:2.2mm}
+.ref .trig .fig svg{width:14.5mm}
+.ref .trig[style*="repeat(2"] .fig svg{width:17mm}
+.ref .trig .alg{font-size:11.5pt}
+.ref .trig .no{font-size:10.5pt}
+.ref .trig[style*="repeat(2"] .fig svg{width:14.5mm}

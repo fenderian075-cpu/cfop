@@ -72,8 +72,8 @@ format is left untouched rather than overwritten.
 (6 pages, all 41 F2L, 57 OLL and 21 PLL) are A4 sheets meant for a wall: case
 diagram, algorithm, a goal picture per step and a headlights branch for PLL.
 `print/cfop-reference-a4.pdf` (1 page) is meant as the back of the Simple sheet when printing double-sided
-(flip on the long edge): notation, the pieces and colours of the cube, the CFOP flow and the common
-moves (Sexy Move, Sledgehammer, Sune and so on).
+(flip on the long edge): notation, the pieces and colours of the cube, and the common moves (the four
+triggers, their left-hand versions, Sune and Anti-Sune, and the three-move inserts).
 `npm run build:print` regenerates all three from the site's own diagram functions and
 algorithm data, so rerun it after changing algorithms or diagrams. It needs the
 Playwright Chromium and the Inter and DejaVu Sans Mono fonts; set `PW_EXE` to

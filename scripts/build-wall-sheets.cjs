@@ -199,6 +199,11 @@ function flatNet(FC){
   const faces=[[1,0,FC[0],'U'],[0,1,FC[4],'L'],[1,1,FC[2],'F'],[2,1,FC[1],'R'],[3,1,FC[5],'B'],[1,2,FC[3],'D']];
   return `<svg viewBox="-2 -2 ${4*S+3*G+4} ${3*S+2*G+4}" xmlns="http://www.w3.org/2000/svg">${faces.map(f=>cell(...f)).join('')}</svg>`;
 }
+// Left-hand version of an algorithm: reflect left and right (R<->L) and reverse every turn.
+function mirror(alg){
+  const swap={R:'L',L:'R',U:'U',D:'D',F:'F',B:'B'};
+  return alg.split(/\s+/).map(t=>{const f=t[0],suf=t.slice(1);if(!(f in swap))throw new Error('Cannot mirror '+t);return swap[f]+(suf==='2'?'2':suf==="'"?'':"'");}).join(' ');
+}
 function loadRef(){
   const a=app({mode:'s',language:'en'}),v=x=>a.value(x);
   const FC=v('FC');
@@ -246,20 +251,27 @@ function loadRef(){
     sw:{c:swatch([FC[0]]),e:swatch([FC[0],FC[2]]),k:swatch([FC[0],FC[2],FC[1]])},
     // FC order: U R F D L B -> yellow, red, blue, white, orange, green
     pairs:[[FC[0],FC[3]],[FC[2],FC[5]],[FC[1],FC[4]]],
-    triggers:[['Sexy Move',"R U R' U'"],['Inverse Sexy',"U R U' R'"],['Sledgehammer',"R' F R F'"],['Hedgeslammer',"F R' F' R"],['Sune',"R U R' U R U2 R'"],['Anti-Sune',"R U2 R' U' R U' R'"]].map(([name,alg])=>({
-      name,alg,chip:v(`chunk(${JSON.stringify(alg)})`),order:v(`algOrder(${JSON.stringify(alg)})`),
-      effect:v(`isoSVG(run(SOLVED,${JSON.stringify(alg)}),false,new Set(${JSON.stringify(ALL)}))`)}))};
+    groups:[
+      ['Triggers',4,[['Sexy Move',"R U R' U'"],['Inverse Sexy',"U R U' R'"],['Sledgehammer',"R' F R F'"],['Hedgeslammer',"F R' F' R"]]],
+      ['Left hand',4,[['Sexy Move',"R U R' U'"],['Inverse Sexy',"U R U' R'"],['Sledgehammer',"R' F R F'"],['Hedgeslammer',"F R' F' R"]].map(([name,alg])=>[name,mirror(alg),alg])],
+      ['Sune',2,[['Sune',"R U R' U R U2 R'"],['Anti-Sune',"R U2 R' U' R U' R'"],...[['Left Sune',"R U R' U R U2 R'"],['Left Anti-Sune',"R U2 R' U' R U' R'"]].map(([name,alg])=>[name,mirror(alg),alg])]],
+      // the three-move patterns that recur most often in the F2L, OLL and PLL algorithms of these sheets
+      ['Inserts',4,[['',"R U R'"],['',"R U' R'"],['',"R' U' R"],['',"R' U R"]]],
+    ].map(([label,cols,items])=>({label,cols,items:items.map(([name,alg,like])=>{
+      // a mirrored move keeps the colour of the move it mirrors
+      const chip=like?v(`chunk(${JSON.stringify(like)})`).replace(/(<ruby[^>]*>)\([^<]*\)/,`$1(${alg})`):v(`chunk(${JSON.stringify(alg)})`);
+      return {name,alg,chip,order:v(`algOrder(${JSON.stringify(alg)})`),
+        effect:v(`isoSVG(run(SOLVED,${JSON.stringify(alg)}),false,new Set(${JSON.stringify(ALL)}))`)};})}))};
   a.close();
   return data;
 }
 function referenceSheet(){
-  const d=load('s'),r=loadRef();
-  const title='<div class="title"><b>Cube Reference</b><span>notation · pieces · flow · common moves</span></div>';
+  const r=loadRef();
+  const title='<div class="title"><b>Cube Reference</b><span>notation · pieces · common moves</span></div>';
   const icon=(m,text=m)=>`<div class="icon refbox"><div class="fig">${r.moves[m]}</div><b>${text}</b></div>`;
   const grp=t=>`<div class="grp"><span>${t}</span><i class="gline"></i></div>`;
   const stepA=(n,name)=>step(n,name,'');
   const piece=(svg,sw,count)=>`<div class="piece refbox"><div class="fig">${svg}</div><div class="cnt"><b>${count}</b>${sw}</div></div>`;
-  const flow=[[1,'Cross',d.goalCross],[2,'F2L',d.goalF2L],[3,'OLL',d.flatOll],[4,'PLL',d.flatPll]];
   return `<section class="sheet s1 ref">${title}
   ${stepA('A','Moves')}
   ${grp('Faces · Whole cube')}
@@ -272,10 +284,8 @@ function referenceSheet(){
     <div class="pieces">${piece(r.centres,r.sw.c,6)}${piece(r.edges,r.sw.e,12)}${piece(r.corners,r.sw.k,8)}</div>
     <div class="refbox pairs">${r.pairs.map(([a,b])=>`<div class="pair2"><i style="background:${a}"></i><i style="background:${b}"></i></div>`).join('')}</div>
   </div>
-  ${stepA('C','Flow')}
-  <div class="flow">${flow.map(([n,name,pic],i)=>`${i?'<i class="to"></i>':''}<div class="fstep refbox"><div class="fig">${pic}</div><b><em>${n}</em>${name}</b></div>`).join('')}</div>
-  ${stepA('D','Common moves')}
-  <div class="grid g3 trig">${r.triggers.map(t=>`<div class="case refbox"><div class="fig">${t.effect}</div><div class="txt"><div class="no">${t.name}</div><div class="alg">${alg(t.chip)}</div><div class="cyc">↻ ×${t.order}</div></div></div>`).join('')}</div>
+  ${stepA('C','Common moves')}
+  ${r.groups.map(g=>`${grp(g.label)}<div class="grid trig" style="grid-template-columns:repeat(${g.cols},1fr)">${g.items.map(t=>`<div class="case refbox"><div class="fig">${t.effect}</div><div class="txt">${t.name?`<div class="no">${t.name}</div>`:''}<div class="alg">${alg(t.chip)}</div><div class="cyc">↻ ×${t.order}</div></div></div>`).join('')}</div>`).join('')}
 </section>`;
 }
 
