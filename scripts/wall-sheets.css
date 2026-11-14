@@ -327,3 +327,18 @@ svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a
 .ref .trig .alg{font-size:11.5pt}
 .ref .trig .no{font-size:10.5pt}
 .ref .trig[style*="repeat(2"] .fig svg{width:14.5mm}
+
+/* Reference page: type and layout pass */
+.ref .grp{font-size:10.5pt}
+.ref .icon b{font-size:13pt}
+.ref .icon .fig svg{width:17mm}
+.ref .cubebox{grid-template-columns:1.1fr 1.55fr .55fr}
+.ref .hold .fig svg{width:26mm}
+.ref .hold .net svg{width:42mm}
+.ref .pair2 i{width:6.4mm;height:6.4mm}
+.ref .trig .no{font-size:10pt;letter-spacing:-.01em;white-space:nowrap}
+.ref .trig .fig svg{width:13.5mm}
+.ref .trig[style*="repeat(2"] .fig svg{width:14.5mm}
+.ref .cyc{font-size:10pt}
+.ref .hold .fig svg{width:23mm}
+.ref .hold .net svg{width:35mm}

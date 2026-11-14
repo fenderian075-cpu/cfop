@@ -343,7 +343,7 @@ async function render(browser,name,body){
     });
     document.querySelectorAll('.case').forEach(c=>{
       const r=c.getBoundingClientRect();
-      if([...c.querySelectorAll('.trg,.alg,.fig')].some(e=>{const q=e.getBoundingClientRect();return q.right>r.right-2||q.bottom>r.bottom-1;}))out.push('card overflows: '+c.textContent.slice(0,40));
+      if([...c.querySelectorAll('.trg,.alg,.fig,.no')].some(e=>{const q=e.getBoundingClientRect();return q.right>r.right-2||q.bottom>r.bottom-1;}))out.push('card overflows: '+c.textContent.slice(0,40));
     });
     return out;
   });
