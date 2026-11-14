@@ -169,7 +169,8 @@ function simpleSheets(){
   // One page. OLL and PLL are two looks each: a rule with an arrow ends in that look's goal picture.
   const d=load('s'),{cross,f2l,oll,pll}=d.cases;
   const title='<div class="title"><b>Simple CFOP</b><span>beginner set · 2-look OLL &amp; PLL</span></div>';
-  const look=(label,pic,question='')=>`<span class="pill">${label}</span>${question?`<span class="q">${question}</span>`:''}<i class="rule"></i><span class="gp">${pic}</span>`;
+  // Same arrow as the step titles' goals (short arrow, then the picture), pushed to the right edge: no long rule across the page.
+  const look=(label,pic,question='')=>`<span class="pill">${label}</span>${question?`<span class="q">${question}</span>`:''}${goal(pic)}`;
   const subhead=(label,pic,question='')=>`<div class="subhead">${look(label,pic,question)}</div>`;
   // The first look shares the row with the step title; the second look gets its own row.
   const stepWithLook=(n,name,label,pic,question='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${look(label,pic,question)}</header>`;
