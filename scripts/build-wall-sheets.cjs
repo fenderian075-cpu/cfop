@@ -178,7 +178,7 @@ function simpleSheets(){
   ${step(1,'Cross',goal(d.goalCross))}
   <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
   ${step(2,'F2L',goal(d.goalF2L))}
-  <div class="grid g4">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
+  <div class="grid g4">${[f2l.slice(0,2),f2l.slice(2,4)].map(pair=>`<div class="pair">${pair.map(c=>card(c,c.name.replace('F2L ',''),'bare')).join('')}</div>`).join('')}${f2l.slice(4).map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
   ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
   <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'','ll')).join('')}</div>
   ${subhead('3-2',d.flatOll)}

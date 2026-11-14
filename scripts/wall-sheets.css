@@ -247,10 +247,10 @@ svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a
 .s1 .pair{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;border:.5mm solid #c3cad5;border-radius:3mm;min-width:0}
 .s1 .pair .case{border:0;border-radius:0;min-width:0}
 .s1 .pair .case+.case{border-left:1px dashed #c3cad5}
-.s1 .pair .case .fig svg{width:19mm}
-.s1 .pair .no{font-size:12pt;font-weight:800;color:#111827}
+.s1 .edgegrid .pair .case .fig svg{width:19mm}
+.s1 .edgegrid .pair .no{font-size:12pt;font-weight:800;color:#111827}
 .s1 .edgegrid{grid-template-columns:1.3fr 1.3fr 1fr 1fr}
-.s1 .pair .case .fig svg{width:17mm}
+.s1 .edgegrid .pair .case .fig svg{width:17mm}
 
 /* Simple 3-2: cases grouped by how many corners are already yellow on top (0, 1, 2). */
 .s1 .og{display:grid;border:.5mm solid #c3cad5;border-radius:3mm;min-width:0}
@@ -267,10 +267,10 @@ svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a
 .s1 .edgegrid{grid-template-columns:repeat(4,1fr)}
 .s1 .og .badge svg{width:9mm}
 .s1 .edgegrid{grid-template-columns:1.1fr 1.1fr 1fr 1fr}
-.s1 .pair .case .fig svg{width:15.5mm}
+.s1 .edgegrid .pair .case .fig svg{width:15.5mm}
 .s1 .edgegrid{grid-template-columns:1.15fr 1.15fr 1fr 1fr}
-.s1 .pair .case{padding:1.2mm 1.4mm;gap:1.6mm}
-.s1 .pair .case .fig svg{width:14.5mm}
+.s1 .edgegrid .pair .case{padding:1.2mm 1.4mm;gap:1.6mm}
+.s1 .edgegrid .pair .case .fig svg{width:14.5mm}
 .s1 .edgegrid>.case .fig svg{width:13.5mm}
 .s1 .og .badge{flex-direction:row;gap:1.4mm}
 .s1 .og .badge .n{font-size:18pt;font-weight:800;color:#111827;line-height:1}
