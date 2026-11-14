@@ -1,14 +1,14 @@
 /* CFOP Trainer Service Worker — online-first with offline fallback */
 const CACHE_PREFIX = 'cfop-runtime-';
-const CACHE = CACHE_PREFIX + 'v107';
+const CACHE = CACHE_PREFIX + 'v108';
 const NETWORK_TIMEOUT_MS = 4000;
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=107',
-  './theme-init.js?v=107',
-  './app.bundle.js?v=107',
-  './cube-worker.js?v=107',
+  './styles.css?v=108',
+  './theme-init.js?v=108',
+  './app.bundle.js?v=108',
+  './cube-worker.js?v=108',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -66,7 +66,7 @@ async function networkFirst(request) {
 
 async function respond(request) {
   // Versioned assets belong to the installed shell. Keep them coherent offline and online.
-  if (new URL(request.url).searchParams.get('v') === '107') {
+  if (new URL(request.url).searchParams.get('v') === '108') {
     const cached = await (await caches.open(CACHE)).match(request);
     if (cached) return cached;
   }

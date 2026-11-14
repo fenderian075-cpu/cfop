@@ -11,7 +11,7 @@ const SIDES=[[47,46,45],[18,19,20],[36,37,38],[11,10,9]]; // side stickers of th
 function flatGoals(FC){
   const S=26,G=2,GRAY='var(--dOff)';
   const rect=(x,y,w,h,fill,stroke)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.6" fill="${fill}" stroke="${stroke||'var(--dline)'}" stroke-width="${stroke?1.3:1}"/>`;
-  const wrap=(w,body)=>`<svg viewBox="-2 -2 ${w+4} ${w+4}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  const wrap=(w,body)=>`<svg class="ll" viewBox="-2 -2 ${w+4} ${w+4}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
   // OLL looks only concern the top face: the yellow cross, then all nine yellow.
   const top=yellow=>{let o='';for(let k=0;k<9;k++)o+=rect((k%3)*(S+G),Math.floor(k/3)*(S+G),S,S,yellow.has(k)?FC[0]:GRAY);return wrap(3*S+2*G,o);};
   // PLL looks only concern the side colours: the top is already finished (and drawn grey, as on the case cards).
@@ -27,17 +27,81 @@ function flatGoals(FC){
   };
   return {flatOllEdges:top(new Set([1,3,4,5,7])),flatOll:top(new Set([0,1,2,3,4,5,6,7,8])),flatPllCorners:side(true),flatPll:side(false)};
 }
-// Edge-orientation (3-1) case figure: only the top face matters, so no side stickers. Corners are muted because they are ignored.
+// Case figures for the two OLL looks. In both, the yellow cells on top are drawn as one solid shape with a bold outline:
+// the shape is what you recognise. Everything that is not yellow stays faint.
+const INK='#111827';
+function yellowShape(FC,yellow,pos,S,G){
+  const P=S+G,h=G/2;
+  let fill='',divide='',edge='';
+  for(const k of yellow){
+    const [x,y]=pos(k),r=Math.floor(k/3),c=k%3,cx=x-h,cy=y-h;
+    fill+=`<rect x="${cx}" y="${cy}" width="${P}" height="${P}" fill="${FC[0]}"/>`;
+    const has=n=>yellow.has(n);
+    if(!(r>0&&has(k-3)))edge+=`M${cx} ${cy}h${P}`;
+    if(!(r<2&&has(k+3)))edge+=`M${cx} ${cy+P}h${P}`;
+    if(!(c>0&&has(k-1)))edge+=`M${cx} ${cy}v${P}`;
+    if(!(c<2&&has(k+1)))edge+=`M${cx+P} ${cy}v${P}`;
+    if(c<2&&has(k+1))divide+=`M${cx+P} ${cy+3}v${P-6}`;
+    if(r<2&&has(k+3))divide+=`M${cx+3} ${cy+P}h${P-6}`;
+  }
+  return `${fill}<path d="${divide}" fill="none" stroke="#b8a800" stroke-width="1"/><path d="${edge}" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+const faintRect=(x,y,w,h,fill,stroke)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+// 3-1 (edge orientation): the top face only. Corners are ignored, so they are barely drawn.
 function topCaseFigure(FC,state){
-  const S=26,G=2,corners=[0,2,6,8];
-  let o='';
+  const S=26,G=2,corners=[0,2,6,8],X=i=>i*(S+G);
+  const yellow=new Set([4,...[1,3,5,7].filter(k=>state[k]<9)]);
+  let faint='';
   for(let k=0;k<9;k++){
-    const yellow=k===4||(!corners.includes(k)&&state[k]<9);
-    const fill=corners.includes(k)?'var(--dMask)':yellow?FC[0]:'var(--ollOff)';
-    o+=`<rect x="${(k%3)*(S+G)}" y="${Math.floor(k/3)*(S+G)}" width="${S}" height="${S}" rx="1.6" fill="${fill}" stroke="var(--dline)" stroke-width="1"/>`;
+    if(yellow.has(k))continue;
+    faint+=corners.includes(k)?faintRect(X(k%3),X(Math.floor(k/3)),S,S,'#fafbfc','#e6e9ef'):faintRect(X(k%3),X(Math.floor(k/3)),S,S,'#f3f5f8','#cfd5de');
   }
   const W=3*S+2*G;
-  return `<svg viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
+  return `<svg class="ll" viewBox="-3 -3 ${W+6} ${W+6}" xmlns="http://www.w3.org/2000/svg">${faint}${yellowShape(FC,yellow,k=>[X(k%3),X(Math.floor(k/3))],S,G)}</svg>`;
+}
+// 3-2 (corner orientation): the cross is done, so the cases differ by where each corner's yellow sits. The yellow side
+// stickers get a strong outline as well. No frame around the top face: a plain square carries no information.
+function cornerCaseFigure(FC,state){
+  const S=26,G=2,T=14,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G;
+  const isYellow=i=>state[i]<9;
+  const yellow=new Set([...Array(9).keys()].filter(isYellow));
+  let faint='',strong='';
+  for(let k=0;k<9;k++)if(!yellow.has(k))faint+=faintRect(X(k%3),X(Math.floor(k/3)),S,S,'#f3f5f8','#cfd5de');
+  const sides=[[[47,46,45],i=>[X(i),0,S,T]],[[18,19,20],i=>[X(i),far,S,T]],[[36,37,38],i=>[0,X(i),T,S]],[[11,10,9],i=>[far,X(i),T,S]]];
+  for(const [idx,box] of sides)for(let i=0;i<3;i++){
+    const [x,y,w,hh]=box(i);
+    if(isYellow(idx[i]))strong+=`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="2" fill="${FC[0]}" stroke="${INK}" stroke-width="2.4"/>`;
+    else faint+=faintRect(x,y,w,hh,'#f7f8fa','#d5dae2');
+  }
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${faint}${yellowShape(FC,yellow,k=>[X(k%3),X(Math.floor(k/3))],S,G)}${strong}</svg>`;
+}
+// Ua / Ub: the three-edge cycle with the solved edge at the back. What tells them apart on a real cube is the colour of the
+// front edge: it belongs on the right face (Ua) or the left face (Ub). The figure marks that colour, the matching corner stickers
+// on the destination side, and an arrow in that colour from the front edge slot to the destination slot. The back edge gets a tick.
+function edgeCycleFigure(FC,state){
+  const S=26,G=2,T=12,o=T+G,X=i=>o+G+i*(S+G),W=2*o+3*S+4*G,far=o+3*(S+G)+G,GRAY='var(--dOff)';
+  const col=i=>FC[Math.floor(state[i]/9)];
+  const toRight=Math.floor(state[19]/9)===1; // face 1 = R; otherwise the front edge belongs on the left face
+  const rect=(x,y,w,h,fill,stroke,sw)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.6" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  let out='';
+  for(let k=0;k<9;k++)out+=rect(X(k%3),X(Math.floor(k/3)),S,S,GRAY,'var(--dline)',1);
+  const strips=[[[47,46,45],i=>[X(i),0,S,T]],[[18,19,20],i=>[X(i),far,S,T]],[[36,37,38],i=>[0,X(i),T,S]],[[11,10,9],i=>[far,X(i),T,S]]];
+  for(const [idx,box] of strips)for(let i=0;i<3;i++)out+=rect(...box(i),col(idx[i]),'#737683',1.3);
+  // rings: the front edge's sticker and the two corner stickers of the same colour on the destination side
+  const ring=(x,y,w,h)=>`<rect x="${x-1}" y="${y-1}" width="${w+2}" height="${h+2}" rx="2.4" fill="none" stroke="${INK}" stroke-width="2.6"/>`;
+  out+=ring(X(1),far,S,T);
+  const dx=toRight?far:0;
+  out+=ring(dx,X(0),T,S)+ring(dx,X(2),T,S);
+  // arrow from the front edge slot (top-face cell 7) to the destination slot (cell 5 or 3), in the front edge's colour
+  const c=k=>[X(k%3)+S/2,X(Math.floor(k/3))+S/2];
+  const [x1,y1]=c(7),[x2,y2]=c(toRight?5:3),len=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/len,uy=(y2-y1)/len;
+  const sx=x1+ux*8,sy=y1+uy*8,ex=x2-ux*13,ey=y2-uy*13,ang=Math.atan2(uy,ux)*180/Math.PI,colour=col(19);
+  out+=`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${INK}" stroke-width="9" stroke-linecap="round"/>`
+     +`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${colour}" stroke-width="5" stroke-linecap="round"/>`
+     +`<polygon points="-1,-9 14,0 -1,9" transform="translate(${ex.toFixed(1)},${ey.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="${colour}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>`;
+  const [bx,by]=c(1);
+  out+=`<circle cx="${bx}" cy="${by}" r="10" fill="#0e7a34" stroke="#fff" stroke-width="2"/><path d="M${bx-5} ${by+0.5} l4 4 l7 -8.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return `<svg class="ll" viewBox="-2 -2 ${W+4} ${W+4}" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
 }
 function load(mode){
   const a=app({mode,language:'en'}),v=x=>a.value(x),cases={};
@@ -70,9 +134,9 @@ function load(mode){
     const mark=badge==='yes'?`<circle cx="${c}" cy="${c}" r="19" fill="#0e7a34"/><path d="M${c-10} ${c+1} l7 7 l13 -15" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>`
       :badge==='no'?`<circle cx="${c}" cy="${c}" r="19" fill="#c62828"/><path d="M${c-8} ${c-8} l16 16 M${c+8} ${c-8} l-16 16" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/>`
       :`<circle cx="${c}" cy="${c}" r="20" fill="#0e7a34"/>${text('×'+badge,23)}`;
-    return `<svg viewBox="-5 -5 ${W+10} ${W+10}" xmlns="http://www.w3.org/2000/svg">${out}${ring}${mark}</svg>`;
+    return `<svg class="ll" viewBox="-5 -5 ${W+10} ${W+10}" xmlns="http://www.w3.org/2000/svg">${out}${ring}${mark}</svg>`;
   }
-  const data={cases,pllState,headlightIcon,
+  const data={FC,cases,pllState,headlightIcon,
     headlights:state=>SIDES.filter(s=>colour(state,s[0])===colour(state,s[2])).length,
     // goal pictures: only the part that is solved after the step is coloured
     goalCross:v(`isoSVG(run(SOLVED,'z2'),false,new Set([1,3,4,5,7,19,22,10,13]))`),
@@ -80,41 +144,50 @@ function load(mode){
     goalOllEdges:v(`llSVG(SOLVED,'oll',true)`),goalOll:v(`llSVG(SOLVED,'oll')`),
     goalPll:v(`isoSVG(SOLVED,false,new Set(${all}))`),
     ...flatGoals(FC),
-    edgeFigures:v('OLL2E.map(([name,alg])=>caseState(alg))').map(state=>topCaseFigure(FC,state))};
+    edgeFigures:v('OLL2E.map(([name,alg])=>caseState(alg))').map(state=>topCaseFigure(FC,state)),
+    edgeCycleFigures:['Ua','Ub'].map(n=>edgeCycleFigure(FC,v(`caseState(PLL.${n})`))),
+    cornerFigures:v('[21,22,23,24,25,26,27].map(n=>caseState(OLL[n]))').map(state=>cornerCaseFigure(FC,state))};
   a.close();
   return data;
 }
 // Trigger names are dropped; the coloured brackets stay.
+// The last two moves are joined with a no-break space so a line never ends with a lone move.
 const alg=h=>h.replace(/<rt>[^<]*<\/rt>/g,'')
   // A bracketed group stays on one line unless it is too long for any card column (more than 12 characters of moves).
-  .replace(/<ruby class="ck (ck-\w+)">([^<]*)<\/ruby>/g,(_,cls,text)=>`<span class="trg ${cls}${text.length>13?' longchip':''}">${text}</span>`);
+  .replace(/<ruby class="ck (ck-\w+)">([^<]*)<\/ruby>/g,(_,cls,text)=>`<span class="trg ${cls}${text.length>13?' longchip':''}">${text}</span>`)
+  .replace(/([^\s>]+) ([^\s<]+)$/,'$1&nbsp;$2');
 const card=(c,label,cls='')=>`<div class="case ${cls}"><div class="fig">${c.svg}</div><div class="txt">${label?`<div class="no">${label}</div>`:''}<div class="alg">${alg(c.alg)}</div></div></div>`;
 const goal=(...pics)=>`<span class="goal">${pics.map(p=>`<i class="to"></i>${p}`).join('')}</span>`;
 const step=(n,name,g,more='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${more?`<span class="range">${more}</span>`:''}${g}</header>`;
 const short=c=>c.name.replace(' perm','');
 
+// Group badge for 3-2: just the number of corners that are already yellow on top (0, 1 or 2). Counting them is the first step.
+function cornerCountBadge(FC,n){
+  return `<span class="n">${n}</span>`;
+}
 function simpleSheets(){
   // One page. OLL and PLL are two looks each: a rule with an arrow ends in that look's goal picture.
   const d=load('s'),{cross,f2l,oll,pll}=d.cases;
   const title='<div class="title"><b>Simple CFOP</b><span>beginner set · 2-look OLL &amp; PLL</span></div>';
-  const look=(label,pic,question='')=>`<span class="pill">${label}</span>${question?`<span class="q">${question}</span>`:''}<i class="rule"></i><span class="gp">${pic}</span>`;
+  // Same arrow as the step titles' goals (short arrow, then the picture), pushed to the right edge: no long rule across the page.
+  const look=(label,pic,question='')=>`<span class="pill">${label}</span>${question?`<span class="q">${question}</span>`:''}${goal(pic)}`;
   const subhead=(label,pic,question='')=>`<div class="subhead">${look(label,pic,question)}</div>`;
   // The first look shares the row with the step title; the second look gets its own row.
   const stepWithLook=(n,name,label,pic,question='')=>`<header class="step"><span class="num">${n}</span><h1>${name}</h1>${look(label,pic,question)}</header>`;
-  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div>${card(c,short(c))}</div>`;
+  const branch=(icon,c)=>`<div class="half"><div class="cond">${icon}</div>${card(c,short(c),'ll')}</div>`;
   return `<section class="sheet s1">${title}
   ${step(1,'Cross',goal(d.goalCross))}
   <div class="grid g4">${cross.map(c=>card(c,'')).join('')}</div>
   ${step(2,'F2L',goal(d.goalF2L))}
-  <div class="grid g4">${f2l.map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
+  <div class="grid g4">${[f2l.slice(0,2),f2l.slice(2,4)].map(pair=>`<div class="pair">${pair.map(c=>card(c,c.name.replace('F2L ',''),'bare')).join('')}</div>`).join('')}${f2l.slice(4).map(c=>card(c,c.name.replace('F2L ',''))).join('')}</div>
   ${stepWithLook(3,'OLL','3-1',d.flatOllEdges)}
-  <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'')).join('')}</div>
+  <div class="grid g3">${oll.slice(0,3).map((c,i)=>card({...c,svg:d.edgeFigures[i]},'','ll')).join('')}</div>
   ${subhead('3-2',d.flatOll)}
-  <div class="grid g4">${oll.slice(3).map(c=>card(c,c.name.replace('OLL ','#'))).join('')}</div>
+  <div class="ogs">${[[0,[21,22]],[1,[27,26]],[2,[23,24,25]]].map(([count,nums])=>`<div class="og" style="grid-template-columns:11mm repeat(${nums.length},1fr)"><div class="badge">${cornerCountBadge(d.FC,count)}</div>${nums.map(n=>card({...oll.find(c=>c.name==='OLL '+n),svg:d.cornerFigures[n-21]},'#'+n,'ll bare')).join('')}</div>`).join('')}</div>
   ${stepWithLook(4,'PLL','4-1',d.flatPllCorners,'Headlights?')}
   <div class="grid g2 br">${branch(d.headlightIcon(d.pllState('T'),'yes'),pll[0])}${branch(d.headlightIcon(d.pllState('Y'),'no'),pll[1])}</div>
   ${subhead('4-2',d.flatPll)}
-  <div class="grid g4">${pll.slice(2).map(c=>card(c,short(c))).join('')}</div>
+  <div class="grid g4 edgegrid"><div class="pair">${pll.slice(2,4).map((c,i)=>card({...c,svg:d.edgeCycleFigures[i]},short(c),'ll bare')).join('')}</div>${pll.slice(4).map(c=>card(c,short(c),'ll')).join('')}</div>
 </section>`;
 }
 
@@ -125,19 +198,19 @@ function fullSheets(){
   function groups(list){
     const out=[];let cur=null;
     for(const c of list){if(!cur||cur.sec!==c.sec){cur={sec:c.sec,items:[]};out.push(cur);}cur.items.push(c);}
-    return out.map(g=>`<div class="grp">${g.sec}</div><div class="grid ${g.items.length===4?'four':'three'}">${g.items.map(c=>card(c,fl(c))).join('')}</div>`).join('');
+    return out.map(g=>`<div class="grp"><span>${g.sec}</span><i class="gline"></i></div><div class="grid ${g.items.length===4?'four':'three'}">${g.items.map(c=>card(c,fl(c))).join('')}</div>`).join('');
   }
   const num=c=>Number(c.name.replace('OLL ',''));
   const ollSorted=[...oll].sort((x,y)=>num(x)-num(y));
   const ol=c=>`${c.name.replace('OLL ','#')}<em>${c.sec.replace(/ shapes?$/,'').replace(' (corners only)','')}</em>`;
   const ollPage=(n,list)=>`<section class="sheet full o">${title(n)}
-  ${step(3,'OLL',goal(d.goalOll),`#${num(list[0])} – #${num(list[list.length-1])}`)}
-  <div class="grid two fill">${list.map(c=>card(c,ol(c))).join('')}</div>
+  ${step(3,'OLL',goal(d.flatOll),`#${num(list[0])} – #${num(list[list.length-1])}`)}
+  <div class="grid two fill">${list.map(c=>card(c,ol(c),'ll')).join('')}</div>
 </section>`;
   // PLL branches by how many sides show headlights, computed from each case's state.
   const byCount={4:[],1:[],0:[]};
   for(const c of pll){const n=d.headlights(d.pllState(short(c)));if(!byCount[n])throw new Error(`Unexpected headlight count ${n} for ${c.name}`);byCount[n].push(c);}
-  const block=(n,rep)=>`<div class="cond">${d.headlightIcon(d.pllState(rep),n?String(n):'no')}</div><i class="to"></i><div class="grid two">${byCount[n].map(c=>card(c,short(c))).join('')}</div>`;
+  const block=(n,rep)=>`<div class="cond">${d.headlightIcon(d.pllState(rep),n?String(n):'no')}</div><div class="grid two">${byCount[n].map(c=>card(c,short(c),'ll')).join('')}</div>`;
   const per=Math.ceil(ollSorted.length/3);
   return `<section class="sheet full f1">${title(1)}
   ${step(1,'Cross',goal(d.goalCross))}
@@ -151,8 +224,8 @@ function fullSheets(){
 </section>
 ${[0,1,2].map(i=>ollPage(3+i,ollSorted.slice(i*per,(i+1)*per))).join('\n')}
 <section class="sheet full p">${title(6)}
-  ${step(4,'PLL',goal(d.goalPll))}
-  <div class="branch"><div class="q">Headlights?</div>${block(4,'Ua')}${block(1,'T')}${block(0,'Y')}</div>
+  <header class="step"><span class="num">4</span><h1>PLL</h1><span class="q">Headlights?</span>${goal(d.flatPll)}</header>
+  <div class="branch">${block(4,'Ua')}<div class="sep"></div>${block(1,'T')}<div class="sep"></div>${block(0,'Y')}</div>
 </section>`;
 }
 

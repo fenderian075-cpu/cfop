@@ -218,3 +218,63 @@ h1{margin:0;font-size:27pt;font-weight:800;letter-spacing:-.02em}
 .s1 .to::after,.s1 .rule::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
 .s1 .half .to{width:4mm}
 .s1 .half{grid-template-columns:15mm 1fr;column-gap:2.4mm}
+
+/* Full CFOP: the Simple sheet's look. One arrow style, a title that leads, group labels with a plain rule (no arrow). */
+.full{--aw:2px;--ac:#929aaa;--ah:2.5mm}
+.full .to{width:7mm;height:var(--aw);background:var(--ac);border-radius:var(--aw)}
+.full .to::after{width:var(--ah);height:var(--ah);border-top:var(--aw) solid var(--ac);border-right:var(--aw) solid var(--ac);right:-1.15mm;border-radius:.3mm}
+.full .title{align-items:baseline;gap:4mm;margin-bottom:3.2mm;padding-bottom:2.2mm;border-bottom-width:.9mm}
+.full .title b{font-size:25pt;font-weight:800;letter-spacing:-.025em;line-height:1}
+.full .title span{font-size:13pt;font-weight:600;color:#4b5563;line-height:1}
+.full .title i{font-size:11pt;font-weight:700;color:#4b5563}
+.full .num{width:10mm;height:10mm;font-size:18pt}
+.full h1{font-size:21pt}
+.full .goal svg{width:11mm}
+.full .range{font-size:11.5pt;margin-left:2mm;padding-bottom:1.2mm}
+.full .step .q{font-size:11.5pt;font-weight:800;margin-left:3mm}
+.full .no{font-size:9.5pt;color:#4b5563}
+.full .no em{color:#8b93a1}
+.grp{display:flex;align-items:center;gap:2.5mm;font-size:9.5pt;font-weight:800;color:#4b5563;margin:2.2mm 0 1.2mm .5mm}
+.gline{flex:1;height:1px;background:#c3cad5}
+.p .branch{grid-template-columns:17mm 1fr;gap:3mm 2.4mm;align-items:start;flex:1}
+.p .cond svg{width:16mm}
+.sep{grid-column:1/-1;height:1px;background:#c3cad5}
+
+/* OLL and PLL pictures: lighter greys and outlines, so the yellow and the coloured stickers read first. */
+svg.ll,.case.ll .fig{--dOff:#edf0f5;--ollOff:#edf0f5;--dMask:#fafbfc;--dline:#7a8290}
+
+/* Simple 4-2: Ua and Ub share one block, side by side, with figures that read the same way. */
+.s1 .pair{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;border:.5mm solid #c3cad5;border-radius:3mm;min-width:0}
+.s1 .pair .case{border:0;border-radius:0;min-width:0}
+.s1 .pair .case+.case{border-left:1px dashed #c3cad5}
+.s1 .edgegrid .pair .case .fig svg{width:19mm}
+.s1 .edgegrid .pair .no{font-size:12pt;font-weight:800;color:#111827}
+.s1 .edgegrid{grid-template-columns:1.3fr 1.3fr 1fr 1fr}
+.s1 .edgegrid .pair .case .fig svg{width:17mm}
+
+/* Simple 3-2: cases grouped by how many corners are already yellow on top (0, 1, 2). */
+.s1 .og{display:grid;border:.5mm solid #c3cad5;border-radius:3mm;min-width:0}
+.s1 .og .case{border:0;border-radius:0;min-width:0}
+.s1 .og .badge+.case{border-radius:0}
+.s1 .og .case+.case{border-left:1px dashed #c3cad5}
+.s1 .og .badge{display:flex;align-items:center;justify-content:center;background:#f5f6f9;border-right:1px solid #c3cad5;border-radius:2.6mm 0 0 2.6mm}
+.s1 .og .badge svg{width:5.4mm;height:auto;display:block}
+
+/* Simple: wider page for the wrapped text, 3-2 as one group per row (up to three cards across), equal columns for 4-2. */
+.s1{padding:8mm 6mm 7mm}
+.s1 .ogs{display:flex;flex-direction:column;gap:2.1mm}
+.s1 .og .badge svg{width:7.4mm}
+.s1 .edgegrid{grid-template-columns:repeat(4,1fr)}
+.s1 .og .badge svg{width:9mm}
+.s1 .edgegrid{grid-template-columns:1.1fr 1.1fr 1fr 1fr}
+.s1 .edgegrid .pair .case .fig svg{width:15.5mm}
+.s1 .edgegrid{grid-template-columns:1.15fr 1.15fr 1fr 1fr}
+.s1 .edgegrid .pair .case{padding:1.2mm 1.4mm;gap:1.6mm}
+.s1 .edgegrid .pair .case .fig svg{width:14.5mm}
+.s1 .edgegrid>.case .fig svg{width:13.5mm}
+.s1 .og .badge{flex-direction:row;gap:1.4mm}
+.s1 .og .badge .n{font-size:18pt;font-weight:800;color:#111827;line-height:1}
+.s1 .og .badge svg{width:8mm}
+.s1 .og .badge .n{font-size:22pt}
+.s1 .subhead .goal svg{width:11mm;height:auto;display:block}
+.s1 .subhead .goal svg{width:10mm}
